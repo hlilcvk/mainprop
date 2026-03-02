@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>PROPTREX — Admin Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#F7F9FF; --bg2:#FFFFFF; --txt:#0B1220; --muted:#58647A;
+      --border: rgba(10,20,35,.10);
+      --accent:#2563EB; --accent2:#06B6D4;
+      --shadow: 0 18px 60px rgba(10,20,35,.10);
+      --radius: 18px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--txt);
+      background: linear-gradient(180deg, var(--bg), var(--bg2));
+      padding: 18px;
+    }
+    .top{
+      display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+      padding: 12px 14px; border:1px solid var(--border); border-radius: 16px; background:#fff; box-shadow: var(--shadow);
+    }
+    .brand{ font-weight:800; letter-spacing:.22em; text-transform:uppercase; font-size:12px; display:flex; gap:10px; align-items:center; }
+    .dot{ width:10px; height:10px; border-radius:50%; background: radial-gradient(circle at 30% 30%, var(--accent2), var(--accent)); }
+    .btn{
+      border-radius: 14px; padding: 10px 12px;
+      font-size: 12px; letter-spacing:.12em; text-transform:uppercase;
+      border: 1px solid var(--border); background: #fff; cursor:pointer;
+    }
+    .btn.primary{ border-color: rgba(37,99,235,.30); background: linear-gradient(135deg, rgba(37,99,235,.12), rgba(6,182,212,.08)); }
+    .grid{
+      margin-top: 14px;
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    .card{
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background:#fff;
+      box-shadow: var(--shadow);
+      padding: 14px;
+      min-height: 110px;
+    }
+    .k{ color: var(--muted); font-size:12px; letter-spacing:.10em; text-transform:uppercase; }
+    .v{ font-size: 28px; font-weight: 800; margin-top: 8px; }
+    .row{
+      margin-top: 12px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 12px;
+      align-items:start;
+    }
+    .muted{ color: var(--muted); font-size: 13px; line-height: 1.45; white-space: pre-line; }
+    .bot{
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,1));
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+    canvas{ width:100%; height:240px; border:1px solid var(--border); border-radius: 16px; background: #fff; }
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+      .row{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    window.PROPTREX_FIREBASE_CONFIG = {
+      apiKey: "YOUR_FIREBASE_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      appId: "YOUR_APP_ID"
+    };
+  </script>
+
+  <div class="top">
+    <div class="brand">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="7" fill="#0B1220"/>
+        <text x="16" y="21" text-anchor="middle" font-family="Inter,system-ui,Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="0.5" fill="#FFFFFF">PX</text>
+      </svg>
+      <span>PROPTREX</span> <span style="color:#58647A;font-weight:600;">Admin Analytics</span>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+      <div id="who" class="muted" style="white-space:normal;">Not signed in</div>
+      <button class="btn primary" id="login">Sign in with Google</button>
+      <button class="btn" id="refresh" disabled>Refresh</button>
+      <button class="btn" id="logout" disabled>Logout</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card"><div class="k">Last 24h Pageviews</div><div class="v" id="pv24">—</div></div>
+    <div class="card"><div class="k">Last 24h Unique</div><div class="v" id="uv24">—</div></div>
+    <div class="card"><div class="k">Verified Waitlist</div><div class="v" id="ver">—</div></div>
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <div class="k">Last 7 Days Trend</div>
+      <div style="margin-top:10px;">
+        <canvas id="chart" width="900" height="300"></canvas>
+      </div>
+      <div class="muted" style="margin-top:8px; white-space:normal;">Pageviews + Unique + Verified requests.</div>
+    </div>
+
+    <div class="bot">
+      <div class="k">Analytics Bot</div>
+      <div class="muted" id="botText" style="margin-top:10px;">Sign in to see a summary.</div>
+      <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn primary" id="botRun" disabled>Generate Summary</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    const pv24 = document.getElementById("pv24");
+    const uv24 = document.getElementById("uv24");
+    const ver = document.getElementById("ver");
+    const who = document.getElementById("who");
+    const loginBtn = document.getElementById("login");
+    const logoutBtn = document.getElementById("logout");
+    const refreshBtn = document.getElementById("refresh");
+    const botRun = document.getElementById("botRun");
+    const botText = document.getElementById("botText");
+
+    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
+    const { getAuth, GoogleAuthProvider, signInWithPopup, signOut } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js");
+
+    const cfg = window.PROPTREX_FIREBASE_CONFIG || null;
+    if (!cfg?.apiKey) {
+      botText.textContent = "Firebase config missing.";
+      loginBtn.disabled = true;
+    }
+
+    const app = initializeApp(cfg);
+    const auth = getAuth(app);
+
+    let idToken = "";
+
+    async function fetchStats(){
+      const res = await fetch("/api/stats", {
+        headers: { "Authorization": `Bearer ${idToken}` }
+      });
+      const data = await res.json().catch(()=> ({}));
+      if (!res.ok || !data?.ok) throw new Error(data?.error || "Stats error");
+      return data;
+    }
+
+    function drawChart(points){
+      const c = document.getElementById("chart");
+      const ctx = c.getContext("2d");
+      ctx.clearRect(0,0,c.width,c.height);
+
+      const pad = 40;
+      const W = c.width - pad*2;
+      const H = c.height - pad*2;
+
+      const maxV = Math.max(
+        1,
+        ...points.map(p=>p.pageviews),
+        ...points.map(p=>p.uniques),
+        ...points.map(p=>p.verified)
+      );
+
+      ctx.strokeStyle = "rgba(10,20,35,0.20)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(pad, pad);
+      ctx.lineTo(pad, pad+H);
+      ctx.lineTo(pad+W, pad+H);
+      ctx.stroke();
+
+      const x = (i)=> points.length<=1 ? pad : pad + (i/(points.length-1))*W;
+      const y = (v)=> pad + H - (v/maxV)*H;
+
+      function line(series, stroke){
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        series.forEach((v,i)=>{
+          const X = x(i), Y = y(v);
+          if (i===0) ctx.moveTo(X,Y); else ctx.lineTo(X,Y);
+        });
+        ctx.stroke();
+      }
+
+      line(points.map(p=>p.pageviews), "rgba(37,99,235,0.85)");
+      line(points.map(p=>p.uniques), "rgba(6,182,212,0.85)");
+      line(points.map(p=>p.verified), "rgba(14,159,110,0.85)");
+
+      ctx.fillStyle = "rgba(88,100,122,0.95)";
+      ctx.font = "12px Inter, Arial";
+      ctx.fillText("PV", pad+6, pad+14);
+      ctx.fillText("UQ", pad+34, pad+14);
+      ctx.fillText("VER", pad+66, pad+14);
+    }
+
+    function makeBotSummary(s){
+      const last = s.last7days?.[s.last7days.length-1];
+      const prev = s.last7days?.[s.last7days.length-2];
+      const pvDelta = (prev && last) ? (last.pageviews - prev.pageviews) : 0;
+      const uqDelta = (prev && last) ? (last.uniques - prev.uniques) : 0;
+      const verDelta = (prev && last) ? (last.verified - prev.verified) : 0;
+
+      const bestDay = s.last7days?.reduce((a,b)=> (b.pageviews>a.pageviews?b:a), s.last7days?.[0]);
+      const bestLine = bestDay ? `Peak day in last 7 days: ${bestDay.day} with ${bestDay.pageviews} pageviews.` : "";
+
+      const rec = [];
+      if ((s.pv24 || 0) > 200) rec.push("Traffic is healthy. Keep the landing minimal and conversion-focused.");
+      if ((s.uv24 || 0) < 10) rec.push("Low unique traffic. Consider a single campaign link to test acquisition.");
+      const conv = (s.verified_total || 0) / Math.max(1, s.signups_total || 0);
+      if ((s.signups_total || 0) > 0 && conv < 0.6) rec.push("Verification drop looks high. Shorten copy and move code entry above fold.");
+      if (!rec.length) rec.push("Metrics look stable. Continue collecting verified emails.");
+
+      return [
+        `Last 24h: ${s.pv24} pageviews / ${s.uv24} unique.`,
+        `Verified total: ${s.verified_total} (signups total: ${s.signups_total}).`,
+        `Day-over-day change: PV ${pvDelta>=0?"+":""}${pvDelta}, Unique ${uqDelta>=0?"+":""}${uqDelta}, Verified ${verDelta>=0?"+":""}${verDelta}.`,
+        bestLine,
+        `Conversion (verified/signups): ${(conv*100).toFixed(1)}%.`,
+        `Next actions: ${rec.join(" ")}`
+      ].filter(Boolean).join("\n");
+    }
+
+    async function load(){
+      const s = await fetchStats();
+      pv24.textContent = s.pv24;
+      uv24.textContent = s.uv24;
+      ver.textContent = s.verified_total;
+      drawChart(s.last7days || []);
+      botText.textContent = makeBotSummary(s);
+    }
+
+    loginBtn.addEventListener("click", async ()=>{
+      const provider = new GoogleAuthProvider();
+      const cred = await signInWithPopup(auth, provider);
+      const user = cred.user;
+      idToken = await user.getIdToken(true);
+
+      who.textContent = `Signed in: ${user.email}`;
+      logoutBtn.disabled = false;
+      refreshBtn.disabled = false;
+      botRun.disabled = false;
+
+      await load();
+    });
+
+    logoutBtn.addEventListener("click", async ()=>{
+      await signOut(auth);
+      idToken = "";
+      who.textContent = "Not signed in";
+      logoutBtn.disabled = true;
+      refreshBtn.disabled = true;
+      botRun.disabled = true;
+      pv24.textContent = "—";
+      uv24.textContent = "—";
+      ver.textContent = "—";
+      botText.textContent = "Sign in to see a summary.";
+      const c = document.getElementById("chart").getContext("2d");
+      c.clearRect(0,0,900,300);
+    });
+
+    refreshBtn.addEventListener("click", async ()=>{ await load(); });
+    botRun.addEventListener("click", async ()=>{ await load(); });
+  </script>
+</body>
+</html>
