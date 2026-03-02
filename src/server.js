@@ -18,7 +18,7 @@ const app = express();
 const PORT = parseInt(process.env.PORT || "3000", 10);
 
 /* ---------- Middleware ---------- */
-app.set("trust proxy", true);
+app.set("trust proxy", 1);
 
 app.use(
   helmet({
