@@ -307,12 +307,12 @@
     window.PROPTREX_HCAPTCHA_SITEKEY = "8e78e92c-9ca0-4b36-a8b8-82f64e949a96";
 
     // Firebase client config (public) for Google sign-in
-  window.PROPTREX_FIREBASE_CONFIG = {
-  apiKey: "AIzaSyA_y7VG2lzYlJ14ZWbb38CUmHAvtSD2Dhg",
-  authDomain: "proptrex-d4784.firebaseapp.com",
-  projectId: "proptrex-d4784",
-  appId: "1:858578852297:web:e38e79adf9ceab82f4b018"
-};
+    window.PROPTREX_FIREBASE_CONFIG = {
+      apiKey: "AIzaSyA_y7VG2lzYlJ14ZWbb38CUmHAvtSD2Dhg",
+      authDomain: "proptrex-d4784.firebaseapp.com",
+      projectId: "proptrex-d4784",
+      appId: "1:858578852297:web:e38e79adf9ceab82f4b018"
+    };
   </script>
 
   <div class="grid"></div>
@@ -388,7 +388,7 @@
             Step 1: Request code → Step 2: Enter code → Confirmed
           </div>
         </div>
-        <button class="x" id="closeSignup" aria-label="Close">✕</button>
+        <button class="x" id="closeSignup" aria-label="Close">&#10005;</button>
       </div>
 
       <div class="modal-body">
@@ -407,7 +407,7 @@
               <option value="fund">Fund / Hedge Fund</option>
               <option value="other">Other</option>
             </select>
-            <input id="note" type="text" placeholder="Focus (futures / macro / flows…)" />
+            <input id="note" type="text" placeholder="Focus (futures / macro / flows...)" />
           </div>
 
           <div class="hcap-wrap">
@@ -456,7 +456,7 @@
         <!-- STEP 3 -->
         <div class="step" id="step3">
           <div class="card-sub" style="margin:10px 0 10px;">
-            ✅ Email verified. You are on the first access list.
+            &#9989; Email verified. You are on the first access list.
           </div>
           <div class="field">
             <button class="btn primary" id="closeDone" type="button">Done</button>
@@ -699,11 +699,11 @@
       }
     });
 
-    // Google sign-in (optional)
+    // Google sign-in with redirect (popup-free)
     const googleBtn = document.getElementById('googleBtn');
 
     const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
-    const { getAuth, GoogleAuthProvider, signInWithPopup } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js");
+    const { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js");
 
     const fbCfg = window.PROPTREX_FIREBASE_CONFIG || null;
     let auth = null;
@@ -712,6 +712,7 @@
       auth = getAuth(app);
     }
 
+    // Google butonuna tiklaninca: bilgileri kaydet, redirect yap
     googleBtn.addEventListener('click', async ()=>{
       const token = getHCaptchaToken();
       if (!token) { showErr(err1, "Please complete the human verification."); return; }
@@ -719,37 +720,57 @@
 
       try{
         const provider = new GoogleAuthProvider();
-        const cred = await signInWithPopup(auth, provider);
-        const user = cred.user;
-        const email = (user?.email || "").trim();
-        if (!email) { showErr(err1, "Google did not return an email."); return; }
-
-        const profile = (document.getElementById('profile').value || "").trim();
-        const note = (document.getElementById('note').value || "").trim();
-
-        const res = await fetch("/api/request-code", {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({
-            email, profile, note,
-            hcaptchaToken: token,
-            googleTrusted: true
-          })
-        });
-        const data = await res.json().catch(()=> ({}));
-        if (!res.ok || !data?.ok) {
-          showErr(err1, data?.error || "Request failed.");
-          resetHCaptcha();
-          return;
-        }
-
-        showToast(toast1, "Google verified. You're on the list.");
-        setStep(3);
+        // hCaptcha token ve form bilgilerini sakla (redirect sonrasi kullanilacak)
+        sessionStorage.setItem('proptrex_hcaptcha', token);
+        sessionStorage.setItem('proptrex_profile', (document.getElementById('profile').value || "").trim());
+        sessionStorage.setItem('proptrex_note', (document.getElementById('note').value || "").trim());
+        await signInWithRedirect(auth, provider);
       }catch{
         showErr(err1, "Google sign-in failed.");
         resetHCaptcha();
       }
     });
+
+    // Sayfa yuklendiginde: Google redirect donusunu yakala
+    if (auth) {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result && result.user) {
+          const email = (result.user.email || "").trim();
+          if (email) {
+            const token = sessionStorage.getItem('proptrex_hcaptcha') || "";
+            const profile = sessionStorage.getItem('proptrex_profile') || "";
+            const note = sessionStorage.getItem('proptrex_note') || "";
+
+            // Modal'i ac ve loading goster
+            backdrop.style.display = 'flex';
+            setStep(1);
+            showToast(toast1, "Google verified. Registering...");
+
+            const res = await fetch("/api/request-code", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, profile, note, hcaptchaToken: token, googleTrusted: true })
+            });
+            const data = await res.json().catch(() => ({}));
+
+            if (res.ok && data?.ok) {
+              showToast(toast1, "Google verified. You're on the list.");
+              setStep(3);
+            } else {
+              showErr(err1, data?.error || "Registration failed. Please try again.");
+            }
+
+            // Temizle
+            sessionStorage.removeItem('proptrex_hcaptcha');
+            sessionStorage.removeItem('proptrex_profile');
+            sessionStorage.removeItem('proptrex_note');
+          }
+        }
+      } catch(e) {
+        console.error("Redirect result error:", e);
+      }
+    }
   </script>
 </body>
 </html>
