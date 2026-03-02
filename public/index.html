@@ -7,306 +7,61 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-  <!-- hCaptcha -->
   <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
-
   <style>
-    :root{
-      --bg:#F7F9FF;
-      --bg2:#FFFFFF;
-      --txt:#0B1220;
-      --muted:#58647A;
-      --line:rgba(10,20,35,.06);
-      --line2:rgba(10,20,35,.03);
-      --accent:#2563EB;
-      --accent2:#06B6D4;
-      --border: rgba(10,20,35,.10);
-      --card: rgba(255,255,255,.80);
-      --shadow: 0 18px 60px rgba(10,20,35,.10);
-      --shadow2: 0 22px 90px rgba(10,20,35,.14);
-      --radius: 18px;
-      --ok:#0E9F6E;
-      --err:#DC2626;
-    }
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0;
-      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      color:var(--txt);
-      background:
-        radial-gradient(1000px 600px at 70% 20%, rgba(37,99,235,.14), transparent 60%),
-        radial-gradient(900px 550px at 20% 75%, rgba(6,182,212,.10), transparent 58%),
-        linear-gradient(180deg, var(--bg), var(--bg2));
-      overflow:hidden;
-    }
-    .grid{
-      position:fixed; inset:-40%;
-      background-image:
-        linear-gradient(var(--line) 1px, transparent 1px),
-        linear-gradient(90deg, var(--line) 1px, transparent 1px),
-        linear-gradient(var(--line2) 1px, transparent 1px),
-        linear-gradient(90deg, var(--line2) 1px, transparent 1px);
-      background-size: 96px 96px, 96px 96px, 18px 18px, 18px 18px;
-      transform: rotate(-10deg);
-      opacity:.65;
-      pointer-events:none;
-      z-index:0;
-      animation: drift 28s linear infinite;
-    }
-    @keyframes drift{
-      0%{ background-position: 0 0, 0 0, 0 0, 0 0; }
-      100%{ background-position: 240px 180px, 240px 180px, 78px 54px, 78px 54px; }
-    }
-    #fx{
-      position:fixed; inset:0;
-      width:100%; height:100%;
-      z-index:1; pointer-events:none;
-    }
-    .topbar{
-      position:fixed; left:0; right:0; top:0;
-      z-index:10;
-      display:flex; align-items:center; justify-content:space-between;
-      padding: 18px 22px; gap:12px;
-    }
-    .brand{
-      display:flex; align-items:center; gap:8px;
-      letter-spacing:.22em;
-      text-transform:uppercase;
-      font-weight:700;
-      font-size:12px;
-      user-select:none;
-    }
-    .brand svg{
-      flex-shrink:0;
-    }
-    .meta{
-      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
-      color: var(--muted);
-      font-size:12px;
-      user-select:none;
-    }
-    .pill{
-      padding:8px 10px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.70);
-      border-radius:999px;
-      box-shadow: 0 8px 22px rgba(10,20,35,.06);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-
-    .wrap{
-      position:relative; z-index:5;
-      height:100%;
-      display:grid; place-items:center;
-      padding: 92px 18px 76px;
-    }
-    .layout{
-      width: min(1200px, 100%);
-      display:grid;
-      grid-template-columns: 1.4fr .6fr;
-      gap: 16px;
-      align-items:center;
-    }
-    .hero{ padding:10px 8px; transform: translate3d(0,0,0); will-change: transform; }
-    .kicker{
-      display:inline-flex; align-items:center; gap:10px;
-      padding:8px 12px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.70);
-      border-radius:999px;
-      color:#243047;
-      font-size:12px;
-      letter-spacing:.14em;
-      text-transform:uppercase;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-    .pulse{
-      width:8px;height:8px;border-radius:50%;
-      background: var(--accent2);
-      box-shadow: 0 0 16px rgba(6,182,212,.35);
-      animation:pulse 1.6s ease-in-out infinite;
-    }
-    @keyframes pulse{ 0%,100%{transform:scale(.92);opacity:.7;} 50%{transform:scale(1.28);opacity:1;} }
-    h1{
-      margin: 18px 0 12px;
-      font-size: clamp(40px, 4.6vw, 64px);
-      line-height: 1.05;
-      letter-spacing: -0.03em;
-      font-weight: 700;
-    }
-    .sub{
-      margin: 0 0 18px;
-      max-width: 760px;
-      color: var(--muted);
-      font-size: clamp(14px, 1.5vw, 18px);
-      line-height: 1.6;
-    }
-    .stack{ display:flex; flex-wrap:wrap; gap:10px; margin:12px 0 18px; }
-    .chip{
-      padding:10px 12px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.72);
-      color: #2B3852;
-      font-size:12px;
-      letter-spacing:.06em;
-      box-shadow: 0 10px 28px rgba(10,20,35,.06);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-    .actions{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top: 6px; }
-    .btn{
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-size: 12px;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.78);
-      color: #0B1220;
-      cursor:pointer;
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-      box-shadow: 0 10px 30px rgba(10,20,35,.08);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      white-space:nowrap;
-    }
-    .btn:hover{ transform: translateY(-1px); border-color: rgba(37,99,235,.30); box-shadow: var(--shadow2); }
-    .btn.primary{ border-color: rgba(37,99,235,.30); background: linear-gradient(135deg, rgba(37,99,235,.14), rgba(6,182,212,.10)); }
-
-    .note{ margin-top: 10px; color: var(--muted); font-size: 12px; }
-
-    .card{
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      background: var(--card);
-      box-shadow: var(--shadow2);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      position:relative;
-      overflow:hidden;
-    }
-    .card::before{
-      content:"";
-      position:absolute;
-      inset:-60%;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(37,99,235,.18), transparent 55%),
-        radial-gradient(circle at 80% 60%, rgba(6,182,212,.12), transparent 60%);
-      filter: blur(22px);
-      opacity:.9;
-      pointer-events:none;
-    }
-    .card-inner{
-      position:relative;
-      padding: 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.92));
-    }
-    .card-title{
-      margin:0;
-      font-size: 11px;
-      letter-spacing:.20em;
-      text-transform:uppercase;
-      color:#1B2740;
-    }
-    .card-sub{ margin:8px 0 10px; color: var(--muted); font-size: 12px; line-height: 1.45; }
-    .field{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
-    input, select{
-      flex:1;
-      min-width: 210px;
-      padding: 12px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(10,20,35,.14);
-      background: rgba(255,255,255,.95);
-      color: #0B1220;
-      outline:none;
-      font-size: 13px;
-    }
-    input::placeholder{ color: rgba(88,100,122,.85); }
-    .sep{ height:1px; margin: 12px 0; background: rgba(10,20,35,.10); }
-    .fine{ font-size: 12px; color: var(--muted); line-height: 1.45; margin-top: 8px; }
-    .toast, .err{ margin-top: 10px; font-size: 12px; display:none; line-height: 1.35; }
-    .toast{ color: var(--ok); }
-    .err{ color: var(--err); }
-
-    .modal-backdrop{
-      position:fixed; inset:0; z-index:50;
-      background: rgba(10,20,35,.30);
-      display:none; align-items:center; justify-content:center;
-      padding: 18px;
-    }
-    .modal{
-      width: min(720px, 100%);
-      border-radius: 18px;
-      border: 1px solid rgba(10,20,35,.12);
-      background: rgba(255,255,255,.94);
-      box-shadow: 0 28px 120px rgba(10,20,35,.20);
-      overflow:hidden;
-    }
-    .modal-head{
-      display:flex; justify-content:space-between; align-items:flex-start;
-      gap:10px; padding: 14px 14px 0;
-    }
-    .x{
-      width: 40px; height: 38px;
-      border-radius: 12px;
-      border: 1px solid rgba(10,20,35,.14);
-      background: rgba(255,255,255,.85);
-      cursor:pointer;
-    }
-    .modal-body{ padding: 0 14px 14px; }
-
-    .step{
-      display:none;
-      padding-top: 8px;
-    }
-    .step.active{ display:block; }
-
-    .code{
-      letter-spacing: .22em;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .hcap-wrap{
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 14px;
-      border: 1px solid rgba(10,20,35,.10);
-      background: rgba(255,255,255,.92);
-    }
-
-    .googleBtn{
-      display:flex; align-items:center; justify-content:center;
-      gap:10px;
-      width:100%;
-    }
-    .gIcon{
-      width:16px; height:16px; border-radius:4px;
-      background: linear-gradient(135deg, rgba(37,99,235,.18), rgba(6,182,212,.14));
-      border: 1px solid rgba(10,20,35,.12);
-    }
-
-    @media (max-width: 980px){
-      .layout{ grid-template-columns: 1fr; }
-      .hero{ text-align:center; }
-      .stack{ justify-content:center; }
-      .actions{ justify-content:center; }
-    }
+    :root{--bg:#F7F9FF;--bg2:#FFFFFF;--txt:#0B1220;--muted:#58647A;--line:rgba(10,20,35,.06);--line2:rgba(10,20,35,.03);--accent:#2563EB;--accent2:#06B6D4;--border:rgba(10,20,35,.10);--card:rgba(255,255,255,.80);--shadow:0 18px 60px rgba(10,20,35,.10);--shadow2:0 22px 90px rgba(10,20,35,.14);--radius:18px;--ok:#0E9F6E;--err:#DC2626;}
+    *{box-sizing:border-box;}html,body{height:100%;}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--txt);background:radial-gradient(1000px 600px at 70% 20%,rgba(37,99,235,.14),transparent 60%),radial-gradient(900px 550px at 20% 75%,rgba(6,182,212,.10),transparent 58%),linear-gradient(180deg,var(--bg),var(--bg2));overflow:hidden;}
+    .grid{position:fixed;inset:-40%;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px),linear-gradient(var(--line2) 1px,transparent 1px),linear-gradient(90deg,var(--line2) 1px,transparent 1px);background-size:96px 96px,96px 96px,18px 18px,18px 18px;transform:rotate(-10deg);opacity:.65;pointer-events:none;z-index:0;animation:drift 28s linear infinite;}
+    @keyframes drift{0%{background-position:0 0,0 0,0 0,0 0;}100%{background-position:240px 180px,240px 180px,78px 54px,78px 54px;}}
+    #fx{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;}
+    .topbar{position:fixed;left:0;right:0;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:18px 22px;gap:12px;}
+    .brand{display:flex;align-items:center;gap:8px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;font-size:12px;user-select:none;}
+    .brand svg{flex-shrink:0;}
+    .meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;color:var(--muted);font-size:12px;user-select:none;}
+    .pill{padding:8px 10px;border:1px solid var(--border);background:rgba(255,255,255,.70);border-radius:999px;box-shadow:0 8px 22px rgba(10,20,35,.06);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+    .wrap{position:relative;z-index:5;height:100%;display:grid;place-items:center;padding:92px 18px 76px;}
+    .layout{width:min(1200px,100%);display:grid;grid-template-columns:1.4fr .6fr;gap:16px;align-items:center;}
+    .hero{padding:10px 8px;transform:translate3d(0,0,0);will-change:transform;}
+    .kicker{display:inline-flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--border);background:rgba(255,255,255,.70);border-radius:999px;color:#243047;font-size:12px;letter-spacing:.14em;text-transform:uppercase;box-shadow:var(--shadow);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+    .pulse{width:8px;height:8px;border-radius:50%;background:var(--accent2);box-shadow:0 0 16px rgba(6,182,212,.35);animation:pulse 1.6s ease-in-out infinite;}
+    @keyframes pulse{0%,100%{transform:scale(.92);opacity:.7;}50%{transform:scale(1.28);opacity:1;}}
+    h1{margin:18px 0 12px;font-size:clamp(40px,4.6vw,64px);line-height:1.05;letter-spacing:-0.03em;font-weight:700;}
+    .sub{margin:0 0 18px;max-width:760px;color:var(--muted);font-size:clamp(14px,1.5vw,18px);line-height:1.6;}
+    .stack{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 18px;}
+    .chip{padding:10px 12px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.72);color:#2B3852;font-size:12px;letter-spacing:.06em;box-shadow:0 10px 28px rgba(10,20,35,.06);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:6px;}
+    .btn{border-radius:14px;padding:12px 14px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--border);background:rgba(255,255,255,.78);color:#0B1220;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;box-shadow:0 10px 30px rgba(10,20,35,.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);white-space:nowrap;}
+    .btn:hover{transform:translateY(-1px);border-color:rgba(37,99,235,.30);box-shadow:var(--shadow2);}
+    .btn.primary{border-color:rgba(37,99,235,.30);background:linear-gradient(135deg,rgba(37,99,235,.14),rgba(6,182,212,.10));}
+    .note{margin-top:10px;color:var(--muted);font-size:12px;}
+    .card{border-radius:var(--radius);border:1px solid var(--border);background:var(--card);box-shadow:var(--shadow2);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);position:relative;overflow:hidden;}
+    .card::before{content:"";position:absolute;inset:-60%;background:radial-gradient(circle at 20% 20%,rgba(37,99,235,.18),transparent 55%),radial-gradient(circle at 80% 60%,rgba(6,182,212,.12),transparent 60%);filter:blur(22px);opacity:.9;pointer-events:none;}
+    .card-inner{position:relative;padding:14px;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(255,255,255,.92));}
+    .card-title{margin:0;font-size:11px;letter-spacing:.20em;text-transform:uppercase;color:#1B2740;}
+    .card-sub{margin:8px 0 10px;color:var(--muted);font-size:12px;line-height:1.45;}
+    .field{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+    input,select{flex:1;min-width:210px;padding:12px 12px;border-radius:14px;border:1px solid rgba(10,20,35,.14);background:rgba(255,255,255,.95);color:#0B1220;outline:none;font-size:13px;}
+    input::placeholder{color:rgba(88,100,122,.85);}
+    .fine{font-size:12px;color:var(--muted);line-height:1.45;margin-top:8px;}
+    .toast,.err{margin-top:10px;font-size:12px;display:none;line-height:1.35;}
+    .toast{color:var(--ok);}.err{color:var(--err);}
+    .modal-backdrop{position:fixed;inset:0;z-index:50;background:rgba(10,20,35,.30);display:none;align-items:center;justify-content:center;padding:18px;}
+    .modal{width:min(720px,100%);border-radius:18px;border:1px solid rgba(10,20,35,.12);background:rgba(255,255,255,.94);box-shadow:0 28px 120px rgba(10,20,35,.20);overflow:hidden;}
+    .modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:14px 14px 0;}
+    .x{width:40px;height:38px;border-radius:12px;border:1px solid rgba(10,20,35,.14);background:rgba(255,255,255,.85);cursor:pointer;}
+    .modal-body{padding:0 14px 14px;}
+    .step{display:none;padding-top:8px;}.step.active{display:block;}
+    .code{letter-spacing:.22em;font-weight:700;text-transform:uppercase;}
+    .hcap-wrap{margin-top:10px;padding:10px;border-radius:14px;border:1px solid rgba(10,20,35,.10);background:rgba(255,255,255,.92);}
+    .googleBtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;}
+    .gIcon{width:16px;height:16px;border-radius:4px;background:linear-gradient(135deg,rgba(37,99,235,.18),rgba(6,182,212,.14));border:1px solid rgba(10,20,35,.12);}
+    @media(max-width:980px){.layout{grid-template-columns:1fr;}.hero{text-align:center;}.stack{justify-content:center;}.actions{justify-content:center;}}
   </style>
 </head>
-
 <body>
   <script>
-    // hCaptcha sitekey (public)
     window.PROPTREX_HCAPTCHA_SITEKEY = "8e78e92c-9ca0-4b36-a8b8-82f64e949a96";
-
-    // Firebase client config (public) for Google sign-in
     window.PROPTREX_FIREBASE_CONFIG = {
       apiKey: "AIzaSyA_y7VG2lzYlJ14ZWbb38CUmHAvtSD2Dhg",
       authDomain: "proptrex-d4784.firebaseapp.com",
@@ -328,7 +83,7 @@
     </div>
     <div class="meta">
       <span class="pill">Early Access</span>
-      <span class="pill">Request → Verify → Confirm</span>
+      <span class="pill">Request &rarr; Verify &rarr; Confirm</span>
       <a class="pill" href="/admin.html" style="text-decoration:none;color:inherit;">Admin</a>
     </div>
   </div>
@@ -336,441 +91,159 @@
   <main class="wrap">
     <div class="layout" id="layout">
       <section class="hero" id="hero">
-        <div class="kicker"><span class="pulse"></span><span>6 AI AGENTS · MULTI-ASSET · REAL-TIME</span></div>
+        <div class="kicker"><span class="pulse"></span><span>6 AI AGENTS &middot; MULTI-ASSET &middot; REAL-TIME</span></div>
         <h1>The Intelligence Layer<br/>Across Every Market.</h1>
-        <p class="sub">
-          The platform remains private while we calibrate signals and scale infrastructure.
-          Request early access, verify your email, and we'll notify you when your window opens.
-        </p>
-
+        <p class="sub">The platform remains private while we calibrate signals and scale infrastructure. Request early access, verify your email, and we'll notify you when your window opens.</p>
         <div class="stack">
-          <span class="chip">Crypto</span>
-          <span class="chip">CEX / DEX</span>
-          <span class="chip">Stocks</span>
-          <span class="chip">ETFs</span>
-          <span class="chip">Bonds</span>
-          <span class="chip">Tokenized Assets (Next)</span>
+          <span class="chip">Crypto</span><span class="chip">CEX / DEX</span><span class="chip">Stocks</span><span class="chip">ETFs</span><span class="chip">Bonds</span><span class="chip">Tokenized Assets (Next)</span>
         </div>
-
         <div class="actions">
           <button class="btn primary" id="openSignup">Join Early Access</button>
           <button class="btn" id="statusBtn" type="button">Platform Status</button>
         </div>
-
         <div class="note" id="statusNote">Status: Calibration in progress. Limited access window.</div>
       </section>
-
       <aside class="card">
         <div class="card-inner">
           <h3 class="card-title">FIRST ACCESS LIST</h3>
-          <p class="card-sub">
-            Request access. We'll send a verification code to confirm ownership of your email.
-          </p>
-
+          <p class="card-sub">Request access. We'll send a verification code to confirm ownership of your email.</p>
           <div class="field">
-            <button class="btn primary" id="openSignup2" type="button" style="flex:1; min-width:180px;">
-              Request & Verify
-            </button>
+            <button class="btn primary" id="openSignup2" type="button" style="flex:1;min-width:180px;">Request &amp; Verify</button>
           </div>
-
         </div>
       </aside>
     </div>
   </main>
 
-  <!-- Signup Modal -->
   <div class="modal-backdrop" id="backdrop" role="dialog" aria-modal="true" aria-label="Early access signup">
     <div class="modal">
       <div class="modal-head">
         <div>
           <div class="card-title">EARLY ACCESS</div>
-          <div class="card-sub" style="margin:8px 0 0;">
-            Step 1: Request code → Step 2: Enter code → Confirmed
-          </div>
+          <div class="card-sub" style="margin:8px 0 0;">Step 1: Request code &rarr; Step 2: Enter code &rarr; Confirmed</div>
         </div>
         <button class="x" id="closeSignup" aria-label="Close">&#10005;</button>
       </div>
-
       <div class="modal-body">
-        <!-- STEP 1 -->
         <div class="step active" id="step1">
+          <div class="field"><input id="email" type="email" placeholder="Email address" autocomplete="email" required /></div>
           <div class="field">
-            <input id="email" type="email" placeholder="Email address" autocomplete="email" required />
-          </div>
-
-          <div class="field">
-            <select id="profile">
-              <option value="" selected>Profile (optional)</option>
-              <option value="trader">Trader</option>
-              <option value="prop">Prop Firm</option>
-              <option value="desk">Trading Desk</option>
-              <option value="fund">Fund / Hedge Fund</option>
-              <option value="other">Other</option>
-            </select>
+            <select id="profile"><option value="" selected>Profile (optional)</option><option value="trader">Trader</option><option value="prop">Prop Firm</option><option value="desk">Trading Desk</option><option value="fund">Fund / Hedge Fund</option><option value="other">Other</option></select>
             <input id="note" type="text" placeholder="Focus (futures / macro / flows...)" />
           </div>
-
           <div class="hcap-wrap">
             <div class="fine">Human verification:</div>
             <div class="h-captcha" id="hcaptchaBox" data-sitekey="" data-theme="light"></div>
           </div>
-
           <div class="field">
             <button class="btn primary" id="requestCodeBtn" type="button">Send Verification Code</button>
-            <button class="btn googleBtn" id="googleBtn" type="button" title="Sign in with Google">
-              <span class="gIcon"></span> Continue with Google
-            </button>
+            <button class="btn googleBtn" id="googleBtn" type="button" title="Sign in with Google"><span class="gIcon"></span> Continue with Google</button>
           </div>
-
           <div class="toast" id="toast1">OK</div>
           <div class="err" id="err1">Error</div>
-
-          <div class="fine">
-            If you choose Google, your email can be verified instantly.
-          </div>
+          <div class="fine">If you choose Google, your email can be verified instantly.</div>
         </div>
-
-        <!-- STEP 2 -->
         <div class="step" id="step2">
-          <div class="card-sub" style="margin:10px 0 10px;">
-            We sent a 6-digit code to <span id="emailEcho" class="code"></span>.
-          </div>
-
-          <div class="field">
-            <input id="code" type="text" placeholder="6-digit code" inputmode="numeric" maxlength="6" />
-            <button class="btn primary" id="verifyCodeBtn" type="button">Verify</button>
-          </div>
-
-          <div class="field">
-            <button class="btn" id="backBtn" type="button">Change Email</button>
-          </div>
-
+          <div class="card-sub" style="margin:10px 0 10px;">We sent a 6-digit code to <span id="emailEcho" class="code"></span>.</div>
+          <div class="field"><input id="code" type="text" placeholder="6-digit code" inputmode="numeric" maxlength="6" /><button class="btn primary" id="verifyCodeBtn" type="button">Verify</button></div>
+          <div class="field"><button class="btn" id="backBtn" type="button">Change Email</button></div>
           <div class="toast" id="toast2">OK</div>
           <div class="err" id="err2">Error</div>
-
-          <div class="fine">
-            Codes expire quickly. If it expires, request a new one.
-          </div>
+          <div class="fine">Codes expire quickly. If it expires, request a new one.</div>
         </div>
-
-        <!-- STEP 3 -->
         <div class="step" id="step3">
-          <div class="card-sub" style="margin:10px 0 10px;">
-            &#9989; Email verified. You are on the first access list.
-          </div>
-          <div class="field">
-            <button class="btn primary" id="closeDone" type="button">Done</button>
-          </div>
-          <div class="fine">
-            We'll notify you when access opens.
-          </div>
+          <div class="card-sub" style="margin:10px 0 10px;">&#9989; Email verified. You are on the first access list.</div>
+          <div class="field"><button class="btn primary" id="closeDone" type="button">Done</button></div>
+          <div class="fine">We'll notify you when access opens.</div>
         </div>
       </div>
     </div>
   </div>
 
   <script type="module">
-    // Tracking: pageview (silent)
-    try{
-      fetch("/api/track", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ path: location.pathname, ref: document.referrer || "" })
-      }).catch(()=>{});
-    }catch{}
+    try{ fetch("/api/track",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({path:location.pathname,ref:document.referrer||""})}).catch(()=>{}); }catch{}
 
-    // Light particles background
-    const canvas = document.getElementById('fx');
-    const ctx = canvas.getContext('2d');
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
-
-    function resize(){
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
-      canvas.style.width = window.innerWidth + "px";
-      canvas.style.height = window.innerHeight + "px";
-      ctx.setTransform(dpr,0,0,dpr,0,0);
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const mouse = { x: window.innerWidth*0.5, y: window.innerHeight*0.4, tx: window.innerWidth*0.5, ty: window.innerHeight*0.4 };
-    window.addEventListener('mousemove', e => { mouse.tx=e.clientX; mouse.ty=e.clientY; }, {passive:true});
-
-    const N = Math.max(40, Math.min(90, Math.floor((window.innerWidth*window.innerHeight)/26000)));
-    const pts = Array.from({length:N}, ()=>({
-      x: Math.random()*window.innerWidth,
-      y: Math.random()*window.innerHeight,
-      vx: (Math.random()*2-1)*0.25,
-      vy: (Math.random()*2-1)*0.20,
-      r: 1.2 + Math.random()*1.4
-    }));
-
-    function frame(){
-      if (prefersReducedMotion) return;
-      mouse.x += (mouse.tx - mouse.x)*0.06;
-      mouse.y += (mouse.ty - mouse.y)*0.06;
-
-      ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
-
-      const g = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, Math.max(window.innerWidth, window.innerHeight)*0.55);
-      g.addColorStop(0, "rgba(37,99,235,0.10)");
-      g.addColorStop(0.5, "rgba(6,182,212,0.06)");
-      g.addColorStop(1, "rgba(255,255,255,0)");
-      ctx.fillStyle = g;
-      ctx.fillRect(0,0,window.innerWidth,window.innerHeight);
-
-      const maxLink = Math.max(90, Math.min(150, Math.floor(Math.min(window.innerWidth, window.innerHeight)/5)));
-
-      for (const p of pts){
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < -20) p.x = window.innerWidth+20;
-        if (p.x > window.innerWidth+20) p.x = -20;
-        if (p.y < -20) p.y = window.innerHeight+20;
-        if (p.y > window.innerHeight+20) p.y = -20;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-        ctx.fillStyle = "rgba(10,20,35,0.22)";
-        ctx.fill();
-      }
-
-      for (let i=0;i<pts.length;i++){
-        for (let j=i+1;j<pts.length;j++){
-          const a=pts[i], b=pts[j];
-          const dx=a.x-b.x, dy=a.y-b.y;
-          const d=Math.hypot(dx,dy);
-          if (d < maxLink){
-            const alpha = (1 - d/maxLink)*0.18;
-            ctx.strokeStyle = `rgba(37,99,235,${alpha})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(a.x,a.y);
-            ctx.lineTo(b.x,b.y);
-            ctx.stroke();
-          }
-        }
-      }
-      requestAnimationFrame(frame);
-    }
+    const canvas=document.getElementById('fx');const ctx=canvas.getContext('2d');const dpr=Math.min(2,window.devicePixelRatio||1);
+    function resize(){canvas.width=Math.floor(window.innerWidth*dpr);canvas.height=Math.floor(window.innerHeight*dpr);canvas.style.width=window.innerWidth+"px";canvas.style.height=window.innerHeight+"px";ctx.setTransform(dpr,0,0,dpr,0,0);}
+    window.addEventListener('resize',resize);resize();
+    const prefersReducedMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const mouse={x:window.innerWidth*0.5,y:window.innerHeight*0.4,tx:window.innerWidth*0.5,ty:window.innerHeight*0.4};
+    window.addEventListener('mousemove',e=>{mouse.tx=e.clientX;mouse.ty=e.clientY;},{passive:true});
+    const N=Math.max(40,Math.min(90,Math.floor((window.innerWidth*window.innerHeight)/26000)));
+    const pts=Array.from({length:N},()=>({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,vx:(Math.random()*2-1)*0.25,vy:(Math.random()*2-1)*0.20,r:1.2+Math.random()*1.4}));
+    function frame(){if(prefersReducedMotion)return;mouse.x+=(mouse.tx-mouse.x)*0.06;mouse.y+=(mouse.ty-mouse.y)*0.06;ctx.clearRect(0,0,window.innerWidth,window.innerHeight);const g=ctx.createRadialGradient(mouse.x,mouse.y,0,mouse.x,mouse.y,Math.max(window.innerWidth,window.innerHeight)*0.55);g.addColorStop(0,"rgba(37,99,235,0.10)");g.addColorStop(0.5,"rgba(6,182,212,0.06)");g.addColorStop(1,"rgba(255,255,255,0)");ctx.fillStyle=g;ctx.fillRect(0,0,window.innerWidth,window.innerHeight);const maxLink=Math.max(90,Math.min(150,Math.floor(Math.min(window.innerWidth,window.innerHeight)/5)));for(const p of pts){p.x+=p.vx;p.y+=p.vy;if(p.x<-20)p.x=window.innerWidth+20;if(p.x>window.innerWidth+20)p.x=-20;if(p.y<-20)p.y=window.innerHeight+20;if(p.y>window.innerHeight+20)p.y=-20;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle="rgba(10,20,35,0.22)";ctx.fill();}for(let i=0;i<pts.length;i++){for(let j=i+1;j<pts.length;j++){const a=pts[i],b=pts[j];const dx=a.x-b.x,dy=a.y-b.y;const d=Math.hypot(dx,dy);if(d<maxLink){const alpha=(1-d/maxLink)*0.18;ctx.strokeStyle=`rgba(37,99,235,${alpha})`;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}}}requestAnimationFrame(frame);}
     requestAnimationFrame(frame);
 
-    // Modal open/close
-    const backdrop = document.getElementById('backdrop');
-    const open1 = document.getElementById('openSignup');
-    const open2 = document.getElementById('openSignup2');
-    const close = document.getElementById('closeSignup');
-    const closeDone = document.getElementById('closeDone');
+    const backdrop=document.getElementById('backdrop');const open1=document.getElementById('openSignup');const open2=document.getElementById('openSignup2');const close=document.getElementById('closeSignup');const closeDone=document.getElementById('closeDone');
+    const step1=document.getElementById('step1');const step2=document.getElementById('step2');const step3=document.getElementById('step3');
+    const toast1=document.getElementById('toast1');const err1=document.getElementById('err1');const toast2=document.getElementById('toast2');const err2=document.getElementById('err2');
+    const showToast=(el,msg)=>{el.style.display='block';el.textContent=msg;setTimeout(()=>el.style.display='none',4000);};
+    const showErr=(el,msg)=>{el.style.display='block';el.textContent=msg;setTimeout(()=>el.style.display='none',8000);};
+    function setStep(n){step1.classList.toggle('active',n===1);step2.classList.toggle('active',n===2);step3.classList.toggle('active',n===3);}
+    function show(){backdrop.style.display='flex';setStep(1);setTimeout(()=>document.getElementById('email')?.focus(),50);}
+    function hide(){backdrop.style.display='none';}
+    open1.addEventListener('click',show);open2.addEventListener('click',show);close.addEventListener('click',hide);closeDone.addEventListener('click',hide);
+    backdrop.addEventListener('click',(e)=>{if(e.target===backdrop)hide();});
+    window.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&backdrop.style.display==='flex')hide();});
 
-    const step1 = document.getElementById('step1');
-    const step2 = document.getElementById('step2');
-    const step3 = document.getElementById('step3');
+    const statusBtn=document.getElementById('statusBtn');const statusNote=document.getElementById('statusNote');
+    const statuses=["Status: Calibration in progress. Limited access window.","Status: Regime engine warming up. Liquidity scans active.","Status: Fusion layer syncing. Alerts queue standby.","Status: Market structure models compiling. Invite window soon."];
+    let si=0;statusBtn.addEventListener('click',()=>{si=(si+1)%statuses.length;statusNote.textContent=statuses[si];});
 
-    const toast1 = document.getElementById('toast1');
-    const err1 = document.getElementById('err1');
-    const toast2 = document.getElementById('toast2');
-    const err2 = document.getElementById('err2');
+    const sitekey=window.PROPTREX_HCAPTCHA_SITEKEY||"";const hcapBox=document.getElementById("hcaptchaBox");if(sitekey)hcapBox.setAttribute("data-sitekey",sitekey);
+    function getHCaptchaToken(){try{if(window.hcaptcha&&typeof window.hcaptcha.getResponse==="function"){return window.hcaptcha.getResponse();}}catch{}return"";}
+    function resetHCaptcha(){try{if(window.hcaptcha&&typeof window.hcaptcha.reset==="function")window.hcaptcha.reset();}catch{}}
 
-    const showToast = (el, msg) => { el.style.display='block'; el.textContent=msg; setTimeout(()=>el.style.display='none',2600); };
-    const showErr = (el, msg) => { el.style.display='block'; el.textContent=msg; setTimeout(()=>el.style.display='none',3600); };
+    const requestBtn=document.getElementById('requestCodeBtn');const backBtn=document.getElementById('backBtn');const verifyBtn=document.getElementById('verifyCodeBtn');const emailEcho=document.getElementById('emailEcho');
 
-    function setStep(n){
-      step1.classList.toggle('active', n===1);
-      step2.classList.toggle('active', n===2);
-      step3.classList.toggle('active', n===3);
-    }
+    requestBtn.addEventListener('click',async()=>{
+      const email=(document.getElementById('email').value||"").trim();const profile=(document.getElementById('profile').value||"").trim();const note=(document.getElementById('note').value||"").trim();const token=getHCaptchaToken();
+      if(!email||!email.includes("@")){showErr(err1,"Enter a valid email.");return;}
+      if(!token){showErr(err1,"Please complete the human verification.");return;}
+      try{const res=await fetch("/api/request-code",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,profile,note,hcaptchaToken:token})});const data=await res.json().catch(()=>({}));if(!res.ok||!data?.ok){showErr(err1,data?.error||"Failed to send code.");resetHCaptcha();return;}emailEcho.textContent=email;showToast(toast1,"Code sent. Check your inbox.");setStep(2);setTimeout(()=>document.getElementById('code')?.focus(),50);}catch{showErr(err1,"Network error. Try again.");resetHCaptcha();}
+    });
+    backBtn.addEventListener('click',()=>{setStep(1);resetHCaptcha();});
 
-    function show(){
-      backdrop.style.display='flex';
-      setStep(1);
-      setTimeout(()=>document.getElementById('email')?.focus(),50);
-    }
-    function hide(){ backdrop.style.display='none'; }
+    verifyBtn.addEventListener('click',async()=>{
+      const email=(document.getElementById('email').value||"").trim();const code=(document.getElementById('code').value||"").trim().replace(/\s+/g,'');const token=getHCaptchaToken();
+      if(!email||!email.includes("@")){showErr(err2,"Email missing.");return;}
+      if(!/^\d{6}$/.test(code)){showErr(err2,"Enter the 6-digit code.");return;}
+      if(!token){showErr(err2,"Please complete the human verification.");return;}
+      try{const res=await fetch("/api/verify-code",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,code,hcaptchaToken:token})});const data=await res.json().catch(()=>({}));if(!res.ok||!data?.ok){showErr(err2,data?.error||"Verification failed.");resetHCaptcha();return;}showToast(toast2,"Verified.");setStep(3);}catch{showErr(err2,"Network error. Try again.");resetHCaptcha();}
+    });
 
-    open1.addEventListener('click', show);
-    open2.addEventListener('click', show);
-    close.addEventListener('click', hide);
-    closeDone.addEventListener('click', hide);
-    backdrop.addEventListener('click', (e)=>{ if(e.target===backdrop) hide(); });
-    window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && backdrop.style.display==='flex') hide(); });
+    // ===== GOOGLE SIGN-IN =====
+    const googleBtn=document.getElementById('googleBtn');
+    const {initializeApp}=await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
+    const {getAuth,GoogleAuthProvider,signInWithPopup}=await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js");
+    const fbCfg=window.PROPTREX_FIREBASE_CONFIG||null;
+    let auth=null;
+    if(fbCfg&&fbCfg.apiKey){const app=initializeApp(fbCfg);auth=getAuth(app);}
 
-    // Status button
-    const statusBtn = document.getElementById('statusBtn');
-    const statusNote = document.getElementById('statusNote');
-    const statuses = [
-      "Status: Calibration in progress. Limited access window.",
-      "Status: Regime engine warming up. Liquidity scans active.",
-      "Status: Fusion layer syncing. Alerts queue standby.",
-      "Status: Market structure models compiling. Invite window soon."
-    ];
-    let si=0;
-    statusBtn.addEventListener('click', ()=>{ si=(si+1)%statuses.length; statusNote.textContent=statuses[si]; });
+    googleBtn.addEventListener('click',()=>{
+      const token=getHCaptchaToken();
+      if(!token){showErr(err1,"Please complete the human verification.");return;}
+      if(!auth){showErr(err1,"Google sign-in is not configured.");return;}
 
-    // hCaptcha init
-    const sitekey = window.PROPTREX_HCAPTCHA_SITEKEY || "";
-    const hcapBox = document.getElementById("hcaptchaBox");
-    if (sitekey) hcapBox.setAttribute("data-sitekey", sitekey);
+      const provider=new GoogleAuthProvider();
 
-    function getHCaptchaToken(){
-      try{
-        if (window.hcaptcha && typeof window.hcaptcha.getResponse === "function") {
-          return window.hcaptcha.getResponse();
-        }
-      }catch{}
-      return "";
-    }
-
-    function resetHCaptcha(){
-      try{
-        if (window.hcaptcha && typeof window.hcaptcha.reset === "function") window.hcaptcha.reset();
-      }catch{}
-    }
-
-    // Step 1: request code
-    const requestBtn = document.getElementById('requestCodeBtn');
-    const backBtn = document.getElementById('backBtn');
-    const verifyBtn = document.getElementById('verifyCodeBtn');
-    const emailEcho = document.getElementById('emailEcho');
-
-    requestBtn.addEventListener('click', async ()=>{
-      const email = (document.getElementById('email').value || "").trim();
-      const profile = (document.getElementById('profile').value || "").trim();
-      const note = (document.getElementById('note').value || "").trim();
-      const token = getHCaptchaToken();
-
-      if (!email || !email.includes("@")) { showErr(err1, "Enter a valid email."); return; }
-      if (!token) { showErr(err1, "Please complete the human verification."); return; }
-
-      try{
-        const res = await fetch("/api/request-code", {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ email, profile, note, hcaptchaToken: token })
-        });
-        const data = await res.json().catch(()=> ({}));
-        if (!res.ok || !data?.ok) {
-          showErr(err1, data?.error || "Failed to send code.");
-          resetHCaptcha();
-          return;
-        }
-        emailEcho.textContent = email;
-        showToast(toast1, "Code sent. Check your inbox.");
-        setStep(2);
-        setTimeout(()=>document.getElementById('code')?.focus(), 50);
-      }catch{
-        showErr(err1, "Network error. Try again.");
+      signInWithPopup(auth,provider).then(async(cred)=>{
+        const email=(cred.user?.email||"").trim();
+        if(!email){showErr(err1,"Google did not return an email.");return;}
+        const profile=(document.getElementById('profile').value||"").trim();
+        const note=(document.getElementById('note').value||"").trim();
+        try{
+          const res=await fetch("/api/request-code",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,profile,note,hcaptchaToken:token,googleTrusted:true})});
+          const data=await res.json().catch(()=>({}));
+          if(res.ok&&data?.ok){showToast(toast1,"Google verified. You're on the list.");setStep(3);}
+          else{showErr(err1,data?.error||"Request failed.");resetHCaptcha();}
+        }catch{showErr(err1,"Network error. Try again.");resetHCaptcha();}
+      }).catch((e)=>{
+        console.error("Google sign-in error:",e);
+        showErr(err1,"Google error: "+(e.code||e.message||"Unknown"));
         resetHCaptcha();
-      }
+      });
     });
-
-    backBtn.addEventListener('click', ()=>{
-      setStep(1);
-      resetHCaptcha();
-    });
-
-    // Step 2: verify code
-    verifyBtn.addEventListener('click', async ()=>{
-      const email = (document.getElementById('email').value || "").trim();
-      const code = (document.getElementById('code').value || "").trim().replace(/\s+/g,'');
-      const token = getHCaptchaToken();
-
-      if (!email || !email.includes("@")) { showErr(err2, "Email missing."); return; }
-      if (!/^\d{6}$/.test(code)) { showErr(err2, "Enter the 6-digit code."); return; }
-      if (!token) { showErr(err2, "Please complete the human verification."); return; }
-
-      try{
-        const res = await fetch("/api/verify-code", {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ email, code, hcaptchaToken: token })
-        });
-        const data = await res.json().catch(()=> ({}));
-        if (!res.ok || !data?.ok) {
-          showErr(err2, data?.error || "Verification failed.");
-          resetHCaptcha();
-          return;
-        }
-        showToast(toast2, "Verified.");
-        setStep(3);
-      }catch{
-        showErr(err2, "Network error. Try again.");
-        resetHCaptcha();
-      }
-    });
-
-    // Google sign-in with redirect (popup-free)
-    const googleBtn = document.getElementById('googleBtn');
-
-    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
-    const { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js");
-
-    const fbCfg = window.PROPTREX_FIREBASE_CONFIG || null;
-    let auth = null;
-    if (fbCfg && fbCfg.apiKey) {
-      const app = initializeApp(fbCfg);
-      auth = getAuth(app);
-    }
-
-    // Google butonuna tiklaninca: bilgileri kaydet, redirect yap
-    googleBtn.addEventListener('click', async ()=>{
-      const token = getHCaptchaToken();
-      if (!token) { showErr(err1, "Please complete the human verification."); return; }
-      if (!auth) { showErr(err1, "Google sign-in is not configured."); return; }
-
-      try{
-        const provider = new GoogleAuthProvider();
-        // hCaptcha token ve form bilgilerini sakla (redirect sonrasi kullanilacak)
-        sessionStorage.setItem('proptrex_hcaptcha', token);
-        sessionStorage.setItem('proptrex_profile', (document.getElementById('profile').value || "").trim());
-        sessionStorage.setItem('proptrex_note', (document.getElementById('note').value || "").trim());
-        await signInWithRedirect(auth, provider);
-      }catch{
-        showErr(err1, "Google sign-in failed.");
-        resetHCaptcha();
-      }
-    });
-
-    // Sayfa yuklendiginde: Google redirect donusunu yakala
-    if (auth) {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result && result.user) {
-          const email = (result.user.email || "").trim();
-          if (email) {
-            const token = sessionStorage.getItem('proptrex_hcaptcha') || "";
-            const profile = sessionStorage.getItem('proptrex_profile') || "";
-            const note = sessionStorage.getItem('proptrex_note') || "";
-
-            // Modal'i ac ve loading goster
-            backdrop.style.display = 'flex';
-            setStep(1);
-            showToast(toast1, "Google verified. Registering...");
-
-            const res = await fetch("/api/request-code", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email, profile, note, hcaptchaToken: token, googleTrusted: true })
-            });
-            const data = await res.json().catch(() => ({}));
-
-            if (res.ok && data?.ok) {
-              showToast(toast1, "Google verified. You're on the list.");
-              setStep(3);
-            } else {
-              showErr(err1, data?.error || "Registration failed. Please try again.");
-            }
-
-            // Temizle
-            sessionStorage.removeItem('proptrex_hcaptcha');
-            sessionStorage.removeItem('proptrex_profile');
-            sessionStorage.removeItem('proptrex_note');
-          }
-        }
-      } catch(e) {
-        console.error("Redirect result error:", e);
-      }
-    }
   </script>
 </body>
 </html>
