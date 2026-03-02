@@ -64,7 +64,7 @@
     window.PROPTREX_HCAPTCHA_SITEKEY = "8e78e92c-9ca0-4b36-a8b8-82f64e949a96";
     window.PROPTREX_FIREBASE_CONFIG = {
       apiKey: "AIzaSyA_y7VG2lzYlJ14ZWbb38CUmHAvtSD2Dhg",
-      authDomain:"propmain.hllcvk.cloud",
+      authDomain: "proptrex-d4784.firebaseapp.com",
       projectId: "proptrex-d4784",
       appId: "1:858578852297:web:e38e79adf9ceab82f4b018"
     };
@@ -218,22 +218,18 @@
     let auth=null;
     if(fbCfg&&fbCfg.apiKey){const app=initializeApp(fbCfg);auth=getAuth(app);}
 
-    // Sayfa yuklendiginde: redirect donusunu kontrol et
     if(auth){
       try{
         const result=await getRedirectResult(auth);
         if(result&&result.user){
           const email=(result.user.email||"").trim();
           if(email){
-            // Firebase ID token al - backend bununla dogrulayacak
             const idToken=await result.user.getIdToken();
             const profile=sessionStorage.getItem('proptrex_profile')||"";
             const note=sessionStorage.getItem('proptrex_note')||"";
-
             backdrop.style.display='flex';
             setStep(1);
             showToast(toast1,"Google verified. Registering...");
-
             const res=await fetch("/api/request-code",{
               method:"POST",
               headers:{"Content-Type":"application/json"},
@@ -250,21 +246,29 @@
             sessionStorage.removeItem('proptrex_note');
           }
         }
-      }catch(e){console.error("Redirect result error:",e);}
+      }catch(e){
+        console.error("Redirect result error:",e);
+        if(e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request'){
+           showErr(err1, "Sign-in was cancelled. Please try again.");
+        }
+      }
     }
 
-    // Google butonuna tikla: form bilgilerini kaydet, Google'a redirect yap
-    googleBtn.addEventListener('click',()=>{
+    googleBtn.addEventListener('click', async()=>{
       const token=getHCaptchaToken();
       if(!token){showErr(err1,"Please complete the human verification.");return;}
       if(!auth){showErr(err1,"Google sign-in is not configured.");return;}
 
-      // Form bilgilerini sakla
       sessionStorage.setItem('proptrex_profile',(document.getElementById('profile').value||"").trim());
       sessionStorage.setItem('proptrex_note',(document.getElementById('note').value||"").trim());
 
-      const provider=new GoogleAuthProvider();
-      signInWithRedirect(auth,provider);
+      try {
+        const provider=new GoogleAuthProvider();
+        await signInWithRedirect(auth,provider);
+      } catch (error) {
+        console.error("Sign-in error:", error);
+        showErr(err1, "Auth failed: " + error.code);
+      }
     });
   </script>
 </body>
