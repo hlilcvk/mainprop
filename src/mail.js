@@ -1,23 +1,43 @@
 import nodemailer from "nodemailer";
 
+import pool from "./db.js";
+
 let transporter = null;
 
-function getTransporter() {
+async function getTransporter() {
   if (transporter) return transporter;
 
+  let host = process.env.SMTP_HOST || "localhost";
+  let port = parseInt(process.env.SMTP_PORT || "587", 10);
+  let secure = process.env.SMTP_SECURE === "true";
+  let user = process.env.SMTP_USER || "";
+  let pass = process.env.SMTP_PASS || "";
+  let tlsReject = process.env.SMTP_TLS_REJECT !== "false";
+
+  // Try to override from DB settings
+  try {
+    const res = await pool.query("SELECT value FROM system_settings WHERE key = 'smtp_config'");
+    if (res.rows.length > 0) {
+      const dbSmtp = res.rows[0].value;
+      if (dbSmtp && dbSmtp.host) {
+        host = dbSmtp.host;
+        port = parseInt(dbSmtp.port || "587", 10);
+        secure = !!dbSmtp.secure;
+        user = dbSmtp.user || "";
+        pass = dbSmtp.pass || "";
+        tlsReject = !!dbSmtp.tlsReject;
+      }
+    }
+  } catch (err) {
+    console.error("Failed to load SMTP config from DB:", err.message);
+  }
+
   transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || "localhost",
-    port: parseInt(process.env.SMTP_PORT || "587", 10),
-    secure: process.env.SMTP_SECURE === "true",
-    auth: {
-      user: process.env.SMTP_USER || "",
-      pass: process.env.SMTP_PASS || "",
-    },
-    // Coolify'da kendi SMTP (ör. mailserver) kullanıyorsanız
-    // TLS doğrulamasını kapatabilirsiniz:
-    tls: {
-      rejectUnauthorized: process.env.SMTP_TLS_REJECT !== "false",
-    },
+    host,
+    port,
+    secure,
+    auth: { user, pass },
+    tls: { rejectUnauthorized: tlsReject },
   });
 
   return transporter;

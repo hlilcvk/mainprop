@@ -513,12 +513,12 @@
           <h3 style="margin: 0 0 16px; font-size: 15px;">Dynamic Registration Fields</h3>
           <p style="margin: 0 0 16px; font-size: 13px; color: var(--text-muted);">
             Fields defined here will automatically appear on the index.html registration form.
-            Edit as a JSON Array of objects:
-            <code>[{"id":"phone", "label":"Phone", "type":"text", "required":true}]</code>
           </p>
-          <textarea id="setDynamicFields" style="font-family: monospace; font-size: 12px; height: 120px;"></textarea>
-          <button class="btn btn-primary" onclick="saveSetting('dynamic_form_fields', 'setDynamicFields')"
-            style="margin-top: 12px;">Save Form Fields</button>
+          <div id="dynFieldsContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom:12px;"></div>
+          <div style="display:flex; gap:12px;">
+            <button class="btn" onclick="addDynFieldRow()">+ Add Field</button>
+            <button class="btn btn-primary" onclick="saveDynFieldsConfig()">Save Form Fields</button>
+          </div>
         </div>
 
         <!-- Auto Email Section -->
@@ -526,22 +526,83 @@
           <h3 style="margin: 0 0 16px; font-size: 15px;">Auto-Reply Email</h3>
           <p style="margin: 0 0 16px; font-size: 13px; color: var(--text-muted);">
             Sent instantly when a user verifies their email. Use <code>{{first_name}}</code> for personalization.
-            Format as JSON: <code>{"enabled": true, "subject": "Hi", "body": "HTML Content"}</code>
           </p>
-          <textarea id="setAutoReply" style="font-family: monospace; font-size: 12px; height: 120px;"></textarea>
-          <button class="btn btn-primary" onclick="saveSetting('auto_reply_email', 'setAutoReply')"
-            style="margin-top: 12px;">Save Auto-Reply</button>
+          <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="arEnabled" style="width:auto; transform:scale(1.2);" />
+            <label style="margin:0; font-weight:500;">Enable Auto-Reply</label>
+          </div>
+          <div class="form-group">
+            <label>Email Subject</label>
+            <input type="text" id="arSubject" placeholder="Welcome to PROPTREX!" />
+          </div>
+          <div class="form-group">
+            <label>Email HTML Body</label>
+            <textarea id="arBody" style="height: 120px;" placeholder="Hello {{first_name}}, ..."></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="saveAutoReplyConfig()" style="margin-top: 12px;">Save
+            Auto-Reply</button>
+        </div>
+
+        <!-- SMTP Email Provider Section -->
+        <div class="setting-section">
+          <h3 style="margin: 0 0 16px; font-size: 15px;">SMTP Mail Provider Configuration</h3>
+          <p style="margin: 0 0 16px; font-size: 13px; color: var(--text-muted);">
+            Proptrex sends emails via Nodemailer. Configure your SMTP provider (SendGrid, Mailgun, Amazon SES, or
+            custom). Leaving these blank will default to the <code>.env</code> file.
+          </p>
+          <div class="grid-2" style="margin-bottom:0px;">
+            <div class="form-group"><label>SMTP Host</label><input type="text" id="smtpHost"
+                placeholder="smtp.sendgrid.net" /></div>
+            <div class="form-group"><label>SMTP Port</label><input type="number" id="smtpPort" placeholder="587" />
+            </div>
+          </div>
+          <div class="grid-2" style="margin-bottom:0px;">
+            <div class="form-group"><label>SMTP Block User</label><input type="text" id="smtpUser"
+                placeholder="apikey" /></div>
+            <div class="form-group"><label>SMTP Password</label><input type="password" id="smtpPass"
+                placeholder="••••••••••••••" /></div>
+          </div>
+          <div class="grid-2" style="margin-bottom:0px;">
+            <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" id="smtpSecure" style="width:auto; transform:scale(1.2);" />
+              <label style="margin:0; font-weight:500; font-size:12px;">Use Secure (TLS - usually true for port
+                465)</label>
+            </div>
+            <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" id="smtpTlsReject" style="width:auto; transform:scale(1.2);" checked />
+              <label style="margin:0; font-weight:500; font-size:12px;">Reject Unauthorized TLS (Keep checked
+                usually)</label>
+            </div>
+          </div>
+          <button class="btn btn-secondary" onclick="saveSmtpConfig()"
+            style="margin-top: 12px; border: 1px solid var(--border-color);">Save SMTP Config</button>
         </div>
 
         <!-- Firebase Settings Section -->
-        <div class="setting-section">
+        <div class="setting-section" style="border:none; margin:0; padding:0;">
           <h3 style="margin: 0 0 16px; font-size: 15px;">Firebase Config</h3>
           <p style="margin: 0 0 16px; font-size: 13px; color: var(--text-muted);">
             Used for Google Authentication login. Includes Admin SDK keys if set.
           </p>
-          <textarea id="setFirebase" style="font-family: monospace; font-size: 12px; height: 160px;"></textarea>
-          <button class="btn btn-primary" onclick="saveSetting('firebase_config', 'setFirebase')"
-            style="margin-top: 12px;">Save Firebase Config</button>
+          <div class="grid-2" style="margin-bottom:0px;">
+            <div class="form-group"><label>API Key</label><input type="text" id="fbApiKey" placeholder="AIzaSyB..." />
+            </div>
+            <div class="form-group"><label>Auth Domain</label><input type="text" id="fbAuthDomain"
+                placeholder="xxx.firebaseapp.com" /></div>
+          </div>
+          <div class="grid-2" style="margin-bottom:0px;">
+            <div class="form-group"><label>Project ID</label><input type="text" id="fbProjectId"
+                placeholder="proptrex-123" /></div>
+            <div class="form-group"><label>Client Email</label><input type="text" id="fbClientEmail"
+                placeholder="firebase-adminsdk-xxx@..." /></div>
+          </div>
+          <div class="form-group">
+            <label>Private Key</label>
+            <textarea id="fbPrivateKey" style="font-family: monospace; font-size: 12px; height: 120px;"
+              placeholder="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="saveFirebaseConfig()" style="margin-top: 12px;">Save Firebase
+            Config</button>
         </div>
 
       </div>
@@ -893,28 +954,174 @@
     }
 
     // --- TAB 3: Settings ---
+    let currentDynFields = [];
+
     async function loadSettings() {
       try {
         const data = await apiCall("/api/admin/settings");
         const s = data.settings || {};
 
-        document.getElementById("setDynamicFields").value = JSON.stringify(s.dynamic_form_fields || [], null, 2);
-        document.getElementById("setAutoReply").value = JSON.stringify(s.auto_reply_email || { enabled: false }, null, 2);
-        document.getElementById("setFirebase").value = JSON.stringify(s.firebase_config || {}, null, 2);
+        // Load Dynamic Fields
+        currentDynFields = Array.isArray(s.dynamic_form_fields) ? s.dynamic_form_fields : [];
+        renderDynFields();
+
+        // Load Auto Reply
+        const ar = s.auto_reply_email || {};
+        document.getElementById("arEnabled").checked = !!ar.enabled;
+        document.getElementById("arSubject").value = ar.subject || "";
+        document.getElementById("arBody").value = ar.body || "";
+
+        // Load Firebase
+        const fb = s.firebase_config || {};
+        document.getElementById("fbApiKey").value = fb.apiKey || "";
+        document.getElementById("fbAuthDomain").value = fb.authDomain || "";
+        document.getElementById("fbProjectId").value = fb.projectId || "";
+        document.getElementById("fbClientEmail").value = fb.clientEmail || "";
+        document.getElementById("fbPrivateKey").value = fb.privateKey || "";
+
+        // Load SMTP
+        const smtp = s.smtp_config || {};
+        document.getElementById("smtpHost").value = smtp.host || "";
+        document.getElementById("smtpPort").value = smtp.port || "";
+        document.getElementById("smtpUser").value = smtp.user || "";
+        document.getElementById("smtpPass").value = smtp.pass || "";
+        document.getElementById("smtpSecure").checked = !!smtp.secure;
+        document.getElementById("smtpTlsReject").checked = smtp.tlsReject !== undefined ? !!smtp.tlsReject : true;
+
       } catch (e) {
         showToast("Error loading settings", true);
       }
     }
 
-    window.saveSetting = async (key, elementId) => {
-      try {
-        const val = JSON.parse(document.getElementById(elementId).value || "{}");
-        await apiCall(`/api/admin/settings/${key}`, "PUT", { value: val });
-        showToast("Settings saved successfully");
-      } catch (e) {
-        showToast("Invalid JSON format or Save Error", true);
+    // Dynamic Fields Logic
+    window.renderDynFields = () => {
+      const container = document.getElementById("dynFieldsContainer");
+      container.innerHTML = "";
+      if (currentDynFields.length === 0) {
+        container.innerHTML = "<div style='color:var(--text-muted); font-size:13px;'>No custom fields. Click Add Field.</div>";
+        return;
       }
+
+      currentDynFields.forEach((f, i) => {
+        const row = document.createElement("div");
+        row.style.display = "flex";
+        row.style.gap = "12px";
+        row.style.alignItems = "flex-end";
+        row.style.background = "#F1F5F9";
+        row.style.padding = "16px";
+        row.style.borderRadius = "8px";
+        row.style.border = "1px solid #E2E8F0";
+
+        row.innerHTML = `
+          <div style="flex:1;"><label style="font-size:11px; margin-bottom:4px;">ID (lowercase_only)</label>
+            <input type="text" id="df_id_${i}" value="${f.id || ''}" placeholder="e.g. phone" style="padding:8px;" />
+          </div>
+          <div style="flex:1;"><label style="font-size:11px; margin-bottom:4px;">Display Label</label>
+            <input type="text" id="df_lbl_${i}" value="${f.label || ''}" placeholder="Phone Number" style="padding:8px;" />
+          </div>
+          <div style="width:100px;"><label style="font-size:11px; margin-bottom:4px;">Input Type</label>
+             <select id="df_typ_${i}" style="padding:8px;">
+               <option value="text" ${f.type === 'text' ? 'selected' : ''}>Text</option>
+               <option value="number" ${f.type === 'number' ? 'selected' : ''}>Number</option>
+               <option value="date" ${f.type === 'date' ? 'selected' : ''}>Date</option>
+             </select>
+          </div>
+          <div style="width:80px; display:flex; flex-direction:column; align-items:center; padding-bottom:8px;">
+             <label style="font-size:11px; margin-bottom:8px;">Required</label>
+             <input type="checkbox" id="df_req_${i}" ${f.required ? 'checked' : ''} style="width:16px; height:16px; margin:0;" />
+          </div>
+          <button class="btn btn-danger" style="margin-bottom:2px; padding:8px 12px;" onclick="removeDynFieldRow(${i})">X</button>
+        `;
+        container.appendChild(row);
+      });
     }
+
+    window.addDynFieldRow = () => {
+      syncDynFieldsFromUI();
+      currentDynFields.push({ id: "", label: "", type: "text", required: false });
+      renderDynFields();
+    };
+
+    window.removeDynFieldRow = (index) => {
+      syncDynFieldsFromUI();
+      currentDynFields.splice(index, 1);
+      renderDynFields();
+    };
+
+    function syncDynFieldsFromUI() {
+      currentDynFields.forEach((f, i) => {
+        const elId = document.getElementById(`df_id_${i}`);
+        if (elId) {
+          f.id = elId.value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+          f.label = document.getElementById(`df_lbl_${i}`).value.trim();
+          f.type = document.getElementById(`df_typ_${i}`).value;
+          f.required = document.getElementById(`df_req_${i}`).checked;
+        }
+      });
+    }
+
+    window.saveDynFieldsConfig = async () => {
+      syncDynFieldsFromUI();
+      const validFields = currentDynFields.filter(f => f.id && f.label);
+      try {
+        await apiCall("/api/admin/settings/dynamic_form_fields", "PUT", { value: validFields });
+        currentDynFields = validFields;
+        renderDynFields();
+        showToast("Form Fields saved successfully");
+      } catch (e) {
+        showToast("Error saving form fields: " + e.message, true);
+      }
+    };
+
+    window.saveAutoReplyConfig = async () => {
+      const val = {
+        enabled: document.getElementById("arEnabled").checked,
+        subject: document.getElementById("arSubject").value.trim(),
+        body: document.getElementById("arBody").value.trim()
+      };
+      try {
+        await apiCall("/api/admin/settings/auto_reply_email", "PUT", { value: val });
+        showToast("Auto-Reply saved successfully");
+      } catch (e) {
+        showToast("Error saving Auto-Reply: " + e.message, true);
+      }
+    };
+
+    window.saveSmtpConfig = async () => {
+      const val = {
+        host: document.getElementById("smtpHost").value.trim(),
+        port: document.getElementById("smtpPort").value,
+        user: document.getElementById("smtpUser").value.trim(),
+        pass: document.getElementById("smtpPass").value.trim(),
+        secure: document.getElementById("smtpSecure").checked,
+        tlsReject: document.getElementById("smtpTlsReject").checked
+      };
+
+      try {
+        await apiCall("/api/admin/settings/smtp_config", "PUT", { value: val });
+        // After sending request, restart server nodemailer instance might be needed via API eventually, 
+        // but since our transporter fetches per request it's ok.
+        showToast("SMTP Config saved successfully. New emails will use these settings.");
+      } catch (e) {
+        showToast("Error saving SMTP Config: " + e.message, true);
+      }
+    };
+
+    window.saveFirebaseConfig = async () => {
+      const val = {
+        apiKey: document.getElementById("fbApiKey").value.trim(),
+        authDomain: document.getElementById("fbAuthDomain").value.trim(),
+        projectId: document.getElementById("fbProjectId").value.trim(),
+        clientEmail: document.getElementById("fbClientEmail").value.trim(),
+        privateKey: document.getElementById("fbPrivateKey").value.trim()
+      };
+      try {
+        await apiCall("/api/admin/settings/firebase_config", "PUT", { value: val });
+        showToast("Firebase Config saved successfully");
+      } catch (e) {
+        showToast("Error saving Firebase Config: " + e.message, true);
+      }
+    };
 
     // Boot
     initFirebaseClient();
