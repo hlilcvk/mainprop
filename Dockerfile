@@ -31,10 +31,11 @@ COPY public/ ./public/
 USER appuser
 
 # Healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
 
-EXPOSE 3000
+EXPOSE 8080
+ENV PORT=8080
 
 # Veritabanını başlat, sonra sunucuyu çalıştır
-CMD ["sh", "-c", "node src/db-init.js && node src/server.js"]
+CMD ["node", "src/server.js"]
