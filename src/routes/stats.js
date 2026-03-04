@@ -1,55 +1,53 @@
 import { Router } from "express";
 import admin from "firebase-admin";
+import { getAuth } from "firebase-admin/auth";
 import pool from "../db.js";
 
 const router = Router();
 
-function ensureFirebase() {
-  if (admin.apps.length) return;
+// Admin auth check (same logic as admin.js)
+async function requireStatsAdmin(req, res, next) {
+  const authHeader = req.headers["authorization"] || "";
+  const mechanism = authHeader.split(" ")[0];
+  const token = authHeader.split(" ")[1];
 
-  const projectId = process.env.FIREBASE_PROJECT_ID || "";
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL || "";
-  let privateKey = process.env.FIREBASE_PRIVATE_KEY || "";
-
-  privateKey = privateKey.replace(/\\n/g, "\n");
-
-  if (!projectId || !clientEmail || !privateKey) {
-    throw new Error("Firebase admin not configured");
-  }
-
-  admin.initializeApp({
-    credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
-  });
-}
-
-router.get("/stats", async (req, res) => {
-  try {
-    ensureFirebase();
-  } catch {
-    return res.status(503).json({ ok: false, error: "Admin auth not configured" });
-  }
-
-  const authz = req.headers["authorization"] || "";
-  const token = authz.startsWith("Bearer ") ? authz.slice(7).trim() : "";
   if (!token) return res.status(401).json({ ok: false, error: "Missing token" });
 
-  let decoded;
+  // Secret bypass
+  if (mechanism === "Secret") {
+    const expectedSecret = process.env.ADMIN_SECRET;
+    if (expectedSecret && token === expectedSecret) {
+      req.adminEmail = "Setup Key Admin";
+      return next();
+    }
+    return res.status(403).json({ ok: false, error: "Invalid Setup Key" });
+  }
+
+  // Firebase check
+  if (!admin.apps.length) {
+    return res.status(503).json({ ok: false, error: "Firebase Admin not initialized. Please restart the server after saving Firebase config." });
+  }
+
   try {
-    decoded = await admin.auth().verifyIdToken(token);
+    const decoded = await getAuth().verifyIdToken(token);
+    const email = String(decoded.email || "").toLowerCase();
+    const allow = (process.env.ADMIN_EMAILS || "")
+      .split(",")
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+
+    if (!email || !allow.includes(email)) {
+      return res.status(403).json({ ok: false, error: "Not allowed" });
+    }
+
+    req.adminEmail = email;
+    next();
   } catch {
     return res.status(401).json({ ok: false, error: "Invalid token" });
   }
+}
 
-  const email = String(decoded.email || "").toLowerCase();
-  const allow = (process.env.ADMIN_EMAILS || "")
-    .split(",")
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
-
-  if (!email || !allow.includes(email)) {
-    return res.status(403).json({ ok: false, error: "Not allowed" });
-  }
-
+router.get("/stats", requireStatsAdmin, async (req, res) => {
   try {
     const since24 = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const since7 = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();

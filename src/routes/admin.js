@@ -181,7 +181,27 @@ router.put("/admin/settings/:key", requireAdmin, async (req, res) => {
             [key, value]
         );
 
-        // If firebase config changed, we might need to re-init (but restarting server is cleaner)
+        // If firebase config changed, re-initialize Firebase Admin SDK immediately
+        if (key === "firebase_config" && value && value.projectId && value.clientEmail && value.privateKey) {
+            try {
+                // Delete existing app if any
+                if (admin.apps.length) {
+                    await admin.app().delete();
+                }
+                admin.initializeApp({
+                    credential: admin.credential.cert({
+                        projectId: value.projectId,
+                        clientEmail: value.clientEmail,
+                        privateKey: value.privateKey.replace(/\\n/g, '\n')
+                    })
+                });
+                console.log("Firebase Admin re-initialized from new config saved via Admin Panel.");
+            } catch (fbErr) {
+                console.error("Failed to re-init Firebase Admin:", fbErr.message);
+                // Config is saved to DB, but re-init failed. Will work after restart.
+            }
+        }
+
         return res.json({ ok: true });
     } catch (err) {
         return res.status(500).json({ ok: false, error: "Database error" });
