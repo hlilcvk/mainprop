@@ -7,7 +7,6 @@ import admin from "firebase-admin";
 
 const router = Router();
 
-/* ---------- In-memory rate limiter ---------- */
 const rate = new Map();
 function rateOk(ip, limit = 8, windowMs = 10 * 60 * 1000) {
   const now = Date.now();
@@ -20,7 +19,24 @@ function rateOk(ip, limit = 8, windowMs = 10 * 60 * 1000) {
   return r.count <= limit;
 }
 
+<<<<<<< HEAD
 /* ---------- Route ---------- */
+=======
+async function verifyHCaptcha(token, ip) {
+  const secret = process.env.HCAPTCHA_SECRET || "";
+  if (!secret) return { ok: false, error: "hCaptcha not configured" };
+  if (!token) return { ok: false, error: "Missing captcha token" };
+  const res = await fetch("https://hcaptcha.com/siteverify", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ secret, response: token, remoteip: ip || "" }),
+  });
+  const j = await res.json().catch(() => ({}));
+  if (!j?.success) return { ok: false, error: "Captcha verification failed" };
+  return { ok: true };
+}
+
+>>>>>>> 20cabe46299e9250aeafdfac50e6c135ad240a9f
 router.post("/request-code", async (req, res) => {
   const OTP_SALT = process.env.OTP_SALT || "";
   if (!OTP_SALT) return res.status(503).json({ ok: false, error: "Not configured" });
@@ -34,6 +50,7 @@ router.post("/request-code", async (req, res) => {
   const city = String(req.body.city || "").trim().slice(0, 100);
   const profile = String(req.body.profile || "").trim().slice(0, 60);
   const note = String(req.body.note || "").trim().slice(0, 300);
+<<<<<<< HEAD
   const extra_fields = req.body.extra_fields || {};
   const googleIdToken = String(req.body.googleIdToken || "").trim();
 
@@ -52,6 +69,66 @@ router.post("/request-code", async (req, res) => {
 
   if (!isEmail(email)) return res.status(400).json({ ok: false, error: "Invalid email" });
 
+=======
+  const hcaptchaToken = String(req.body.hcaptchaToken || "").trim();
+  const googleTrusted = req.body.googleTrusted === true;
+  const googleIdToken = String(req.body.googleIdToken || "").trim();
+
+  if (!isEmail(email)) return res.status(400).json({ ok: false, error: "Invalid email" });
+
+  // Google trusted: Firebase ID token ile dogrulama, hCaptcha gerekmez
+  if (googleTrusted && googleIdToken) {
+    // Firebase Admin ile token dogrula
+    try {
+      const admin = (await import("firebase-admin")).default;
+      if (!admin.apps.length) {
+        const projectId = process.env.FIREBASE_PROJECT_ID || "";
+        const clientEmail = process.env.FIREBASE_CLIENT_EMAIL || "";
+        let privateKey = process.env.FIREBASE_PRIVATE_KEY || "";
+        privateKey = privateKey.replace(/\\n/g, "\n");
+        if (projectId && clientEmail && privateKey) {
+          admin.initializeApp({
+            credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
+          });
+        }
+      }
+      const decoded = await admin.auth().verifyIdToken(googleIdToken);
+      const tokenEmail = String(decoded.email || "").toLowerCase();
+      if (tokenEmail !== email) {
+        return res.status(401).json({ ok: false, error: "Email mismatch" });
+      }
+    } catch (err) {
+      console.error("Firebase token verify failed:", err.message);
+      return res.status(401).json({ ok: false, error: "Invalid Google token" });
+    }
+
+    // Dogrulanmis Google kullanici - direkt kaydet
+    try {
+      await pool.query(
+        `INSERT INTO waitlist (email, profile, note, source, status, verified_at)
+         VALUES ($1, $2, $3, 'google', 'verified', now())
+         ON CONFLICT (lower(email)) DO UPDATE SET
+           profile = COALESCE(EXCLUDED.profile, waitlist.profile),
+           note = COALESCE(EXCLUDED.note, waitlist.note),
+           source = 'google',
+           status = 'verified',
+           verified_at = now()`,
+        [email, profile || null, note || null]
+      );
+      return res.json({ ok: true, verified: true });
+    } catch (err) {
+      console.error("Google waitlist error:", err.message);
+      return res.status(500).json({ ok: false, error: "Server error" });
+    }
+  }
+
+  // Normal akis: hCaptcha zorunlu
+  const cap = await verifyHCaptcha(hcaptchaToken, ip);
+  if (!cap.ok) return res.status(401).json({ ok: false, error: cap.error });
+
+  const source = googleTrusted ? "google" : "email";
+
+>>>>>>> 20cabe46299e9250aeafdfac50e6c135ad240a9f
   try {
     if (googleIdToken) {
       await pool.query(
@@ -72,7 +149,6 @@ router.post("/request-code", async (req, res) => {
       return res.json({ ok: true, verified: true });
     }
 
-    // Upsert waitlist (pending)
     await pool.query(
       `INSERT INTO waitlist (email, first_name, last_name, city, profile, note, extra_fields, source, status)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'pending')
@@ -87,7 +163,6 @@ router.post("/request-code", async (req, res) => {
       [email, first_name || null, last_name || null, city || null, profile || null, note || null, extra_fields, source]
     );
 
-    // Generate OTP
     const code = rand6();
     const code_hash = sha256(code + "|" + email + "|" + OTP_SALT);
     const expires_at = new Date(Date.now() + 10 * 60 * 1000).toISOString();
@@ -99,7 +174,6 @@ router.post("/request-code", async (req, res) => {
       [email, code_hash, expires_at, ip_hash]
     );
 
-    // Send email
     const subject = "PROPTREX Verification Code";
     const html = `
       <div style="font-family:Inter,Arial,sans-serif;line-height:1.5;color:#0B1220">
@@ -117,7 +191,6 @@ router.post("/request-code", async (req, res) => {
     `;
 
     await sendEmail(email, subject, html);
-
     return res.json({ ok: true, verified: false });
   } catch (err) {
     console.error("request-code error:", err.message);
