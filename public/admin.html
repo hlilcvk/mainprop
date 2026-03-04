@@ -728,7 +728,10 @@
     }
 
     loginBtn.addEventListener("click", async () => {
-      if (!auth) return;
+      if (!auth) {
+        alert("Firebase Auth is not initialized. Please save Firebase Config first and refresh the page.");
+        return;
+      }
       try {
         const provider = new GoogleAuthProvider();
         const cred = await signInWithPopup(auth, provider);
@@ -736,8 +739,16 @@
         authHeaderValue = `Bearer ${token}`;
         postLogin(cred.user.email);
       } catch (e) {
-        alert("Login failed. Are you authorized?");
-        console.error(e);
+        console.error("Google Sign-In Error:", e);
+        if (e.code === "auth/unauthorized-domain") {
+          alert("This domain is not authorized in Firebase Console.\n\nPlease go to:\nFirebase Console → Authentication → Settings → Authorized Domains\n\nAdd your site domain there (e.g. proptrex.com or your Coolify URL).");
+        } else if (e.code === "auth/popup-closed-by-user") {
+          // User closed popup, no action needed
+        } else if (e.code === "auth/configuration-not-found") {
+          alert("Google Sign-In is not enabled in Firebase Console.\n\nPlease go to:\nFirebase Console → Authentication → Sign-in method\n\nEnable the 'Google' provider.");
+        } else {
+          alert("Login failed: " + (e.message || e.code || "Unknown error"));
+        }
       }
     });
 

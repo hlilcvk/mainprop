@@ -51,6 +51,6 @@ async function getTransporter() {
  */
 export async function sendEmail(to, subject, html) {
   const from = process.env.MAIL_FROM || "PROPTREX <noreply@proptrex.com>";
-  const t = getTransporter();
+  const t = await getTransporter();
   await t.sendMail({ from, to, subject, html });
 }
