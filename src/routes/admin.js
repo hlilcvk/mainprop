@@ -6,16 +6,28 @@ import admin from "firebase-admin";
 const router = Router();
 
 // Middleware to check Admin privileges using Firebase token
-// Expects header: "Authorization: Bearer <ID_TOKEN>"
+// Expects header: "Authorization: Bearer <ID_TOKEN>" or "Authorization: Secret <ADMIN_SECRET>"
 async function requireAdmin(req, res, next) {
     const authHeader = req.headers.authorization || "";
+    const mechanism = authHeader.split(" ")[0]; // Bearer or Secret
     const token = authHeader.split(" ")[1];
 
     if (!token) {
         return res.status(401).json({ ok: false, error: "Missing authorization token" });
     }
 
-    // Check if firebase admin is initialized
+    // 1. Check Secret Bypas (for initial setup)
+    if (mechanism === "Secret") {
+        const expectedSecret = process.env.ADMIN_SECRET;
+        if (expectedSecret && token === expectedSecret) {
+            req.adminEmail = "Setup Key Admin";
+            return next();
+        }
+        return res.status(403).json({ ok: false, error: "Invalid Setup Key" });
+    }
+
+    // 2. Check Standard Firebase Token
+    // Check if firebase admin is initialized first
     if (!admin.apps.length) {
         return res.status(503).json({ ok: false, error: "Firebase Admin not initialized on server" });
     }
