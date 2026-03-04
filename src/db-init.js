@@ -19,8 +19,12 @@ CREATE TABLE IF NOT EXISTS public.waitlist (
   id BIGSERIAL PRIMARY KEY,
   ts TIMESTAMPTZ NOT NULL DEFAULT now(),
   email TEXT NOT NULL,
+  first_name TEXT,
+  last_name TEXT,
+  city TEXT,
   profile TEXT,
   note TEXT,
+  extra_fields JSONB DEFAULT '{}'::jsonb,
   status TEXT NOT NULL DEFAULT 'pending',
   verified_at TIMESTAMPTZ,
   source TEXT NOT NULL DEFAULT 'email'
@@ -41,12 +45,38 @@ CREATE TABLE IF NOT EXISTS public.email_verifications (
 
 CREATE INDEX IF NOT EXISTS email_verifications_email_idx ON public.email_verifications (lower(email));
 CREATE INDEX IF NOT EXISTS email_verifications_expires_idx ON public.email_verifications (expires_at);
+
+CREATE TABLE IF NOT EXISTS public.system_settings (
+  key TEXT PRIMARY KEY,
+  value JSONB NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
 `;
 
 async function init() {
   console.log("Initializing database schema...");
   try {
     await pool.query(schema);
+
+    // Fallback migrations for existing deployments
+    console.log("Running fallback migrations for existing tables...");
+    await pool.query(`
+      ALTER TABLE public.waitlist ADD COLUMN IF NOT EXISTS first_name TEXT;
+      ALTER TABLE public.waitlist ADD COLUMN IF NOT EXISTS last_name TEXT;
+      ALTER TABLE public.waitlist ADD COLUMN IF NOT EXISTS city TEXT;
+      ALTER TABLE public.waitlist ADD COLUMN IF NOT EXISTS extra_fields JSONB DEFAULT '{}'::jsonb;
+    `);
+
+    // Insert default settings if they do not exist
+    console.log("Seeding default settings...");
+    await pool.query(`
+      INSERT INTO public.system_settings (key, value) VALUES 
+      ('dynamic_form_fields', '[]'::jsonb),
+      ('firebase_config', '{}'::jsonb),
+      ('auto_reply_email', '{"enabled": false, "subject": "PROPTREX Registration Received", "body": "Thank you for registering. We will review your application soon."}'::jsonb)
+      ON CONFLICT (key) DO NOTHING;
+    `);
+
     console.log("Database schema initialized successfully.");
   } catch (err) {
     console.error("Schema init failed:", err.message);

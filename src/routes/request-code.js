@@ -2,6 +2,8 @@ import { Router } from "express";
 import pool from "../db.js";
 import { sha256, rand6, isEmail, getClientIp } from "../helpers.js";
 import { sendEmail } from "../mail.js";
+import { getAuth } from "firebase-admin/auth";
+import admin from "firebase-admin";
 
 const router = Router();
 
@@ -18,22 +20,6 @@ function rateOk(ip, limit = 8, windowMs = 10 * 60 * 1000) {
   return r.count <= limit;
 }
 
-/* ---------- hCaptcha ---------- */
-async function verifyHCaptcha(token, ip) {
-  const secret = process.env.HCAPTCHA_SECRET || "";
-  if (!secret) return { ok: false, error: "hCaptcha not configured" };
-  if (!token) return { ok: false, error: "Missing captcha token" };
-
-  const res = await fetch("https://hcaptcha.com/siteverify", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ secret, response: token, remoteip: ip || "" }),
-  });
-  const j = await res.json().catch(() => ({}));
-  if (!j?.success) return { ok: false, error: "Captcha verification failed" };
-  return { ok: true };
-}
-
 /* ---------- Route ---------- */
 router.post("/request-code", async (req, res) => {
   const OTP_SALT = process.env.OTP_SALT || "";
@@ -42,44 +28,63 @@ router.post("/request-code", async (req, res) => {
   const ip = getClientIp(req);
   if (!rateOk(ip)) return res.status(429).json({ ok: false, error: "Too many requests. Try later." });
 
-  const email = String(req.body.email || "").trim().toLowerCase();
+  let email = String(req.body.email || "").trim().toLowerCase();
+  const first_name = String(req.body.first_name || "").trim().slice(0, 100);
+  const last_name = String(req.body.last_name || "").trim().slice(0, 100);
+  const city = String(req.body.city || "").trim().slice(0, 100);
   const profile = String(req.body.profile || "").trim().slice(0, 60);
   const note = String(req.body.note || "").trim().slice(0, 300);
-  const hcaptchaToken = String(req.body.hcaptchaToken || "").trim();
-  const googleTrusted = req.body.googleTrusted === true;
+  const extra_fields = req.body.extra_fields || {};
+  const googleIdToken = String(req.body.googleIdToken || "").trim();
+
+  const source = googleIdToken ? "google" : "email";
+
+  if (googleIdToken) {
+    if (!admin.apps.length) return res.status(503).json({ ok: false, error: "Google Auth not properly configured" });
+    try {
+      const decodedToken = await getAuth().verifyIdToken(googleIdToken);
+      email = decodedToken.email.toLowerCase(); // Force override email from trusted token
+    } catch (err) {
+      console.error("Firebase Token Error:", err.message);
+      return res.status(401).json({ ok: false, error: "Invalid Google Token" });
+    }
+  }
 
   if (!isEmail(email)) return res.status(400).json({ ok: false, error: "Invalid email" });
 
-  const cap = await verifyHCaptcha(hcaptchaToken, ip);
-  if (!cap.ok) return res.status(401).json({ ok: false, error: cap.error });
-
-  const source = googleTrusted ? "google" : "email";
-
   try {
-    if (googleTrusted) {
+    if (googleIdToken) {
       await pool.query(
-        `INSERT INTO waitlist (email, profile, note, source, status, verified_at)
-         VALUES ($1, $2, $3, $4, 'verified', now())
+        `INSERT INTO waitlist (email, first_name, last_name, city, profile, note, extra_fields, source, status, verified_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'verified', now())
          ON CONFLICT (lower(email)) DO UPDATE SET
+           first_name = COALESCE(EXCLUDED.first_name, waitlist.first_name),
+           last_name = COALESCE(EXCLUDED.last_name, waitlist.last_name),
+           city = COALESCE(EXCLUDED.city, waitlist.city),
            profile = COALESCE(EXCLUDED.profile, waitlist.profile),
            note = COALESCE(EXCLUDED.note, waitlist.note),
+           extra_fields = COALESCE(EXCLUDED.extra_fields, waitlist.extra_fields),
            source = EXCLUDED.source,
            status = 'verified',
            verified_at = now()`,
-        [email, profile || null, note || null, source]
+        [email, first_name || null, last_name || null, city || null, profile || null, note || null, extra_fields, source]
       );
       return res.json({ ok: true, verified: true });
     }
 
     // Upsert waitlist (pending)
     await pool.query(
-      `INSERT INTO waitlist (email, profile, note, source, status)
-       VALUES ($1, $2, $3, $4, 'pending')
+      `INSERT INTO waitlist (email, first_name, last_name, city, profile, note, extra_fields, source, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'pending')
        ON CONFLICT (lower(email)) DO UPDATE SET
+         first_name = COALESCE(EXCLUDED.first_name, waitlist.first_name),
+         last_name = COALESCE(EXCLUDED.last_name, waitlist.last_name),
+         city = COALESCE(EXCLUDED.city, waitlist.city),
          profile = COALESCE(EXCLUDED.profile, waitlist.profile),
          note = COALESCE(EXCLUDED.note, waitlist.note),
+         extra_fields = COALESCE(EXCLUDED.extra_fields, waitlist.extra_fields),
          source = EXCLUDED.source`,
-      [email, profile || null, note || null, source]
+      [email, first_name || null, last_name || null, city || null, profile || null, note || null, extra_fields, source]
     );
 
     // Generate OTP

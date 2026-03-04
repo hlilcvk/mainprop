@@ -1,25 +1,10 @@
 import { Router } from "express";
 import pool from "../db.js";
-import { sha256, isEmail, getClientIp } from "../helpers.js";
+import { sha256, isEmail, getClientIp, sendEmail } from "../helpers.js";
 
 const router = Router();
 
-/* ---------- hCaptcha ---------- */
-async function verifyHCaptcha(token, ip) {
-  const secret = process.env.HCAPTCHA_SECRET || "";
-  if (!secret) return { ok: false, error: "hCaptcha not configured" };
-  if (!token) return { ok: false, error: "Missing captcha token" };
-
-  const res = await fetch("https://hcaptcha.com/siteverify", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ secret, response: token, remoteip: ip || "" }),
-  });
-  const j = await res.json().catch(() => ({}));
-  if (!j?.success) return { ok: false, error: "Captcha verification failed" };
-  return { ok: true };
-}
-
+/* ---------- Route ---------- */
 router.post("/verify-code", async (req, res) => {
   const OTP_SALT = process.env.OTP_SALT || "";
   if (!OTP_SALT) return res.status(503).json({ ok: false, error: "Not configured" });
@@ -28,13 +13,9 @@ router.post("/verify-code", async (req, res) => {
 
   const email = String(req.body.email || "").trim().toLowerCase();
   const code = String(req.body.code || "").trim().replace(/\s+/g, "");
-  const hcaptchaToken = String(req.body.hcaptchaToken || "").trim();
 
   if (!isEmail(email)) return res.status(400).json({ ok: false, error: "Invalid email" });
   if (!/^\d{6}$/.test(code)) return res.status(400).json({ ok: false, error: "Invalid code format" });
-
-  const cap = await verifyHCaptcha(hcaptchaToken, ip);
-  if (!cap.ok) return res.status(401).json({ ok: false, error: cap.error });
 
   try {
     const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
@@ -74,10 +55,31 @@ router.post("/verify-code", async (req, res) => {
       [(row.attempts || 0) + 1, row.id]
     );
 
+    // Success
     await pool.query(
-      `UPDATE waitlist SET status = 'verified', verified_at = now() WHERE lower(email) = lower($1)`,
+      `UPDATE waitlist SET status = 'verified', verified_at = now() WHERE lower(email) = $1`,
       [email]
     );
+
+    // Send Auto Reply if configured
+    try {
+      const autoReplyRes = await pool.query("SELECT value FROM system_settings WHERE key = 'auto_reply_email'");
+      if (autoReplyRes.rows.length > 0) {
+        const autoReply = autoReplyRes.rows[0].value;
+        if (autoReply && autoReply.enabled) {
+          const waitlistUser = await pool.query("SELECT first_name FROM waitlist WHERE lower(email) = $1", [email]);
+          const name = waitlistUser.rows.length > 0 && waitlistUser.rows[0].first_name ? waitlistUser.rows[0].first_name : "there";
+
+          let bodyHtml = autoReply.body || "Thank you for registering.";
+          // Simple personalization
+          bodyHtml = bodyHtml.replace(/{{first_name}}/g, name);
+
+          await sendEmail(email, autoReply.subject || "PROPTREX Registration Received", bodyHtml);
+        }
+      }
+    } catch (mailErr) {
+      console.error("Auto reply mail error:", mailErr.message);
+    }
 
     return res.json({ ok: true });
   } catch (err) {

@@ -1,279 +1,925 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>PROPTREX — Admin Analytics</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PROPTREX — Admin Panel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    :root{
-      --bg:#F7F9FF; --bg2:#FFFFFF; --txt:#0B1220; --muted:#58647A;
-      --border: rgba(10,20,35,.10);
-      --accent:#2563EB; --accent2:#06B6D4;
-      --shadow: 0 18px 60px rgba(10,20,35,.10);
-      --radius: 18px;
+    :root {
+      --bg: #F8FAFC;
+      --bg2: #FFFFFF;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --accent: #3B82F6;
+      --accent-hover: #2563EB;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --radius: 12px;
     }
-    *{ box-sizing:border-box; }
-    body{
-      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      color:var(--txt);
-      background: linear-gradient(180deg, var(--bg), var(--bg2));
-      padding: 18px;
+
+    * {
+      box-sizing: border-box;
     }
-    .top{
-      display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
-      padding: 12px 14px; border:1px solid var(--border); border-radius: 16px; background:#fff; box-shadow: var(--shadow);
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+      background: var(--bg);
     }
-    .brand{ font-weight:800; letter-spacing:.22em; text-transform:uppercase; font-size:12px; display:flex; gap:10px; align-items:center; }
-    .dot{ width:10px; height:10px; border-radius:50%; background: radial-gradient(circle at 30% 30%, var(--accent2), var(--accent)); }
-    .btn{
-      border-radius: 14px; padding: 10px 12px;
-      font-size: 12px; letter-spacing:.12em; text-transform:uppercase;
-      border: 1px solid var(--border); background: #fff; cursor:pointer;
+
+    /* Navbar */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      background: var(--bg2);
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
-    .btn.primary{ border-color: rgba(37,99,235,.30); background: linear-gradient(135deg, rgba(37,99,235,.12), rgba(6,182,212,.08)); }
-    .grid{
-      margin-top: 14px;
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 14px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .who {
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .btn {
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: #F1F5F9;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
+    .btn-danger {
+      color: #EF4444;
+      border-color: #FECACA;
+      background: #FEF2F2;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: #FEE2E2;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Layout */
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0px;
+    }
+
+    .tab {
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      color: var(--text);
+    }
+
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fade 0.3s;
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Cards & Grids */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 980px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .k {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .v {
+      font-size: 32px;
+      font-weight: 700;
+      margin-top: 8px;
+      color: var(--text);
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      background: #fff;
+      transition: all 0.2s;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .setting-section {
+      padding-bottom: 24px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .setting-section:last-child {
+      border: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+      margin: -24px;
+      border-radius: var(--radius);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      background: #F8FAFC;
+      padding: 14px 24px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 14px 24px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #F1F5F9;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-ok {
+      background: #D1FAE5;
+      color: #065F46;
+    }
+
+    .badge-warn {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    .badge-blue {
+      background: #DBEAFE;
+      color: #1E40AF;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal {
+      background: var(--bg2);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
       gap: 12px;
     }
-    .card{
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      background:#fff;
-      box-shadow: var(--shadow);
-      padding: 14px;
-      min-height: 110px;
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1000;
+      background: #10B981;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
     }
-    .k{ color: var(--muted); font-size:12px; letter-spacing:.10em; text-transform:uppercase; }
-    .v{ font-size: 28px; font-weight: 800; margin-top: 8px; }
-    .row{
-      margin-top: 12px;
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 12px;
-      align-items:start;
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
     }
-    .muted{ color: var(--muted); font-size: 13px; line-height: 1.45; white-space: pre-line; }
-    .bot{
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,1));
-      box-shadow: var(--shadow);
-      padding: 14px;
-    }
-    canvas{ width:100%; height:240px; border:1px solid var(--border); border-radius: 16px; background: #fff; }
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
-      .row{ grid-template-columns: 1fr; }
+
+    .toast.error {
+      background: #EF4444;
     }
   </style>
 </head>
 
 <body>
-  <script>
-    window.PROPTREX_FIREBASE_CONFIG = {
-      apiKey: "YOUR_FIREBASE_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      appId: "YOUR_APP_ID"
-    };
-  </script>
 
-  <div class="top">
+  <div class="topbar">
     <div class="brand">
-      <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="32" height="32" rx="7" fill="#0B1220"/>
-        <text x="16" y="21" text-anchor="middle" font-family="Inter,system-ui,Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="0.5" fill="#FFFFFF">PX</text>
+      <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="6" fill="#0F172A" />
+        <text x="16" y="21" text-anchor="middle" font-family="Inter,sans-serif" font-size="14" font-weight="700"
+          fill="#FFFFFF">PX</text>
       </svg>
-      <span>PROPTREX</span> <span style="color:#58647A;font-weight:600;">Admin Analytics</span>
+      PROPTREX ADMIN
     </div>
-    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-      <div id="who" class="muted" style="white-space:normal;">Not signed in</div>
-      <button class="btn primary" id="login">Sign in with Google</button>
-      <button class="btn" id="refresh" disabled>Refresh</button>
-      <button class="btn" id="logout" disabled>Logout</button>
-    </div>
-  </div>
-
-  <div class="grid">
-    <div class="card"><div class="k">Last 24h Pageviews</div><div class="v" id="pv24">—</div></div>
-    <div class="card"><div class="k">Last 24h Unique</div><div class="v" id="uv24">—</div></div>
-    <div class="card"><div class="k">Verified Waitlist</div><div class="v" id="ver">—</div></div>
-  </div>
-
-  <div class="row">
-    <div class="card">
-      <div class="k">Last 7 Days Trend</div>
-      <div style="margin-top:10px;">
-        <canvas id="chart" width="900" height="300"></canvas>
+    <div class="nav-actions">
+      <div id="who" class="who">Not signed in</div>
+      <div id="loginGroup" style="display:flex; gap:8px;">
+        <button class="btn btn-primary" id="loginBtn">Sign in with Google</button>
+        <button class="btn" id="secretLoginBtn">Use Setup Key</button>
       </div>
-      <div class="muted" style="margin-top:8px; white-space:normal;">Pageviews + Unique + Verified requests.</div>
+      <button class="btn" id="logoutBtn" style="display:none;">Logout</button>
+    </div>
+  </div>
+
+  <div class="container" id="appContent" style="display:none;">
+
+    <!-- Tabs Navigation -->
+    <div class="tabs">
+      <div class="tab active" data-tab="analytics">Analytics</div>
+      <div class="tab" data-tab="users">Users List</div>
+      <div class="tab" data-tab="settings">System Settings</div>
     </div>
 
-    <div class="bot">
-      <div class="k">Analytics Bot</div>
-      <div class="muted" id="botText" style="margin-top:10px;">Sign in to see a summary.</div>
-      <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="btn primary" id="botRun" disabled>Generate Summary</button>
+    <!-- TAB 1: Analytics -->
+    <div id="analytics" class="tab-content active">
+      <div class="grid-3">
+        <div class="card">
+          <div class="k">Last 24h Pageviews</div>
+          <div class="v" id="pv24">—</div>
+        </div>
+        <div class="card">
+          <div class="k">Last 24h Unique</div>
+          <div class="v" id="uv24">—</div>
+        </div>
+        <div class="card">
+          <div class="k">Verified Waitlist</div>
+          <div class="v" id="ver">—</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="k" style="margin-bottom: 16px;">Last 7 Days Trend</div>
+          <canvas id="chart" width="800" height="260" style="width:100%; max-height:260px;"></canvas>
+        </div>
+
+        <div class="card" style="background: linear-gradient(180deg, #F8FAFC, #FFFFFF);">
+          <div class="k" style="margin-bottom: 16px;">Analytics Bot</div>
+          <div id="botText" style="font-size: 14px; line-height: 1.6; color: var(--text-muted); white-space: pre-line;">
+            Loading insights...
+          </div>
+          <button class="btn btn-primary" id="refreshStatsBtn" style="margin-top:24px; width:100%;">Refresh
+            Data</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Users List -->
+    <div id="users" class="tab-content">
+      <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2 style="margin: 0 0 4px; font-size: 18px;">Registered Users</h2>
+          <p style="margin: 0; color: var(--text-muted); font-size: 14px;">Manage waitlist applications and request more
+            information.</p>
+        </div>
+        <button class="btn" id="refreshUsersBtn">Refresh List</button>
+      </div>
+
+      <div class="card" style="padding: 0;">
+        <div class="table-container">
+          <table id="usersTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>City</th>
+                <th>Profile</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTbody">
+              <tr>
+                <td colspan="7" style="text-align:center; padding: 40px;">Loading users...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: System Settings -->
+    <div id="settings" class="tab-content">
+      <div class="card">
+        <h2 style="margin: 0 0 24px; font-size: 18px;">Global Configurations</h2>
+
+        <!-- Forms Setup Section -->
+        <div class="setting-section">
+          <h3 style="margin: 0 0 16px; font-size: 15px;">Dynamic Registration Fields</h3>
+          <p style="margin: 0 0 16px; font-size: 13px; color: var(--text-muted);">
+            Fields defined here will automatically appear on the index.html registration form.
+            Edit as a JSON Array of objects:
+            <code>[{"id":"phone", "label":"Phone", "type":"text", "required":true}]</code>
+          </p>
+          <textarea id="setDynamicFields" style="font-family: monospace; font-size: 12px; height: 120px;"></textarea>
+          <button class="btn btn-primary" onclick="saveSetting('dynamic_form_fields', 'setDynamicFields')"
+            style="margin-top: 12px;">Save Form Fields</button>
+        </div>
+
+        <!-- Auto Email Section -->
+        <div class="setting-section">
+          <h3 style="margin: 0 0 16px; font-size: 15px;">Auto-Reply Email</h3>
+          <p style="margin: 0 0 16px; font-size: 13px; color: var(--text-muted);">
+            Sent instantly when a user verifies their email. Use <code>{{first_name}}</code> for personalization.
+            Format as JSON: <code>{"enabled": true, "subject": "Hi", "body": "HTML Content"}</code>
+          </p>
+          <textarea id="setAutoReply" style="font-family: monospace; font-size: 12px; height: 120px;"></textarea>
+          <button class="btn btn-primary" onclick="saveSetting('auto_reply_email', 'setAutoReply')"
+            style="margin-top: 12px;">Save Auto-Reply</button>
+        </div>
+
+        <!-- Firebase Settings Section -->
+        <div class="setting-section">
+          <h3 style="margin: 0 0 16px; font-size: 15px;">Firebase Config</h3>
+          <p style="margin: 0 0 16px; font-size: 13px; color: var(--text-muted);">
+            Used for Google Authentication login. Includes Admin SDK keys if set.
+          </p>
+          <textarea id="setFirebase" style="font-family: monospace; font-size: 12px; height: 160px;"></textarea>
+          <button class="btn btn-primary" onclick="saveSetting('firebase_config', 'setFirebase')"
+            style="margin-top: 12px;">Save Firebase Config</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div> <!-- End App Content -->
+
+  <!-- User Edit Modal -->
+  <div class="modal-backdrop" id="editModalBackdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="editModalTitle">Edit User</h3>
+        <button class="btn" style="padding: 4px 8px;" onclick="closeModal('editModalBackdrop')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editUserId" />
+        <div class="grid-2" style="margin-bottom:0;">
+          <div class="form-group"><label>First Name</label><input type="text" id="editFirst" /></div>
+          <div class="form-group"><label>Last Name</label><input type="text" id="editLast" /></div>
+        </div>
+        <div class="form-group"><label>City</label><input type="text" id="editCity" /></div>
+        <div class="form-group"><label>Profile</label><input type="text" id="editProfile" /></div>
+        <div class="form-group"><label>Note</label><textarea id="editNote"></textarea></div>
+        <div class="form-group"><label>Extra Fields (JSON)</label><textarea id="editExtra"
+            style="font-family: monospace;"></textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeModal('editModalBackdrop')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveUserEdit()">Save Changes</button>
       </div>
     </div>
   </div>
 
+  <!-- Request Info Modal -->
+  <div class="modal-backdrop" id="reqModalBackdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="reqModalTitle">Request More Info</h3>
+        <button class="btn" style="padding: 4px 8px;" onclick="closeModal('reqModalBackdrop')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 14px; margin-top: 0; color: var(--text-muted);">
+          This will send an automated email from the system asking the user for more details. They can reply directly to
+          the email.
+        </p>
+        <input type="hidden" id="reqUserId" />
+        <div class="form-group">
+          <label>Custom Message (inserted into template)</label>
+          <textarea id="reqMessage"
+            style="height: 120px;">Please reply to this email with details regarding your primary trading focus, strategies, and average monthly volume.</textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeModal('reqModalBackdrop')">Cancel</button>
+        <button class="btn btn-primary" onclick="sendReqInfo()">Send Email</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">Action successful</div>
+
+  <!-- Scripts -->
   <script type="module">
-    const pv24 = document.getElementById("pv24");
-    const uv24 = document.getElementById("uv24");
-    const ver = document.getElementById("ver");
+    // Core state
+    let authHeaderValue = ""; // Can be "Bearer <firebase_token>" or "Secret <admin_secret>"
+    let usersList = [];
+
+    // UI Elements
+    const loginBtn = document.getElementById("loginBtn");
+    const secretLoginBtn = document.getElementById("secretLoginBtn");
+    const loginGroup = document.getElementById("loginGroup");
+    const logoutBtn = document.getElementById("logoutBtn");
     const who = document.getElementById("who");
-    const loginBtn = document.getElementById("login");
-    const logoutBtn = document.getElementById("logout");
-    const refreshBtn = document.getElementById("refresh");
-    const botRun = document.getElementById("botRun");
-    const botText = document.getElementById("botText");
+    const appContent = document.getElementById("appContent");
+    const toastEl = document.getElementById("toast");
 
-    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
-    const { getAuth, GoogleAuthProvider, signInWithPopup, signOut } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js");
+    // Firebase Init (Fetch from API un-authenticated first to init client SDK)
+    let auth = null;
+    let GoogleAuthProvider = null, signInWithPopup = null, signOut = null;
 
-    const cfg = window.PROPTREX_FIREBASE_CONFIG || null;
-    if (!cfg?.apiKey) {
-      botText.textContent = "Firebase config missing.";
-      loginBtn.disabled = true;
+    async function initFirebaseClient() {
+      try {
+        const res = await fetch("/api/settings/public");
+        const data = await res.json();
+        const fbConfig = data.settings.firebase_config;
+
+        if (fbConfig && fbConfig.apiKey) {
+          const fbApp = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
+          const fbAuth = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js");
+
+          const app = fbApp.initializeApp(fbConfig);
+          auth = fbAuth.getAuth(app);
+          GoogleAuthProvider = fbAuth.GoogleAuthProvider;
+          signInWithPopup = fbAuth.signInWithPopup;
+          signOut = fbAuth.signOut;
+        } else {
+          who.textContent = "Firebase config missing in DB.";
+          loginBtn.disabled = true;
+        }
+      } catch (e) {
+        who.textContent = "Error loading initial config.";
+        console.error(e);
+      }
     }
 
-    const app = initializeApp(cfg);
-    const auth = getAuth(app);
-
-    let idToken = "";
-
-    async function fetchStats(){
-      const res = await fetch("/api/stats", {
-        headers: { "Authorization": `Bearer ${idToken}` }
+    // Auth Flows
+    if (secretLoginBtn) {
+      secretLoginBtn.addEventListener("click", () => {
+        const secret = prompt("Enter your ADMIN_SECRET (Setup Key):");
+        if (secret) {
+          authHeaderValue = `Secret ${secret}`;
+          postLogin("Setup Key Admin");
+        }
       });
-      const data = await res.json().catch(()=> ({}));
-      if (!res.ok || !data?.ok) throw new Error(data?.error || "Stats error");
+    }
+
+    loginBtn.addEventListener("click", async () => {
+      if (!auth) return;
+      try {
+        const provider = new GoogleAuthProvider();
+        const cred = await signInWithPopup(auth, provider);
+        const token = await cred.user.getIdToken(true);
+        authHeaderValue = `Bearer ${token}`;
+        postLogin(cred.user.email);
+      } catch (e) {
+        alert("Login failed. Are you authorized?");
+        console.error(e);
+      }
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      if (auth) await signOut(auth).catch(() => { });
+      authHeaderValue = "";
+      who.textContent = "Not signed in";
+      loginGroup.style.display = "flex";
+      logoutBtn.style.display = "none";
+      appContent.style.display = "none";
+    });
+
+    async function postLogin(email) {
+      who.textContent = `Admin: ${email}`;
+      loginGroup.style.display = "none";
+      logoutBtn.style.display = "block";
+      appContent.style.display = "block";
+
+      // Load Initial Data
+      await loadAnalytics();
+      await loadUsers();
+      await loadSettings();
+    }
+
+    // Utility: API Caller
+    async function apiCall(path, method = "GET", body = null) {
+      const headers = { "Authorization": authHeaderValue };
+      if (body) headers["Content-Type"] = "application/json";
+
+      const req = { method, headers };
+      if (body) req.body = JSON.stringify(body);
+
+      const res = await fetch(path, req);
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data.ok) throw new Error(data.error || `HTTP ${res.status}`);
       return data;
     }
 
-    function drawChart(points){
+    function showToast(msg, isErr = false) {
+      toastEl.textContent = msg;
+      toastEl.className = `toast show ${isErr ? 'error' : ''}`;
+      setTimeout(() => toastEl.classList.remove('show'), 3000);
+    }
+
+    // Tabs logic
+    document.querySelectorAll('.tab').forEach(t => {
+      t.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        document.getElementById(t.getAttribute('data-tab')).classList.add('active');
+      });
+    });
+
+    // --- TAB 1: Analytics ---
+    async function loadAnalytics() {
+      try {
+        const s = await apiCall("/api/stats");
+        document.getElementById("pv24").textContent = s.pv24 || 0;
+        document.getElementById("uv24").textContent = s.uv24 || 0;
+        document.getElementById("ver").textContent = s.verified_total || 0;
+
+        drawChart(s.last7days || []);
+        document.getElementById("botText").textContent = makeBotSummary(s);
+      } catch (err) {
+        showToast("Stats error: " + err.message, true);
+      }
+    }
+    document.getElementById("refreshStatsBtn").addEventListener("click", loadAnalytics);
+
+    function drawChart(points) {
       const c = document.getElementById("chart");
       const ctx = c.getContext("2d");
-      ctx.clearRect(0,0,c.width,c.height);
+      ctx.clearRect(0, 0, c.width, c.height);
 
-      const pad = 40;
-      const W = c.width - pad*2;
-      const H = c.height - pad*2;
+      const pad = 40; const W = c.width - pad * 2; const H = c.height - pad * 2;
+      const maxV = Math.max(1, ...points.map(p => p.pageviews), ...points.map(p => p.uniques), ...points.map(p => p.verified));
 
-      const maxV = Math.max(
-        1,
-        ...points.map(p=>p.pageviews),
-        ...points.map(p=>p.uniques),
-        ...points.map(p=>p.verified)
-      );
+      // Grid line
+      ctx.strokeStyle = "#E2E8F0"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(pad, pad); ctx.lineTo(pad, pad + H); ctx.lineTo(pad + W, pad + H); ctx.stroke();
 
-      ctx.strokeStyle = "rgba(10,20,35,0.20)";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(pad, pad);
-      ctx.lineTo(pad, pad+H);
-      ctx.lineTo(pad+W, pad+H);
-      ctx.stroke();
+      const x = (i) => points.length <= 1 ? pad : pad + (i / (points.length - 1)) * W;
+      const y = (v) => pad + H - (v / maxV) * H;
 
-      const x = (i)=> points.length<=1 ? pad : pad + (i/(points.length-1))*W;
-      const y = (v)=> pad + H - (v/maxV)*H;
-
-      function line(series, stroke){
-        ctx.strokeStyle = stroke;
-        ctx.lineWidth = 2;
+      function line(series, stroke) {
+        ctx.strokeStyle = stroke; ctx.lineWidth = 2; ctx.lineJoin = 'round';
         ctx.beginPath();
-        series.forEach((v,i)=>{
-          const X = x(i), Y = y(v);
-          if (i===0) ctx.moveTo(X,Y); else ctx.lineTo(X,Y);
+        series.forEach((v, i) => {
+          if (i === 0) ctx.moveTo(x(i), y(v)); else ctx.lineTo(x(i), y(v));
         });
         ctx.stroke();
       }
 
-      line(points.map(p=>p.pageviews), "rgba(37,99,235,0.85)");
-      line(points.map(p=>p.uniques), "rgba(6,182,212,0.85)");
-      line(points.map(p=>p.verified), "rgba(14,159,110,0.85)");
-
-      ctx.fillStyle = "rgba(88,100,122,0.95)";
-      ctx.font = "12px Inter, Arial";
-      ctx.fillText("PV", pad+6, pad+14);
-      ctx.fillText("UQ", pad+34, pad+14);
-      ctx.fillText("VER", pad+66, pad+14);
+      line(points.map(p => p.pageviews), "#3B82F6"); // PV
+      line(points.map(p => p.uniques), "#06B6D4");   // Unique
+      line(points.map(p => p.verified), "#10B981");  // Verified
     }
 
-    function makeBotSummary(s){
-      const last = s.last7days?.[s.last7days.length-1];
-      const prev = s.last7days?.[s.last7days.length-2];
+    function makeBotSummary(s) {
+      const last = s.last7days?.[s.last7days.length - 1];
+      const prev = s.last7days?.[s.last7days.length - 2];
       const pvDelta = (prev && last) ? (last.pageviews - prev.pageviews) : 0;
-      const uqDelta = (prev && last) ? (last.uniques - prev.uniques) : 0;
-      const verDelta = (prev && last) ? (last.verified - prev.verified) : 0;
 
-      const bestDay = s.last7days?.reduce((a,b)=> (b.pageviews>a.pageviews?b:a), s.last7days?.[0]);
-      const bestLine = bestDay ? `Peak day in last 7 days: ${bestDay.day} with ${bestDay.pageviews} pageviews.` : "";
+      const p = [`Daily pageviews: ${s.pv24}. Total verified: ${s.verified_total}.`];
+      if (pvDelta > 0) p.push(`Traffic is trending UP (+${pvDelta} compared to yesterday).`);
+      else if (pvDelta < 0) p.push(`Traffic is trending DOWN (${pvDelta} compared to yesterday).`);
 
-      const rec = [];
-      if ((s.pv24 || 0) > 200) rec.push("Traffic is healthy. Keep the landing minimal and conversion-focused.");
-      if ((s.uv24 || 0) < 10) rec.push("Low unique traffic. Consider a single campaign link to test acquisition.");
       const conv = (s.verified_total || 0) / Math.max(1, s.signups_total || 0);
-      if ((s.signups_total || 0) > 0 && conv < 0.6) rec.push("Verification drop looks high. Shorten copy and move code entry above fold.");
-      if (!rec.length) rec.push("Metrics look stable. Continue collecting verified emails.");
+      if ((s.signups_total || 0) > 0 && conv < 0.6) p.push("Alert: High drop-off during email verification step.");
+      else p.push("Conversion rates look healthy.");
 
-      return [
-        `Last 24h: ${s.pv24} pageviews / ${s.uv24} unique.`,
-        `Verified total: ${s.verified_total} (signups total: ${s.signups_total}).`,
-        `Day-over-day change: PV ${pvDelta>=0?"+":""}${pvDelta}, Unique ${uqDelta>=0?"+":""}${uqDelta}, Verified ${verDelta>=0?"+":""}${verDelta}.`,
-        bestLine,
-        `Conversion (verified/signups): ${(conv*100).toFixed(1)}%.`,
-        `Next actions: ${rec.join(" ")}`
-      ].filter(Boolean).join("\n");
+      return p.join("\n");
     }
 
-    async function load(){
-      const s = await fetchStats();
-      pv24.textContent = s.pv24;
-      uv24.textContent = s.uv24;
-      ver.textContent = s.verified_total;
-      drawChart(s.last7days || []);
-      botText.textContent = makeBotSummary(s);
+    // --- TAB 2: Users ---
+    async function loadUsers() {
+      try {
+        const data = await apiCall("/api/admin/users");
+        usersList = data.users || [];
+        renderUsersTable();
+      } catch (err) {
+        showToast("Users error: " + err.message, true);
+      }
+    }
+    document.getElementById("refreshUsersBtn").addEventListener("click", loadUsers);
+
+    function renderUsersTable() {
+      const tb = document.getElementById("usersTbody");
+      tb.innerHTML = "";
+      if (usersList.length === 0) {
+        tb.innerHTML = '<tr><td colspan="7" style="text-align:center;">No users found.</td></tr>';
+        return;
+      }
+
+      usersList.forEach(u => {
+        const d = new Date(u.ts).toLocaleDateString();
+        const statClass = u.status === 'verified' ? 'badge-ok' : (u.status === 'pending' ? 'badge-warn' : 'badge-blue');
+        const name = [u.first_name, u.last_name].filter(Boolean).join(" ") || "-";
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${d}</td>
+          <td><span class="badge ${statClass}">${u.status}</span></td>
+          <td style="font-weight:500;">${name}</td>
+          <td>${u.email}</td>
+          <td>${u.city || "-"}</td>
+          <td>${u.profile || "-"}</td>
+          <td style="text-align:right;">
+             <button class="btn" style="padding:6px 10px; font-size:11px;" onclick="openEditModal(${u.id})">Edit</button>
+             <button class="btn btn-primary" style="padding:6px 10px; font-size:11px; margin-left:4px;" onclick="openReqModal(${u.id})">Request Info</button>
+          </td>
+        `;
+        tb.appendChild(tr);
+      });
     }
 
-    loginBtn.addEventListener("click", async ()=>{
-      const provider = new GoogleAuthProvider();
-      const cred = await signInWithPopup(auth, provider);
-      const user = cred.user;
-      idToken = await user.getIdToken(true);
+    // Modals Handling
+    window.closeModal = (id) => document.getElementById(id).style.display = 'none';
 
-      who.textContent = `Signed in: ${user.email}`;
-      logoutBtn.disabled = false;
-      refreshBtn.disabled = false;
-      botRun.disabled = false;
+    window.openEditModal = (id) => {
+      const u = usersList.find(x => x.id === id);
+      if (!u) return;
+      document.getElementById("editUserId").value = u.id;
+      document.getElementById("editFirst").value = u.first_name || "";
+      document.getElementById("editLast").value = u.last_name || "";
+      document.getElementById("editCity").value = u.city || "";
+      document.getElementById("editProfile").value = u.profile || "";
+      document.getElementById("editNote").value = u.note || "";
+      document.getElementById("editExtra").value = JSON.stringify(u.extra_fields || {}, null, 2);
 
-      await load();
-    });
+      document.getElementById("editModalBackdrop").style.display = "flex";
+    };
 
-    logoutBtn.addEventListener("click", async ()=>{
-      await signOut(auth);
-      idToken = "";
-      who.textContent = "Not signed in";
-      logoutBtn.disabled = true;
-      refreshBtn.disabled = true;
-      botRun.disabled = true;
-      pv24.textContent = "—";
-      uv24.textContent = "—";
-      ver.textContent = "—";
-      botText.textContent = "Sign in to see a summary.";
-      const c = document.getElementById("chart").getContext("2d");
-      c.clearRect(0,0,900,300);
-    });
+    window.saveUserEdit = async () => {
+      const id = document.getElementById("editUserId").value;
+      const body = {
+        first_name: document.getElementById("editFirst").value,
+        last_name: document.getElementById("editLast").value,
+        city: document.getElementById("editCity").value,
+        profile: document.getElementById("editProfile").value,
+        note: document.getElementById("editNote").value,
+        extra_fields: {}
+      };
 
-    refreshBtn.addEventListener("click", async ()=>{ await load(); });
-    botRun.addEventListener("click", async ()=>{ await load(); });
+      try {
+        body.extra_fields = JSON.parse(document.getElementById("editExtra").value || "{}");
+      } catch (e) {
+        return showToast("Invalid JSON in Extra Fields", true);
+      }
+
+      try {
+        await apiCall(`/api/admin/users/${id}`, "PUT", body);
+        showToast("User updated successfully");
+        closeModal("editModalBackdrop");
+        loadUsers(); // Refresh
+      } catch (err) {
+        showToast("Update failed: " + err.message, true);
+      }
+    };
+
+    window.openReqModal = (id) => {
+      const u = usersList.find(x => x.id === id);
+      if (!u) return;
+      document.getElementById("reqUserId").value = u.id;
+      document.getElementById("reqModalTitle").textContent = `Request Info: ${u.email}`;
+      document.getElementById("reqModalBackdrop").style.display = "flex";
+    };
+
+    window.sendReqInfo = async () => {
+      const id = document.getElementById("reqUserId").value;
+      const msg = document.getElementById("reqMessage").value;
+      try {
+        await apiCall(`/api/admin/users/${id}/request-info`, "POST", { additionalMessage: msg });
+        showToast("Email sent!");
+        closeModal("reqModalBackdrop");
+      } catch (err) {
+        showToast("Failed to send: " + err.message, true);
+      }
+    }
+
+    // --- TAB 3: Settings ---
+    async function loadSettings() {
+      try {
+        const data = await apiCall("/api/admin/settings");
+        const s = data.settings || {};
+
+        document.getElementById("setDynamicFields").value = JSON.stringify(s.dynamic_form_fields || [], null, 2);
+        document.getElementById("setAutoReply").value = JSON.stringify(s.auto_reply_email || { enabled: false }, null, 2);
+        document.getElementById("setFirebase").value = JSON.stringify(s.firebase_config || {}, null, 2);
+      } catch (e) {
+        showToast("Error loading settings", true);
+      }
+    }
+
+    window.saveSetting = async (key, elementId) => {
+      try {
+        const val = JSON.parse(document.getElementById(elementId).value || "{}");
+        await apiCall(`/api/admin/settings/${key}`, "PUT", { value: val });
+        showToast("Settings saved successfully");
+      } catch (e) {
+        showToast("Invalid JSON format or Save Error", true);
+      }
+    }
+
+    // Boot
+    initFirebaseClient();
   </script>
+
 </body>
+
 </html>
