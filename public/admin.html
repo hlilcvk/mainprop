@@ -711,11 +711,18 @@
 
     // Auth Flows
     if (secretLoginBtn) {
-      secretLoginBtn.addEventListener("click", () => {
+      secretLoginBtn.addEventListener("click", async () => {
         const secret = prompt("Enter your ADMIN_SECRET (Setup Key):");
-        if (secret) {
-          authHeaderValue = `Secret ${secret}`;
+        if (!secret) return;
+
+        // Validate key against server before opening panel
+        authHeaderValue = `Secret ${secret}`;
+        try {
+          await apiCall("/api/admin/settings"); // Test call
           postLogin("Setup Key Admin");
+        } catch (e) {
+          authHeaderValue = "";
+          alert("Invalid Setup Key! Please check your ADMIN_SECRET environment variable in Coolify.");
         }
       });
     }
