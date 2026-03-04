@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PROPTREX — Early Access</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #050505;
+      --bg-accent: #0f1115;
+      --text-main: #FFFFFF;
+      --text-muted: #8892B0;
+      
+      --accent: #3B82F6;
+      --accent-glow: rgba(59, 130, 246, 0.4);
+      --accent-secondary: #06B6D4;
+      
+      --border: rgba(255, 255, 255, 0.08);
+      --card-bg: rgba(15, 17, 21, 0.6);
+      
+      --radius: 16px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      
+      --err: #ef4444;
+      --ok: #10b981;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Outfit', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      overflow-x: hidden;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient Background Glows */
+    .ambient-light {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+    .light-1 {
+      top: -10%; left: -10%;
+      width: 50vw; height: 50vw;
+      background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+      animation: float 20s ease-in-out infinite alternate;
+    }
+    .light-2 {
+      bottom: -10%; right: -10%;
+      width: 60vw; height: 60vw;
+      background: radial-gradient(circle, rgba(6,182,212,0.1) 0%, transparent 70%);
+      animation: float 25s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(5%, 5%); }
+    }
+
+    /* Top Navigation */
+    .topbar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 5%;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .brand svg { width: 32px; height: 32px; }
+
+    .nav-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .lang-switcher {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .lang-switcher:hover {
+      color: var(--text-main);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    /* Main Container */
+    .container {
+      position: relative;
+      z-index: 5;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 5%;
+      display: grid;
+      grid-template-columns: 1fr 450px;
+      gap: 60px;
+      align-items: center;
+      min-height: calc(100vh - 85px);
+    }
+
+    @media (max-width: 992px) {
+      .container {
+        grid-template-columns: 1fr;
+        padding-top: 40px;
+        padding-bottom: 80px;
+        text-align: center;
+      }
+    }
+
+    /* Hero Text */
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border: 1px solid rgba(6,182,212,0.3);
+      background: rgba(6,182,212,0.05);
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--accent-secondary);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      box-shadow: 0 0 20px rgba(6,182,212,0.1);
+    }
+
+    .hero-badge .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent-secondary);
+      box-shadow: 0 0 8px var(--accent-secondary);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.5; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    h1 {
+      font-size: clamp(40px, 5vw, 64px);
+      line-height: 1.1;
+      margin: 0 0 24px 0;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #FFFFFF 0%, #A1A1AA 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      max-width: 600px;
+      line-height: 1.6;
+    }
+    
+    @media (max-width: 992px) {
+      .subtitle { margin: 0 auto 32px; }
+    }
+
+    /* Features / Chips */
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+    @media (max-width: 992px) {
+      .features { justify-content: center; }
+    }
+
+    .chip {
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      color: #D4D4D8;
+      transition: var(--transition);
+    }
+    .chip:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    /* Glass Card (Form Container) */
+    .glass-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), transparent);
+    }
+
+    .card-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+    }
+    
+    .card-subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin: 0 0 24px 0;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .form-row > div { flex: 1; }
+    @media (max-width: 480px){
+      .form-row { flex-direction: column; gap: 16px; }
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    input, select {
+      width: 100%;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      transition: var(--transition);
+      outline: none;
+    }
+    
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+      background: rgba(0,0,0,0.4);
+    }
+    
+    input::placeholder { color: rgba(255,255,255,0.3); }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, #2563EB 100%);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(37,99,235,0.3);
+    }
+    
+    .btn-primary:hover {
+      box-shadow: 0 12px 25px rgba(37,99,235,0.4);
+      transform: translateY(-2px);
+    }
+
+    .btn-google {
+      background: #FFFFFF;
+      color: #000000;
+      margin-top: 12px;
+      border: 1px solid transparent;
+    }
+    .btn-google:hover {
+      background: #F8FAFC;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255,255,255,0.1);
+    }
+    .g-icon { width: 18px; height: 18px; }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 20px 0;
+      color: var(--text-muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--border);
+    }
+    .divider:not(:empty)::before { margin-right: 15px; }
+    .divider:not(:empty)::after { margin-left: 15px; }
+
+    .message {
+      margin-top: 16px;
+      font-size: 13px;
+      padding: 12px;
+      border-radius: 8px;
+      display: none;
+    }
+    .message.success {
+      display: block;
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--ok);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    .message.error {
+      display: block;
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--err);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    /* Steps */
+    .step { display: none; animation: fadeIn 0.4s ease forwards; }
+    .step.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Footer info */
+    .fine-print {
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="ambient-light light-1"></div>
+  <div class="ambient-light light-2"></div>
+
+  <nav class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="32" height="32" rx="8" fill="#3B82F6"/>
+        <text x="16" y="22" text-anchor="middle" font-family="Outfit, sans-serif" font-size="16" font-weight="700" fill="#FFFFFF">PX</text>
+      </svg>
+      PROPTREX
+    </div>
+    <div class="nav-actions">
+      <button class="lang-switcher" id="langToggle">TR</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero-content">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        <span data-i18n="badge">6 AI AGENTS · MULTI-ASSET · REAL-TIME</span>
+      </div>
+      <h1 data-i18n="heading">The Intelligence Layer<br/>Across Every Market.</h1>
+      <p class="subtitle" data-i18n="subheading">
+        The platform remains private while we calibrate signals and scale infrastructure.
+        Request early access and we'll notify you when your window opens.
+      </p>
+      
+      <div class="features">
+        <div class="chip">Crypto</div>
+        <div class="chip">CEX / DEX</div>
+        <div class="chip">Stocks</div>
+        <div class="chip">ETFs</div>
+        <div class="chip">Bonds</div>
+      </div>
+    </section>
+
+    <aside class="glass-card">
+      
+      <!-- Step 1: Request -->
+      <div class="step active" id="step1">
+        <h2 class="card-title" data-i18n="cardTitle">Request Access</h2>
+        <p class="card-subtitle" data-i18n="cardSub">Join the waitlist to secure your spot.</p>
+
+        <form id="requestForm" onsubmit="return false;">
+          <div class="form-row">
+            <div class="form-group">
+              <label data-i18n="lblFirstName">First Name *</label>
+              <input type="text" id="first_name" required />
+            </div>
+            <div class="form-group">
+              <label data-i18n="lblLastName">Last Name *</label>
+              <input type="text" id="last_name" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label data-i18n="lblEmail">Email Address *</label>
+            <input type="email" id="email" required />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label data-i18n="lblCity">City *</label>
+              <input type="text" id="city" required />
+            </div>
+            <div class="form-group">
+              <label data-i18n="lblProfile">Profile</label>
+              <select id="profile">
+                <option value="trader">Trader</option>
+                <option value="prop">Prop Firm</option>
+                <option value="fund">Fund / Desk</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dynamic Fields Container -->
+          <div id="dynamicFieldsContainer"></div>
+
+          <button class="btn btn-primary" id="btnEmailSignup" type="button" data-i18n="btnEmail">Continue with Email</button>
+          
+          <div class="divider" data-i18n="divider">OR</div>
+          
+          <button class="btn btn-google" id="btnGoogleSignup" type="button">
+            <svg class="g-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            <span data-i18n="btnGoogle">Continue with Google</span>
+          </button>
+          
+          <div id="msg1" class="message"></div>
+        </form>
+      </div>
+
+      <!-- Step 2: Verification -->
+      <div class="step" id="step2">
+        <h2 class="card-title" data-i18n="step2Title">Verification Code</h2>
+        <p class="card-subtitle" data-i18n="step2Sub">We sent a 6-digit code to <span id="emailEcho" style="color:#fff;font-weight:600;"></span></p>
+
+        <form onsubmit="return false;">
+          <div class="form-group">
+            <input type="text" id="code" placeholder="000000" maxlength="6" style="text-align:center; letter-spacing:8px; font-size:24px;" />
+          </div>
+          
+          <button class="btn btn-primary" id="btnVerify" type="button" data-i18n="btnVerify">Verify Code</button>
+          
+          <div style="margin-top:16px;text-align:center;">
+             <a href="#" id="btnBack" style="color:var(--text-muted);font-size:14px;text-decoration:none;" data-i18n="btnChangeEmail">Change email</a>
+          </div>
+
+          <div id="msg2" class="message"></div>
+        </form>
+      </div>
+
+      <!-- Step 3: Success -->
+      <div class="step" id="step3">
+        <div style="text-align:center;">
+          <div style="width:64px;height:64px;border-radius:50%;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <h2 class="card-title" data-i18n="step3Title">You're on the list.</h2>
+          <p class="card-subtitle" data-i18n="step3Sub" style="margin-bottom:0;">Your email has been verified. We will notify you when your access window opens.</p>
+        </div>
+      </div>
+
+      <div class="fine-print" data-i18n="finePrint">By requesting access, you agree to our terms and privacy policy.</div>
+    </aside>
+  </main>
+
+  <script type="module">
+    // State
+    const state = {
+      lang: 'EN',
+      dynamicFields: [],
+      fbConfig: null,
+      authLib: null
+    };
+
+    // Translations Dictionary
+    const dict = {
+      EN: {
+        badge: "6 AI AGENTS · MULTI-ASSET · REAL-TIME",
+        heading: "The Intelligence Layer<br/>Across Every Market.",
+        subheading: "The platform remains private while we calibrate signals and scale infrastructure. Request early access and we'll notify you when your window opens.",
+        cardTitle: "Request Access",
+        cardSub: "Join the waitlist to secure your spot.",
+        lblFirstName: "First Name *",
+        lblLastName: "Last Name *",
+        lblEmail: "Email Address *",
+        lblCity: "City *",
+        lblProfile: "Profile",
+        btnEmail: "Continue with Email",
+        divider: "OR",
+        btnGoogle: "Continue with Google",
+        step2Title: "Verification Code",
+        step2Sub: "We sent a 6-digit code to ",
+        btnVerify: "Verify Code",
+        btnChangeEmail: "Change Email",
+        step3Title: "You're on the list.",
+        step3Sub: "Your email has been verified. We will notify you when your access window opens.",
+        finePrint: "By requesting access, you agree to our terms and privacy policy.",
+        errFields: "Please fill all required fields.",
+        errEmail: "Please enter a valid email.",
+        errCode: "Enter the 6 digit code."
+      },
+      TR: {
+        badge: "6 YAPAY ZEKA AJANI · ÇOKLU VARLIK · GERÇEK ZAMANLI",
+        heading: "Tüm Piyasalarda<br/>İstihbarat Katmanı.",
+        subheading: "Sinyalleri kalibre edip altyapıyı ölçeklendirirken platform gizli kalmaya devam ediyor. Erken erişim talep edin, zamanınız geldiğinde size haber verelim.",
+        cardTitle: "Erişim Talep Et",
+        cardSub: "Sıraya katılmak için kayıt olun.",
+        lblFirstName: "Ad *",
+        lblLastName: "Soyad *",
+        lblEmail: "E-Posta Adresi *",
+        lblCity: "Şehir *",
+        lblProfile: "Profil",
+        btnEmail: "E-posta ile Devam Et",
+        divider: "VEYA",
+        btnGoogle: "Google ile Devam Et",
+        step2Title: "Doğrulama Kodu",
+        step2Sub: "6 haneli kodu şuraya gönderdik: ",
+        btnVerify: "Kodu Doğrula",
+        btnChangeEmail: "E-postayı Değiştir",
+        step3Title: "Listeye Alındınız.",
+        step3Sub: "E-postanız doğrulandı. Erişim pencereniz açıldığında sizi bilgilendireceğiz.",
+        finePrint: "Erişim talep ederek şartlarımızı ve gizlilik politikamızı kabul etmiş olursunuz.",
+        errFields: "Lütfen tüm zorunlu alanları doldurun.",
+        errEmail: "Geçerli bir e-posta girin.",
+        errCode: "6 haneli kodu girin."
+      }
+    };
+
+    // Elements
+    const langToggle = document.getElementById('langToggle');
+    const msg1 = document.getElementById('msg1');
+    const msg2 = document.getElementById('msg2');
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+
+    // UI Helpers
+    function setLang(l) {
+      state.lang = l;
+      langToggle.textContent = l === 'EN' ? 'TR' : 'EN';
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[l][key]) el.innerHTML = dict[l][key];
+      });
+      // Update dynamic fields labels if they have translation strings (assuming EN for now if no TR provided)
+      renderDynamicFields();
+    }
+
+    langToggle.addEventListener('click', () => {
+      setLang(state.lang === 'EN' ? 'TR' : 'EN');
+    });
+
+    function showMsg(el, type, txt) {
+      el.className = `message ${type}`;
+      el.textContent = txt;
+      setTimeout(() => el.className = 'message', 4000);
+    }
+
+    function switchStep(num) {
+      step1.classList.remove('active');
+      step2.classList.remove('active');
+      step3.classList.remove('active');
+      if(num===1) step1.classList.add('active');
+      if(num===2) step2.classList.add('active');
+      if(num===3) step3.classList.add('active');
+    }
+
+    // Dynamic Fields rendering
+    function renderDynamicFields() {
+      const c = document.getElementById('dynamicFieldsContainer');
+      c.innerHTML = '';
+      if (!state.dynamicFields || state.dynamicFields.length === 0) return;
+
+      state.dynamicFields.forEach(f => {
+        // f = { id: "company", label: "Company Name", type: "text", required: true }
+        const wrap = document.createElement('div');
+        wrap.className = 'form-group';
+        
+        const lbl = document.createElement('label');
+        lbl.textContent = f.label + (f.required ? ' *' : '');
+        
+        const inp = document.createElement('input');
+        inp.type = f.type || 'text';
+        inp.id = `dyn_${f.id}`;
+        if(f.required) inp.required = true;
+
+        wrap.appendChild(lbl);
+        wrap.appendChild(inp);
+        c.appendChild(wrap);
+      });
+    }
+
+    // Init App
+    async function init() {
+      // Setup tracking quietly
+      fetch("/api/track", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ path: location.pathname, ref: document.referrer || "" })
+      }).catch(()=>{});
+
+      // Fetch settings (Firebase config & Custom fields)
+      try {
+        const sr = await fetch("/api/settings/public");
+        const sData = await sr.json();
+        if (sData.ok && sData.settings) {
+          if(sData.settings.dynamic_form_fields) {
+            state.dynamicFields = sData.settings.dynamic_form_fields;
+            renderDynamicFields();
+          }
+          if(sData.settings.firebase_config && sData.settings.firebase_config.apiKey) {
+            state.fbConfig = sData.settings.firebase_config;
+            loadFirebase();
+          }
+        }
+      } catch(e) { console.warn("Failed to load settings", e); }
+    }
+
+    async function loadFirebase() {
+      try {
+        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
+        const { getAuth, GoogleAuthProvider, signInWithPopup } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js");
+        const app = initializeApp(state.fbConfig);
+        state.authLib = { auth: getAuth(app), GoogleAuthProvider, signInWithPopup };
+      } catch(e) { console.error("Firebase init failed", e); }
+    }
+
+    function collectForm() {
+      const email = document.getElementById('email').value.trim();
+      const first = document.getElementById('first_name').value.trim();
+      const last = document.getElementById('last_name').value.trim();
+      const city = document.getElementById('city').value.trim();
+      const profile = document.getElementById('profile').value;
+
+      let valid = true;
+      if (!first || !last || !city) valid = false;
+
+      const extra = {};
+      state.dynamicFields.forEach(f => {
+        const el = document.getElementById(`dyn_${f.id}`);
+        if(el) {
+          extra[f.id] = el.value.trim();
+          if(f.required && !extra[f.id]) valid = false;
+        }
+      });
+
+      return { valid, data: { email, first_name: first, last_name: last, city, profile, note: "", extra_fields: extra } };
+    }
+
+    // Handlers
+    document.getElementById('btnEmailSignup').addEventListener('click', async () => {
+      const { valid, data } = collectForm();
+      if (!valid) return showMsg(msg1, 'error', dict[state.lang].errFields);
+      if (!data.email.includes('@')) return showMsg(msg1, 'error', dict[state.lang].errEmail);
+
+      try {
+        const r = await fetch('/api/request-code', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(data) // Send everything, no hcaptcha
+        });
+        const d = await r.json();
+        if(d.ok) {
+          document.getElementById('emailEcho').textContent = data.email;
+          switchStep(2);
+        } else {
+          showMsg(msg1, 'error', d.error || "Failed");
+        }
+      } catch(e) { showMsg(msg1, 'error', "Network Error"); }
+    });
+
+    document.getElementById('btnGoogleSignup').addEventListener('click', async () => {
+      if(!state.authLib) return showMsg(msg1, 'error', "Google connect is offline");
+      const { valid, data } = collectForm();
+      if (!valid) return showMsg(msg1, 'error', dict[state.lang].errFields);
+
+      try {
+        const provider = new state.authLib.GoogleAuthProvider();
+        const cred = await state.authLib.signInWithPopup(state.authLib.auth, provider);
+        const token = await cred.user.getIdToken();
+        
+        data.googleIdToken = token;
+        data.email = cred.user.email; // Override front end UI with actual Google email just in case
+
+        const r = await fetch('/api/request-code', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(data)
+        });
+        const d = await r.json();
+        if(d.ok && d.verified) {
+          switchStep(3);
+        } else {
+          showMsg(msg1, 'error', d.error || "Request failed");
+        }
+      } catch(e) {
+        if(e.code !== 'auth/popup-closed-by-user') {
+          showMsg(msg1, 'error', "Google Auth failed");
+        }
+      }
+    });
+
+    document.getElementById('btnVerify').addEventListener('click', async () => {
+      const email = document.getElementById('email').value.trim();
+      const code = document.getElementById('code').value.trim();
+      if(code.length !== 6) return showMsg(msg2, 'error', dict[state.lang].errCode);
+
+      try {
+        const r = await fetch('/api/verify-code', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ email, code })
+        });
+        const d = await r.json();
+        if(d.ok) {
+          switchStep(3);
+        } else {
+          showMsg(msg2, 'error', d.error || "Invalid Code");
+        }
+      } catch(e) { showMsg(msg2, 'error', "Network Error"); }
+    });
+
+    document.getElementById('btnBack').addEventListener('click', (e) => {
+      e.preventDefault();
+      switchStep(1);
+    });
+
+    init();
+  </script>
+</body>
+</html>
