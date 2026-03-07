@@ -1,14 +1,16 @@
 import nodemailer from "nodemailer";
 import pool from "./db.js";
 
-let transporter = null;
+let cachedTransporter = null;
+let cachedMailFrom = null;
 
 export function resetTransporter() {
-  transporter = null;
+  cachedTransporter = null;
+  cachedMailFrom = null;
 }
 
 async function getTransporter() {
-  if (transporter) return transporter;
+  if (cachedTransporter) return { transporter: cachedTransporter, mailFrom: cachedMailFrom };
 
   let host = process.env.SMTP_HOST || "localhost";
   let port = parseInt(process.env.SMTP_PORT || "587", 10);
@@ -16,6 +18,7 @@ async function getTransporter() {
   let user = process.env.SMTP_USER || "";
   let pass = process.env.SMTP_PASS || "";
   let tlsReject = process.env.SMTP_TLS_REJECT !== "false";
+  let mailFrom = process.env.MAIL_FROM || "PROPTREX <noreply@proptrex.com>";
 
   try {
     const res = await pool.query("SELECT value FROM system_settings WHERE key = 'smtp_config'");
@@ -29,6 +32,7 @@ async function getTransporter() {
         pass = db.pass || "";
         tlsReject = !!db.tlsReject;
       }
+      if (db && db.mailFrom) mailFrom = db.mailFrom;
     }
   } catch (err) {
     console.error("[MAIL] DB config load failed:", err.message);
@@ -37,7 +41,7 @@ async function getTransporter() {
   // Port 465 ise secure otomatik true yap
   if (port === 465) secure = true;
 
-  transporter = nodemailer.createTransport({
+  cachedTransporter = nodemailer.createTransport({
     host,
     port,
     secure,
@@ -45,11 +49,11 @@ async function getTransporter() {
     tls: { rejectUnauthorized: tlsReject },
   });
 
-  return transporter;
+  cachedMailFrom = mailFrom;
+  return { transporter: cachedTransporter, mailFrom: cachedMailFrom };
 }
 
 export async function sendEmail(to, subject, html) {
-  const from = process.env.MAIL_FROM || "PROPTREX <noreply@proptrex.com>";
-  const t = await getTransporter();
-  await t.sendMail({ from, to, subject, html });
+  const { transporter: t, mailFrom } = await getTransporter();
+  await t.sendMail({ from: mailFrom, to, subject, html });
 }

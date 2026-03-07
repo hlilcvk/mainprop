@@ -418,6 +418,10 @@
             <div class="form-group"><label>User</label><input type="text" id="smtpUser" placeholder="apikey" /></div>
             <div class="form-group"><label>Password</label><input type="password" id="smtpPass" /></div>
           </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label>Mail From</label>
+            <input type="text" id="smtpMailFrom" placeholder="PROPTREX <noreply@proptrex.com>" />
+          </div>
           <div style="display:flex; gap:24px; margin-bottom:16px;">
             <div style="display:flex; align-items:center; gap:8px;">
               <input type="checkbox" id="smtpSecure" style="width:auto;" />
@@ -813,6 +817,7 @@
         document.getElementById("smtpPass").value = smtp.pass || "";
         document.getElementById("smtpSecure").checked = !!smtp.secure;
         document.getElementById("smtpTlsReject").checked = smtp.tlsReject !== undefined ? !!smtp.tlsReject : true;
+        document.getElementById("smtpMailFrom").value = smtp.mailFrom || "";
       } catch { showToast("Settings load error", true); }
     }
 
@@ -874,7 +879,7 @@
     };
 
     window.saveSmtpConfig = async () => {
-      const val = { host: document.getElementById("smtpHost").value.trim(), port: document.getElementById("smtpPort").value, user: document.getElementById("smtpUser").value.trim(), pass: document.getElementById("smtpPass").value.trim(), secure: document.getElementById("smtpSecure").checked, tlsReject: document.getElementById("smtpTlsReject").checked };
+      const val = { host: document.getElementById("smtpHost").value.trim(), port: document.getElementById("smtpPort").value, user: document.getElementById("smtpUser").value.trim(), pass: document.getElementById("smtpPass").value.trim(), secure: document.getElementById("smtpSecure").checked, tlsReject: document.getElementById("smtpTlsReject").checked, mailFrom: document.getElementById("smtpMailFrom").value.trim() };
       try { await apiCall("/api/admin/settings/smtp_config", "PUT", { value: val }); showToast("SMTP saved"); }
       catch (e) { showToast("Error: " + e.message, true); }
     };
