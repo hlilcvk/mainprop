@@ -703,6 +703,7 @@
           }
           if (sData.settings.firebase_config && sData.settings.firebase_config.apiKey) {
             state.fbConfig = sData.settings.firebase_config;
+            console.log("[FIREBASE] Config loaded:", { apiKey: state.fbConfig.apiKey ? "OK" : "MISSING", authDomain: state.fbConfig.authDomain || "MISSING", projectId: state.fbConfig.projectId || "MISSING", appId: state.fbConfig.appId || "MISSING" });
             loadFirebase();
           }
         }

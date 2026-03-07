@@ -447,8 +447,9 @@
           </div>
           <div class="grid-2" style="margin-bottom:0;">
             <div class="form-group"><label>Project ID</label><input type="text" id="fbProjectId" placeholder="proptrex-123" /></div>
-            <div class="form-group"><label>Client Email</label><input type="text" id="fbClientEmail" placeholder="firebase-adminsdk@..." /></div>
+            <div class="form-group"><label>App ID</label><input type="text" id="fbAppId" placeholder="1:123456:web:abcdef" /></div>
           </div>
+          <div class="form-group"><label>Client Email</label><input type="text" id="fbClientEmail" placeholder="firebase-adminsdk@..." /></div>
           <div class="form-group"><label>Private Key</label><textarea id="fbPrivateKey" style="font-size:11px; height:120px;" placeholder="-----BEGIN PRIVATE KEY-----"></textarea></div>
           <button class="btn btn-primary" onclick="saveFirebaseConfig()">SAVE FIREBASE</button>
         </div>
@@ -810,6 +811,7 @@
         document.getElementById("fbApiKey").value = fb.apiKey || "";
         document.getElementById("fbAuthDomain").value = fb.authDomain || "";
         document.getElementById("fbProjectId").value = fb.projectId || "";
+        document.getElementById("fbAppId").value = fb.appId || "";
         document.getElementById("fbClientEmail").value = fb.clientEmail || "";
         document.getElementById("fbPrivateKey").value = fb.privateKey || "";
 
@@ -899,7 +901,7 @@
     };
 
     window.saveFirebaseConfig = async () => {
-      const val = { apiKey: document.getElementById("fbApiKey").value.trim(), authDomain: document.getElementById("fbAuthDomain").value.trim(), projectId: document.getElementById("fbProjectId").value.trim(), clientEmail: document.getElementById("fbClientEmail").value.trim(), privateKey: document.getElementById("fbPrivateKey").value.trim() };
+      const val = { apiKey: document.getElementById("fbApiKey").value.trim(), authDomain: document.getElementById("fbAuthDomain").value.trim(), projectId: document.getElementById("fbProjectId").value.trim(), appId: document.getElementById("fbAppId").value.trim(), clientEmail: document.getElementById("fbClientEmail").value.trim(), privateKey: document.getElementById("fbPrivateKey").value.trim() };
       try { await apiCall("/api/admin/settings/firebase_config", "PUT", { value: val }); showToast("Firebase saved"); }
       catch (e) { showToast("Error: " + e.message, true); }
     };
