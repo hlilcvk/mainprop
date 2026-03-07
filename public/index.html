@@ -713,35 +713,9 @@
     async function loadFirebase() {
       try {
         const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
-        const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js");
+        const { getAuth, GoogleAuthProvider, signInWithPopup } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js");
         const app = initializeApp(state.fbConfig);
-        const auth = getAuth(app);
-        state.authLib = { auth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult };
-
-        // Check if returning from a Google redirect
-        try {
-          const result = await getRedirectResult(auth);
-          if (result && result.user) {
-            const token = await result.user.getIdToken();
-            const saved = JSON.parse(sessionStorage.getItem("googleFormData") || "{}");
-            sessionStorage.removeItem("googleFormData");
-            saved.googleIdToken = token;
-            saved.email = result.user.email;
-            const r = await fetch('/api/request-code', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(saved)
-            });
-            const d = await r.json();
-            if (d.ok && d.verified) {
-              switchStep(3);
-            } else {
-              showMsg(msg1, 'error', d.error || "Request failed");
-            }
-          }
-        } catch (re) {
-          console.error("[FIREBASE] Redirect result error:", re);
-        }
+        state.authLib = { auth: getAuth(app), GoogleAuthProvider, signInWithPopup };
       } catch (e) { console.error("Firebase init failed", e); }
     }
 
@@ -792,19 +766,18 @@
       } catch (e) { showMsg(msg1, 'error', "Network Error"); }
     });
 
-    // Google signup — email NOT required, comes from Google account
+    // Google signup — popup
     document.getElementById('btnGoogleSignup').addEventListener('click', async () => {
       if (!state.authLib) return showMsg(msg1, 'error', dict[state.lang].errGoogleOffline);
 
       const { valid, data } = collectForm(true);
       if (!valid) return showMsg(msg1, 'error', dict[state.lang].errFields);
 
-      const provider = new state.authLib.GoogleAuthProvider();
-
-      // Try popup first, fallback to redirect
       try {
+        const provider = new state.authLib.GoogleAuthProvider();
         const cred = await state.authLib.signInWithPopup(state.authLib.auth, provider);
         const token = await cred.user.getIdToken();
+
         data.googleIdToken = token;
         data.email = cred.user.email;
 
@@ -820,15 +793,9 @@
           showMsg(msg1, 'error', d.error || "Request failed");
         }
       } catch (e) {
-        console.warn("[GOOGLE] Popup failed, falling back to redirect:", e.code);
-        // Save form data before redirect
-        sessionStorage.setItem("googleFormData", JSON.stringify(data));
-        try {
-          await state.authLib.signInWithRedirect(state.authLib.auth, provider);
-        } catch (re) {
-          console.error("[GOOGLE] Redirect also failed:", re);
-          showMsg(msg1, 'error', re.message || "Google Auth failed");
-        }
+        console.error("[GOOGLE SIGNUP] Exception:", e);
+        if (e.code === 'auth/popup-closed-by-user') return;
+        showMsg(msg1, 'error', e.message || "Google Auth failed");
       }
     });
 
