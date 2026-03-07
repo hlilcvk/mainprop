@@ -789,11 +789,18 @@
         if (d.ok && d.verified) {
           switchStep(3);
         } else {
+          console.error("[GOOGLE SIGNUP] API error:", d);
           showMsg(msg1, 'error', d.error || "Request failed");
         }
       } catch (e) {
-        if (e.code !== 'auth/popup-closed-by-user') {
-          showMsg(msg1, 'error', "Google Auth failed");
+        console.error("[GOOGLE SIGNUP] Exception:", e);
+        if (e.code === 'auth/popup-closed-by-user') return;
+        if (e.code === 'auth/unauthorized-domain') {
+          showMsg(msg1, 'error', "Bu domain Firebase'de yetkilendirilmemiş. Firebase Console > Authentication > Authorized Domains'e ekleyin.");
+        } else if (e.code === 'auth/configuration-not-found') {
+          showMsg(msg1, 'error', "Firebase'de Google provider aktif değil. Firebase Console > Authentication > Sign-in method'dan etkinleştirin.");
+        } else {
+          showMsg(msg1, 'error', e.message || "Google Auth failed");
         }
       }
     });

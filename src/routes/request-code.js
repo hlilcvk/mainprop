@@ -68,6 +68,22 @@ router.post("/request-code", async (req, res) => {
            verified_at = now()`,
         [email, first_name || null, last_name || null, city || null, profile || null, note || null, extra_fields, source]
       );
+
+      // Auto-reply email for Google sign-in
+      try {
+        const arRes = await pool.query("SELECT value FROM system_settings WHERE key = 'auto_reply_email'");
+        if (arRes.rows.length > 0) {
+          const ar = arRes.rows[0].value;
+          if (ar && ar.enabled) {
+            const name = first_name || "there";
+            let body = (ar.body || "Thank you for registering.").replace(/{{first_name}}/g, name);
+            await sendEmail(email, ar.subject || "PROPTREX Registration Received", body);
+          }
+        }
+      } catch (mailErr) {
+        console.error("[REQUEST-CODE] Google auto-reply error:", mailErr.message);
+      }
+
       return res.json({ ok: true, verified: true });
     }
 
