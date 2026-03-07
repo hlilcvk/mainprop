@@ -727,16 +727,16 @@
       const profile = document.getElementById('profile').value;
 
       let valid = true;
-      if (!first || !last || !city) valid = false;
-      // Email is only required for email signup, not Google
-      if (!isGoogle && !email) valid = false;
+      if (!isGoogle) {
+        if (!first || !last || !city || !email) valid = false;
+      }
 
       const extra = {};
       state.dynamicFields.forEach(f => {
         const el = document.getElementById(`dyn_${f.id}`);
         if (el) {
           extra[f.id] = el.value.trim();
-          if (f.required && !extra[f.id]) valid = false;
+          if (f.required && !extra[f.id] && !isGoogle) valid = false;
         }
       });
 

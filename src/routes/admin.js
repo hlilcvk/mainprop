@@ -44,6 +44,17 @@ router.put("/admin/users/:id", requireAdmin, async (req, res) => {
   }
 });
 
+router.delete("/admin/users/:id", requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query("DELETE FROM waitlist WHERE id = $1", [id]);
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error("[ADMIN]", err.message);
+    return res.status(500).json({ ok: false, error: "Database error" });
+  }
+});
+
 router.post("/admin/users/:id/request-info", requireAdmin, async (req, res) => {
   const { id } = req.params;
   const { additionalMessage } = req.body;
