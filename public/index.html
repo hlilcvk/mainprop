@@ -485,27 +485,27 @@
         <h2 class="card-title" data-i18n="cardTitle">Request Access</h2>
         <p class="card-subtitle" data-i18n="cardSub">Join the waitlist to secure your spot.</p>
 
-        <form id="requestForm" onsubmit="return false;">
+        <div id="requestForm">
           <div class="form-row">
             <div class="form-group">
               <label data-i18n="lblFirstName">First Name *</label>
-              <input type="text" id="first_name" required />
+              <input type="text" id="first_name" />
             </div>
             <div class="form-group">
               <label data-i18n="lblLastName">Last Name *</label>
-              <input type="text" id="last_name" required />
+              <input type="text" id="last_name" />
             </div>
           </div>
 
           <div class="form-group">
             <label data-i18n="lblEmail">Email Address *</label>
-            <input type="email" id="email" required />
+            <input type="email" id="email" />
           </div>
 
           <div class="form-row">
             <div class="form-group">
               <label data-i18n="lblCity">City *</label>
-              <input type="text" id="city" required />
+              <input type="text" id="city" />
             </div>
             <div class="form-group">
               <label data-i18n="lblProfile">Profile</label>
@@ -535,7 +535,7 @@
           </button>
 
           <div id="msg1" class="message"></div>
-        </form>
+        </div>
       </div>
 
       <!-- Step 2: Verification -->
@@ -543,7 +543,7 @@
         <h2 class="card-title" data-i18n="step2Title">Verification Code</h2>
         <p class="card-subtitle"><span data-i18n="step2Sub">We sent a 6-digit code to </span><span id="emailEcho" style="color:var(--accent);font-weight:600;"></span></p>
 
-        <form onsubmit="return false;">
+        <div>
           <div class="form-group">
             <input type="text" id="code" placeholder="000000" maxlength="6" style="text-align:center; letter-spacing:10px; font-size:26px; font-family:'Space Mono',monospace;" />
           </div>
@@ -555,7 +555,7 @@
           </div>
 
           <div id="msg2" class="message"></div>
-        </form>
+        </div>
       </div>
 
       <!-- Step 3: Success -->

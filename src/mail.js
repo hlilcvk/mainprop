@@ -34,6 +34,9 @@ async function getTransporter() {
     console.error("[MAIL] DB config load failed:", err.message);
   }
 
+  // Port 465 ise secure otomatik true yap
+  if (port === 465) secure = true;
+
   transporter = nodemailer.createTransport({
     host,
     port,

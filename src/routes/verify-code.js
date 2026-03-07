@@ -65,8 +65,8 @@ router.post("/verify-code", async (req, res) => {
 
     return res.json({ ok: true });
   } catch (err) {
-    console.error("[VERIFY-CODE]", err.message);
-    return res.status(500).json({ ok: false, error: "Server error" });
+    console.error("[VERIFY-CODE]", err.message, err.stack);
+    return res.status(500).json({ ok: false, error: "Server error: " + err.message });
   }
 });
 

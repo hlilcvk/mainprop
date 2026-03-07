@@ -116,8 +116,8 @@ router.post("/request-code", async (req, res) => {
     await sendEmail(email, subject, html);
     return res.json({ ok: true, verified: false });
   } catch (err) {
-    console.error("[REQUEST-CODE]", err.message);
-    return res.status(500).json({ ok: false, error: "Server error" });
+    console.error("[REQUEST-CODE]", err.message, err.stack);
+    return res.status(500).json({ ok: false, error: "Server error: " + err.message });
   }
 });
 
