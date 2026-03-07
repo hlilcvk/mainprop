@@ -1,39 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PROPTREX — Admin Panel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #F8FAFC;
-      --bg2: #FFFFFF;
-      --text: #0F172A;
+      --bg: #0C0E14;
+      --bg2: #151823;
+      --bg3: #1A1E2E;
+      --text: #E2E8F0;
       --text-muted: #64748B;
-      --border: #E2E8F0;
+      --border: rgba(255,255,255,0.06);
       --accent: #3B82F6;
       --accent-hover: #2563EB;
-      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-      --radius: 12px;
+      --green: #22C55E;
+      --green-glow: rgba(34,197,94,0.15);
+      --amber: #F59E0B;
+      --red: #EF4444;
+      --radius: 4px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
       color: var(--text);
       background: var(--bg);
     }
 
-    /* Navbar */
+    /* Topbar */
     .topbar {
       display: flex;
       justify-content: space-between;
@@ -41,7 +42,7 @@
       gap: 16px;
       flex-wrap: wrap;
       background: var(--bg2);
-      padding: 16px 32px;
+      padding: 14px 32px;
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
@@ -49,287 +50,211 @@
     }
 
     .brand {
+      font-family: 'JetBrains Mono', monospace;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      font-size: 14px;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .nav-actions {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .who {
-      color: var(--text-muted);
       font-size: 13px;
-      font-weight: 500;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      color: var(--green);
     }
+
+    .nav-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .who { color: var(--text-muted); font-size: 12px; font-family: 'JetBrains Mono', monospace; }
 
     .btn {
-      border-radius: 8px;
+      border-radius: var(--radius);
       padding: 10px 16px;
-      font-size: 13px;
-      font-weight: 600;
-      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
       border: 1px solid var(--border);
-      background: var(--bg2);
+      background: var(--bg3);
       color: var(--text);
       cursor: pointer;
       transition: all 0.2s;
     }
+    .btn:hover:not(:disabled) { background: rgba(255,255,255,0.08); }
 
-    .btn:hover:not(:disabled) {
-      background: #F1F5F9;
-    }
+    .btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
+    .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
 
-    .btn-primary {
-      background: var(--accent);
-      color: white;
-      border-color: var(--accent);
-    }
+    .btn-danger { color: var(--red); border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.08); }
+    .btn-danger:hover:not(:disabled) { background: rgba(239,68,68,0.15); }
 
-    .btn-primary:hover:not(:disabled) {
-      background: var(--accent-hover);
-    }
-
-    .btn-danger {
-      color: #EF4444;
-      border-color: #FECACA;
-      background: #FEF2F2;
-    }
-
-    .btn-danger:hover:not(:disabled) {
-      background: #FEE2E2;
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     /* Layout */
-    .container {
-      max-width: 1440px;
-      margin: 0 auto;
-      padding: 32px;
-    }
+    .container { max-width: 1440px; margin: 0 auto; padding: 32px; }
 
     /* Tabs */
     .tabs {
       display: flex;
-      gap: 8px;
-      margin-bottom: 24px;
+      gap: 0;
+      margin-bottom: 28px;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 0px;
     }
 
     .tab {
-      padding: 12px 24px;
-      font-size: 14px;
-      font-weight: 500;
+      padding: 14px 28px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
       color: var(--text-muted);
       cursor: pointer;
       border-bottom: 2px solid transparent;
       transition: all 0.2s;
     }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--green); border-bottom-color: var(--green); }
 
-    .tab:hover {
-      color: var(--text);
-    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fade 0.3s; }
 
-    .tab.active {
-      color: var(--accent);
-      border-bottom-color: var(--accent);
-    }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-      animation: fade 0.3s;
-    }
-
-    @keyframes fade {
-      from {
-        opacity: 0;
-      }
-
-      to {
-        opacity: 1;
-      }
-    }
-
-    /* Cards & Grids */
+    /* Cards */
     .card {
       background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
       padding: 24px;
       margin-bottom: 24px;
     }
 
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
-      margin-bottom: 24px;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 24px;
-      margin-bottom: 24px;
-    }
-
-    @media (max-width: 980px) {
-      .grid-2 {
-        grid-template-columns: 1fr;
-      }
-    }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px; }
+    .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 24px; }
+    @media (max-width: 980px) { .grid-2 { grid-template-columns: 1fr; } }
 
     .k {
       color: var(--text-muted);
-      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.1em;
     }
 
     .v {
-      font-size: 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 36px;
       font-weight: 700;
       margin-top: 8px;
       color: var(--text);
     }
 
+    .metric-card { transition: all 0.2s; }
+    .metric-card:hover { border-color: rgba(255,255,255,0.1); }
+    .metric-card.green-glow .v { color: var(--green); text-shadow: 0 0 20px var(--green-glow); }
+
     /* Forms */
-    .form-group {
-      margin-bottom: 20px;
-    }
+    .form-group { margin-bottom: 20px; }
 
     label {
       display: block;
-      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
       font-weight: 600;
-      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
       margin-bottom: 8px;
     }
 
-    input,
-    textarea,
-    select {
+    input, textarea, select {
       width: 100%;
       padding: 10px 14px;
-      border-radius: 8px;
+      border-radius: var(--radius);
       border: 1px solid var(--border);
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      background: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      background: var(--bg);
+      color: var(--text);
       transition: all 0.2s;
     }
+    input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
+    textarea { resize: vertical; min-height: 80px; }
 
-    input:focus,
-    textarea:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    .setting-section { padding-bottom: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+    .setting-section:last-child { border: none; margin: 0; padding: 0; }
+
+    .section-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 6px;
+      color: var(--text);
     }
 
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    .setting-section {
-      padding-bottom: 24px;
-      margin-bottom: 24px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .setting-section:last-child {
-      border: none;
-      margin: 0;
-      padding: 0;
+    .section-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin: 0 0 16px;
     }
 
     /* Tables */
-    .table-container {
-      overflow-x: auto;
-      margin: -24px;
-      border-radius: var(--radius);
-    }
+    .table-container { overflow-x: auto; margin: -24px; }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
 
     th {
-      background: #F8FAFC;
-      padding: 14px 24px;
-      font-size: 12px;
+      background: var(--bg3);
+      padding: 12px 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
       font-weight: 600;
       color: var(--text-muted);
       text-transform: uppercase;
+      letter-spacing: 0.1em;
       border-bottom: 1px solid var(--border);
       white-space: nowrap;
     }
 
     td {
-      padding: 14px 24px;
-      font-size: 14px;
+      padding: 12px 24px;
+      font-size: 13px;
       border-bottom: 1px solid var(--border);
       color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
     }
 
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    tr:hover td {
-      background: #F1F5F9;
-    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); border-left: 2px solid var(--accent); }
 
     .badge {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       padding: 4px 10px;
-      border-radius: 99px;
-      font-size: 11px;
+      border-radius: var(--radius);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
       font-weight: 600;
       text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
+    .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
 
-    .badge-ok {
-      background: #D1FAE5;
-      color: #065F46;
-    }
+    .badge-ok { background: rgba(34,197,94,0.1); color: var(--green); }
+    .badge-ok::before { background: var(--green); box-shadow: 0 0 8px var(--green); }
 
-    .badge-warn {
-      background: #FEF3C7;
-      color: #92400E;
-    }
+    .badge-warn { background: rgba(245,158,11,0.1); color: var(--amber); }
+    .badge-warn::before { background: var(--amber); }
 
-    .badge-blue {
-      background: #DBEAFE;
-      color: #1E40AF;
-    }
+    .badge-blue { background: rgba(59,130,246,0.1); color: var(--accent); }
+    .badge-blue::before { background: var(--accent); }
 
     /* Modals */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.4);
+      background: rgba(0,0,0,0.6);
       backdrop-filter: blur(4px);
       z-index: 100;
       display: none;
@@ -340,10 +265,10 @@
 
     .modal {
       background: var(--bg2);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
       width: 100%;
       max-width: 600px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
       display: flex;
       flex-direction: column;
       max-height: 90vh;
@@ -356,266 +281,180 @@
       justify-content: space-between;
       align-items: center;
     }
+    .modal-title { font-size: 16px; font-weight: 600; margin: 0; }
+    .modal-body { padding: 24px; overflow-y: auto; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; }
 
-    .modal-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .modal-body {
-      padding: 24px;
-      overflow-y: auto;
-    }
-
-    .modal-footer {
-      padding: 16px 24px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-    }
-
+    /* Toast */
     .toast {
       position: fixed;
       bottom: 24px;
       right: 24px;
       z-index: 1000;
-      background: #10B981;
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-weight: 500;
-      font-size: 14px;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      background: var(--bg2);
+      color: var(--text);
+      padding: 14px 24px;
+      border-radius: var(--radius);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      border-left: 3px solid var(--green);
       transform: translateY(100px);
       opacity: 0;
       transition: all 0.3s;
     }
-
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
-    .toast.error {
-      background: #EF4444;
-    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.error { border-left-color: var(--red); }
   </style>
 </head>
 
 <body>
-
   <div class="topbar">
     <div class="brand">
-      <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
-        <rect width="32" height="32" rx="6" fill="#0F172A" />
-        <text x="16" y="21" text-anchor="middle" font-family="Inter,sans-serif" font-size="14" font-weight="700"
-          fill="#FFFFFF">PX</text>
+      <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="4" fill="#22C55E"/>
+        <text x="16" y="21" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="13" font-weight="700" fill="#0C0E14">PX</text>
       </svg>
       PROPTREX ADMIN
     </div>
     <div class="nav-actions">
-      <div id="who" class="who">Not signed in</div>
+      <div id="who" class="who">NOT SIGNED IN</div>
       <div id="loginGroup" style="display:flex; gap:8px;">
-        <button class="btn btn-primary" id="loginBtn">Sign in with Google</button>
-        <button class="btn" id="secretLoginBtn">Use Setup Key</button>
+        <button class="btn btn-primary" id="loginBtn">SIGN IN WITH GOOGLE</button>
+        <button class="btn" id="secretLoginBtn">USE SETUP KEY</button>
       </div>
-      <button class="btn" id="logoutBtn" style="display:none;">Logout</button>
+      <button class="btn" id="logoutBtn" style="display:none;">LOGOUT</button>
     </div>
   </div>
 
   <div class="container" id="appContent" style="display:none;">
-
-    <!-- Tabs Navigation -->
     <div class="tabs">
       <div class="tab active" data-tab="analytics">Analytics</div>
-      <div class="tab" data-tab="users">Users List</div>
-      <div class="tab" data-tab="settings">System Settings</div>
+      <div class="tab" data-tab="users">Users</div>
+      <div class="tab" data-tab="settings">Settings</div>
     </div>
 
     <!-- TAB 1: Analytics -->
     <div id="analytics" class="tab-content active">
       <div class="grid-3">
-        <div class="card">
-          <div class="k">Last 24h Pageviews</div>
-          <div class="v" id="pv24">—</div>
-        </div>
-        <div class="card">
-          <div class="k">Last 24h Unique</div>
-          <div class="v" id="uv24">—</div>
-        </div>
-        <div class="card">
-          <div class="k">Verified Waitlist</div>
-          <div class="v" id="ver">—</div>
-        </div>
+        <div class="card metric-card"><div class="k">24H PAGEVIEWS</div><div class="v" id="pv24">-</div></div>
+        <div class="card metric-card"><div class="k">24H UNIQUE</div><div class="v" id="uv24">-</div></div>
+        <div class="card metric-card green-glow"><div class="k">VERIFIED WAITLIST</div><div class="v" id="ver">-</div></div>
       </div>
 
       <div class="grid-2">
         <div class="card">
-          <div class="k" style="margin-bottom: 16px;">Last 7 Days Trend</div>
+          <div class="k" style="margin-bottom:16px;">7 DAY TREND</div>
           <canvas id="chart" width="800" height="260" style="width:100%; max-height:260px;"></canvas>
         </div>
-
-        <div class="card" style="background: linear-gradient(180deg, #F8FAFC, #FFFFFF);">
-          <div class="k" style="margin-bottom: 16px;">Analytics Bot</div>
-          <div id="botText" style="font-size: 14px; line-height: 1.6; color: var(--text-muted); white-space: pre-line;">
-            Loading insights...
-          </div>
-          <button class="btn btn-primary" id="refreshStatsBtn" style="margin-top:24px; width:100%;">Refresh
-            Data</button>
+        <div class="card">
+          <div class="k" style="margin-bottom:16px;">ANALYTICS BOT</div>
+          <div id="botText" style="font-family:'JetBrains Mono',monospace; font-size:12px; line-height:1.8; color:var(--text-muted); white-space:pre-line;">Loading...</div>
+          <button class="btn btn-primary" id="refreshStatsBtn" style="margin-top:20px; width:100%;">REFRESH DATA</button>
         </div>
       </div>
     </div>
 
-    <!-- TAB 2: Users List -->
+    <!-- TAB 2: Users -->
     <div id="users" class="tab-content">
-      <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+      <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <h2 style="margin: 0 0 4px; font-size: 18px;">Registered Users</h2>
-          <p style="margin: 0; color: var(--text-muted); font-size: 14px;">Manage waitlist applications and request more
-            information.</p>
+          <h2 style="margin:0 0 4px; font-size:16px;">Registered Users</h2>
+          <p style="margin:0; color:var(--text-muted); font-size:12px;">Manage waitlist applications.</p>
         </div>
-        <button class="btn" id="refreshUsersBtn">Refresh List</button>
+        <button class="btn" id="refreshUsersBtn">REFRESH</button>
       </div>
 
-      <div class="card" style="padding: 0;">
+      <div class="card" style="padding:0;">
         <div class="table-container">
           <table id="usersTable">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>City</th>
-                <th>Profile</th>
-                <th style="text-align: right;">Actions</th>
+                <th>Date</th><th>Status</th><th>Name</th><th>Email</th><th>City</th><th>Profile</th><th style="text-align:right;">Actions</th>
               </tr>
             </thead>
             <tbody id="usersTbody">
-              <tr>
-                <td colspan="7" style="text-align:center; padding: 40px;">Loading users...</td>
-              </tr>
+              <tr><td colspan="7" style="text-align:center; padding:40px; color:var(--text-muted);">Loading...</td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- TAB 3: System Settings -->
+    <!-- TAB 3: Settings -->
     <div id="settings" class="tab-content">
       <div class="card">
-        <h2 style="margin: 0 0 24px; font-size: 18px;">Global Configurations</h2>
+        <h2 style="margin:0 0 24px; font-size:16px;">System Configuration</h2>
 
-        <!-- Forms Setup Section -->
         <div class="setting-section">
-          <h3 style="margin: 0 0 16px; font-size: 15px;">Dynamic Registration Fields</h3>
-          <p style="margin: 0 0 16px; font-size: 13px; color: var(--text-muted);">
-            Fields defined here will automatically appear on the index.html registration form.
-          </p>
+          <h3 class="section-title">Dynamic Registration Fields</h3>
+          <p class="section-desc">Fields defined here appear on the registration form automatically.</p>
           <div id="dynFieldsContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom:12px;"></div>
           <div style="display:flex; gap:12px;">
-            <button class="btn" onclick="addDynFieldRow()">+ Add Field</button>
-            <button class="btn btn-primary" onclick="saveDynFieldsConfig()">Save Form Fields</button>
+            <button class="btn" onclick="addDynFieldRow()">+ ADD FIELD</button>
+            <button class="btn btn-primary" onclick="saveDynFieldsConfig()">SAVE FIELDS</button>
           </div>
         </div>
 
-        <!-- Auto Email Section -->
         <div class="setting-section">
-          <h3 style="margin: 0 0 16px; font-size: 15px;">Auto-Reply Email</h3>
-          <p style="margin: 0 0 16px; font-size: 13px; color: var(--text-muted);">
-            Sent instantly when a user verifies their email. Use <code>{{first_name}}</code> for personalization.
-          </p>
+          <h3 class="section-title">Auto-Reply Email</h3>
+          <p class="section-desc">Sent when a user verifies their email. Use {{first_name}} for personalization.</p>
           <div class="form-group" style="display:flex; align-items:center; gap:8px;">
-            <input type="checkbox" id="arEnabled" style="width:auto; transform:scale(1.2);" />
-            <label style="margin:0; font-weight:500;">Enable Auto-Reply</label>
+            <input type="checkbox" id="arEnabled" style="width:auto;" />
+            <label style="margin:0; font-size:11px;">ENABLE AUTO-REPLY</label>
           </div>
-          <div class="form-group">
-            <label>Email Subject</label>
-            <input type="text" id="arSubject" placeholder="Welcome to PROPTREX!" />
-          </div>
-          <div class="form-group">
-            <label>Email HTML Body</label>
-            <textarea id="arBody" style="height: 120px;" placeholder="Hello {{first_name}}, ..."></textarea>
-          </div>
-          <button class="btn btn-primary" onclick="saveAutoReplyConfig()" style="margin-top: 12px;">Save
-            Auto-Reply</button>
+          <div class="form-group"><label>Subject</label><input type="text" id="arSubject" placeholder="Welcome to PROPTREX!" /></div>
+          <div class="form-group"><label>HTML Body</label><textarea id="arBody" style="height:120px;" placeholder="Hello {{first_name}}, ..."></textarea></div>
+          <button class="btn btn-primary" onclick="saveAutoReplyConfig()">SAVE AUTO-REPLY</button>
         </div>
 
-        <!-- SMTP Email Provider Section -->
         <div class="setting-section">
-          <h3 style="margin: 0 0 16px; font-size: 15px;">SMTP Mail Provider Configuration</h3>
-          <p style="margin: 0 0 16px; font-size: 13px; color: var(--text-muted);">
-            Proptrex sends emails via Nodemailer. Configure your SMTP provider (SendGrid, Mailgun, Amazon SES, or
-            custom). Leaving these blank will default to the <code>.env</code> file.
-          </p>
-          <div class="grid-2" style="margin-bottom:0px;">
-            <div class="form-group"><label>SMTP Host</label><input type="text" id="smtpHost"
-                placeholder="smtp.sendgrid.net" /></div>
-            <div class="form-group"><label>SMTP Port</label><input type="number" id="smtpPort" placeholder="587" />
+          <h3 class="section-title">SMTP Configuration</h3>
+          <p class="section-desc">Configure your SMTP provider. Leaving blank defaults to .env values.</p>
+          <div class="grid-2" style="margin-bottom:0;">
+            <div class="form-group"><label>Host</label><input type="text" id="smtpHost" placeholder="smtp.sendgrid.net" /></div>
+            <div class="form-group"><label>Port</label><input type="number" id="smtpPort" placeholder="587" /></div>
+          </div>
+          <div class="grid-2" style="margin-bottom:0;">
+            <div class="form-group"><label>User</label><input type="text" id="smtpUser" placeholder="apikey" /></div>
+            <div class="form-group"><label>Password</label><input type="password" id="smtpPass" /></div>
+          </div>
+          <div style="display:flex; gap:24px; margin-bottom:16px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" id="smtpSecure" style="width:auto;" />
+              <label style="margin:0; font-size:10px;">SECURE (TLS)</label>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" id="smtpTlsReject" style="width:auto;" checked />
+              <label style="margin:0; font-size:10px;">REJECT UNAUTH TLS</label>
             </div>
           </div>
-          <div class="grid-2" style="margin-bottom:0px;">
-            <div class="form-group"><label>SMTP Block User</label><input type="text" id="smtpUser"
-                placeholder="apikey" /></div>
-            <div class="form-group"><label>SMTP Password</label><input type="password" id="smtpPass"
-                placeholder="••••••••••••••" /></div>
-          </div>
-          <div class="grid-2" style="margin-bottom:0px;">
-            <div class="form-group" style="display:flex; align-items:center; gap:8px;">
-              <input type="checkbox" id="smtpSecure" style="width:auto; transform:scale(1.2);" />
-              <label style="margin:0; font-weight:500; font-size:12px;">Use Secure (TLS - usually true for port
-                465)</label>
-            </div>
-            <div class="form-group" style="display:flex; align-items:center; gap:8px;">
-              <input type="checkbox" id="smtpTlsReject" style="width:auto; transform:scale(1.2);" checked />
-              <label style="margin:0; font-weight:500; font-size:12px;">Reject Unauthorized TLS (Keep checked
-                usually)</label>
-            </div>
-          </div>
-          <button class="btn btn-secondary" onclick="saveSmtpConfig()"
-            style="margin-top: 12px; border: 1px solid var(--border-color);">Save SMTP Config</button>
+          <button class="btn btn-primary" onclick="saveSmtpConfig()">SAVE SMTP</button>
         </div>
 
-        <!-- Firebase Settings Section -->
-        <div class="setting-section" style="border:none; margin:0; padding:0;">
-          <h3 style="margin: 0 0 16px; font-size: 15px;">Firebase Config</h3>
-          <p style="margin: 0 0 16px; font-size: 13px; color: var(--text-muted);">
-            Used for Google Authentication login. Includes Admin SDK keys if set.
-          </p>
-          <div class="grid-2" style="margin-bottom:0px;">
-            <div class="form-group"><label>API Key</label><input type="text" id="fbApiKey" placeholder="AIzaSyB..." />
-            </div>
-            <div class="form-group"><label>Auth Domain</label><input type="text" id="fbAuthDomain"
-                placeholder="xxx.firebaseapp.com" /></div>
+        <div class="setting-section">
+          <h3 class="section-title">Firebase Config</h3>
+          <p class="section-desc">Used for Google Authentication.</p>
+          <div class="grid-2" style="margin-bottom:0;">
+            <div class="form-group"><label>API Key</label><input type="text" id="fbApiKey" placeholder="AIzaSyB..." /></div>
+            <div class="form-group"><label>Auth Domain</label><input type="text" id="fbAuthDomain" placeholder="xxx.firebaseapp.com" /></div>
           </div>
-          <div class="grid-2" style="margin-bottom:0px;">
-            <div class="form-group"><label>Project ID</label><input type="text" id="fbProjectId"
-                placeholder="proptrex-123" /></div>
-            <div class="form-group"><label>Client Email</label><input type="text" id="fbClientEmail"
-                placeholder="firebase-adminsdk-xxx@..." /></div>
+          <div class="grid-2" style="margin-bottom:0;">
+            <div class="form-group"><label>Project ID</label><input type="text" id="fbProjectId" placeholder="proptrex-123" /></div>
+            <div class="form-group"><label>Client Email</label><input type="text" id="fbClientEmail" placeholder="firebase-adminsdk@..." /></div>
           </div>
-          <div class="form-group">
-            <label>Private Key</label>
-            <textarea id="fbPrivateKey" style="font-family: monospace; font-size: 12px; height: 120px;"
-              placeholder="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"></textarea>
-          </div>
-          <button class="btn btn-primary" onclick="saveFirebaseConfig()" style="margin-top: 12px;">Save Firebase
-            Config</button>
+          <div class="form-group"><label>Private Key</label><textarea id="fbPrivateKey" style="font-size:11px; height:120px;" placeholder="-----BEGIN PRIVATE KEY-----"></textarea></div>
+          <button class="btn btn-primary" onclick="saveFirebaseConfig()">SAVE FIREBASE</button>
         </div>
-
       </div>
     </div>
+  </div>
 
-  </div> <!-- End App Content -->
-
-  <!-- User Edit Modal -->
+  <!-- Edit Modal -->
   <div class="modal-backdrop" id="editModalBackdrop">
     <div class="modal">
       <div class="modal-header">
-        <h3 class="modal-title" id="editModalTitle">Edit User</h3>
-        <button class="btn" style="padding: 4px 8px;" onclick="closeModal('editModalBackdrop')">✕</button>
+        <h3 class="modal-title">Edit User</h3>
+        <button class="btn" style="padding:4px 8px;" onclick="closeModal('editModalBackdrop')">X</button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="editUserId" />
@@ -626,12 +465,11 @@
         <div class="form-group"><label>City</label><input type="text" id="editCity" /></div>
         <div class="form-group"><label>Profile</label><input type="text" id="editProfile" /></div>
         <div class="form-group"><label>Note</label><textarea id="editNote"></textarea></div>
-        <div class="form-group"><label>Extra Fields (JSON)</label><textarea id="editExtra"
-            style="font-family: monospace;"></textarea></div>
+        <div class="form-group"><label>Extra Fields (JSON)</label><textarea id="editExtra" style="font-size:11px;"></textarea></div>
       </div>
       <div class="modal-footer">
-        <button class="btn" onclick="closeModal('editModalBackdrop')">Cancel</button>
-        <button class="btn btn-primary" onclick="saveUserEdit()">Save Changes</button>
+        <button class="btn" onclick="closeModal('editModalBackdrop')">CANCEL</button>
+        <button class="btn btn-primary" onclick="saveUserEdit()">SAVE</button>
       </div>
     </div>
   </div>
@@ -640,38 +478,30 @@
   <div class="modal-backdrop" id="reqModalBackdrop">
     <div class="modal">
       <div class="modal-header">
-        <h3 class="modal-title" id="reqModalTitle">Request More Info</h3>
-        <button class="btn" style="padding: 4px 8px;" onclick="closeModal('reqModalBackdrop')">✕</button>
+        <h3 class="modal-title" id="reqModalTitle">Request Info</h3>
+        <button class="btn" style="padding:4px 8px;" onclick="closeModal('reqModalBackdrop')">X</button>
       </div>
       <div class="modal-body">
-        <p style="font-size: 14px; margin-top: 0; color: var(--text-muted);">
-          This will send an automated email from the system asking the user for more details. They can reply directly to
-          the email.
-        </p>
+        <p style="font-size:12px; margin-top:0; color:var(--text-muted);">Send an email asking the user for more details.</p>
         <input type="hidden" id="reqUserId" />
         <div class="form-group">
-          <label>Custom Message (inserted into template)</label>
-          <textarea id="reqMessage"
-            style="height: 120px;">Please reply to this email with details regarding your primary trading focus, strategies, and average monthly volume.</textarea>
+          <label>Custom Message</label>
+          <textarea id="reqMessage" style="height:120px;">Please reply to this email with details regarding your primary trading focus, strategies, and average monthly volume.</textarea>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn" onclick="closeModal('reqModalBackdrop')">Cancel</button>
-        <button class="btn btn-primary" onclick="sendReqInfo()">Send Email</button>
+        <button class="btn" onclick="closeModal('reqModalBackdrop')">CANCEL</button>
+        <button class="btn btn-primary" onclick="sendReqInfo()">SEND EMAIL</button>
       </div>
     </div>
   </div>
 
-  <!-- Toast -->
-  <div id="toast" class="toast">Action successful</div>
+  <div id="toast" class="toast">OK</div>
 
-  <!-- Scripts -->
   <script type="module">
-    // Core state
-    let authHeaderValue = ""; // Can be "Bearer <firebase_token>" or "Secret <admin_secret>"
+    let authHeaderValue = "";
     let usersList = [];
 
-    // UI Elements
     const loginBtn = document.getElementById("loginBtn");
     const secretLoginBtn = document.getElementById("secretLoginBtn");
     const loginGroup = document.getElementById("loginGroup");
@@ -680,7 +510,6 @@
     const appContent = document.getElementById("appContent");
     const toastEl = document.getElementById("toast");
 
-    // Firebase Init (Fetch from API un-authenticated first to init client SDK)
     let auth = null;
     let GoogleAuthProvider = null, signInWithPopup = null, signOut = null;
 
@@ -688,50 +517,40 @@
       try {
         const res = await fetch("/api/settings/public");
         const data = await res.json();
-        const fbConfig = data.settings.firebase_config;
-
+        const fbConfig = data.settings?.firebase_config;
         if (fbConfig && fbConfig.apiKey) {
           const fbApp = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js");
           const fbAuth = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js");
-
           const app = fbApp.initializeApp(fbConfig);
           auth = fbAuth.getAuth(app);
           GoogleAuthProvider = fbAuth.GoogleAuthProvider;
           signInWithPopup = fbAuth.signInWithPopup;
           signOut = fbAuth.signOut;
         } else {
-          who.textContent = "Firebase config missing in DB.";
+          who.textContent = "FIREBASE NOT CONFIGURED";
           loginBtn.disabled = true;
         }
       } catch (e) {
-        who.textContent = "Error loading initial config.";
+        who.textContent = "CONFIG LOAD ERROR";
         console.error(e);
       }
     }
 
-    // Auth Flows
-    if (secretLoginBtn) {
-      secretLoginBtn.addEventListener("click", async () => {
-        const secret = prompt("Enter your ADMIN_SECRET (Setup Key):");
-        if (!secret) return;
-
-        // Validate key against server before opening panel
-        authHeaderValue = `Secret ${secret}`;
-        try {
-          await apiCall("/api/admin/settings"); // Test call
-          postLogin("Setup Key Admin");
-        } catch (e) {
-          authHeaderValue = "";
-          alert("Invalid Setup Key! Please check your ADMIN_SECRET environment variable in Coolify.");
-        }
-      });
-    }
+    secretLoginBtn.addEventListener("click", async () => {
+      const secret = prompt("Enter ADMIN_SECRET:");
+      if (!secret) return;
+      authHeaderValue = `Secret ${secret}`;
+      try {
+        await apiCall("/api/admin/settings");
+        postLogin("Setup Key Admin");
+      } catch {
+        authHeaderValue = "";
+        alert("Invalid Setup Key.");
+      }
+    });
 
     loginBtn.addEventListener("click", async () => {
-      if (!auth) {
-        alert("Firebase Auth is not initialized. Please save Firebase Config first and refresh the page.");
-        return;
-      }
+      if (!auth) return alert("Firebase Auth not initialized.");
       try {
         const provider = new GoogleAuthProvider();
         const cred = await signInWithPopup(auth, provider);
@@ -739,84 +558,72 @@
         authHeaderValue = `Bearer ${token}`;
         postLogin(cred.user.email);
       } catch (e) {
-        console.error("Google Sign-In Error:", e);
         if (e.code === "auth/unauthorized-domain") {
-          alert("This domain is not authorized in Firebase Console.\n\nPlease go to:\nFirebase Console → Authentication → Settings → Authorized Domains\n\nAdd your site domain there (e.g. proptrex.com or your Coolify URL).");
-        } else if (e.code === "auth/popup-closed-by-user") {
-          // User closed popup, no action needed
+          alert("Domain not authorized in Firebase Console.\nAdd your domain under Authentication > Settings > Authorized Domains.");
         } else if (e.code === "auth/configuration-not-found") {
-          alert("Google Sign-In is not enabled in Firebase Console.\n\nPlease go to:\nFirebase Console → Authentication → Sign-in method\n\nEnable the 'Google' provider.");
-        } else {
-          alert("Login failed: " + (e.message || e.code || "Unknown error"));
+          alert("Enable Google provider in Firebase Console > Authentication > Sign-in method.");
+        } else if (e.code !== "auth/popup-closed-by-user") {
+          alert("Login failed: " + (e.message || e.code));
         }
       }
     });
 
     logoutBtn.addEventListener("click", async () => {
-      if (auth) await signOut(auth).catch(() => { });
+      if (auth) await signOut(auth).catch(() => {});
       authHeaderValue = "";
-      who.textContent = "Not signed in";
+      who.textContent = "NOT SIGNED IN";
       loginGroup.style.display = "flex";
       logoutBtn.style.display = "none";
       appContent.style.display = "none";
     });
 
     async function postLogin(email) {
-      who.textContent = `Admin: ${email}`;
+      who.textContent = `ADMIN: ${email}`;
       loginGroup.style.display = "none";
       logoutBtn.style.display = "block";
       appContent.style.display = "block";
-
-      // Load Initial Data
       await loadAnalytics();
       await loadUsers();
       await loadSettings();
     }
 
-    // Utility: API Caller
     async function apiCall(path, method = "GET", body = null) {
-      const headers = { "Authorization": authHeaderValue };
+      const headers = { Authorization: authHeaderValue };
       if (body) headers["Content-Type"] = "application/json";
-
-      const req = { method, headers };
-      if (body) req.body = JSON.stringify(body);
-
-      const res = await fetch(path, req);
+      const opts = { method, headers };
+      if (body) opts.body = JSON.stringify(body);
+      const res = await fetch(path, opts);
       const data = await res.json().catch(() => ({}));
-
       if (!res.ok || !data.ok) throw new Error(data.error || `HTTP ${res.status}`);
       return data;
     }
 
     function showToast(msg, isErr = false) {
       toastEl.textContent = msg;
-      toastEl.className = `toast show ${isErr ? 'error' : ''}`;
-      setTimeout(() => toastEl.classList.remove('show'), 3000);
+      toastEl.className = `toast show ${isErr ? "error" : ""}`;
+      setTimeout(() => toastEl.classList.remove("show"), 3000);
     }
 
-    // Tabs logic
-    document.querySelectorAll('.tab').forEach(t => {
-      t.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
-        t.classList.add('active');
-        document.getElementById(t.getAttribute('data-tab')).classList.add('active');
+    // Tabs
+    document.querySelectorAll(".tab").forEach(t => {
+      t.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach(x => x.classList.remove("active"));
+        t.classList.add("active");
+        document.getElementById(t.getAttribute("data-tab")).classList.add("active");
       });
     });
 
-    // --- TAB 1: Analytics ---
+    // Analytics
     async function loadAnalytics() {
       try {
         const s = await apiCall("/api/stats");
         document.getElementById("pv24").textContent = s.pv24 || 0;
         document.getElementById("uv24").textContent = s.uv24 || 0;
         document.getElementById("ver").textContent = s.verified_total || 0;
-
         drawChart(s.last7days || []);
         document.getElementById("botText").textContent = makeBotSummary(s);
-      } catch (err) {
-        showToast("Stats error: " + err.message, true);
-      }
+      } catch (err) { showToast("Stats error: " + err.message, true); }
     }
     document.getElementById("refreshStatsBtn").addEventListener("click", loadAnalytics);
 
@@ -828,52 +635,59 @@
       const pad = 40; const W = c.width - pad * 2; const H = c.height - pad * 2;
       const maxV = Math.max(1, ...points.map(p => p.pageviews), ...points.map(p => p.uniques), ...points.map(p => p.verified));
 
-      // Grid line
-      ctx.strokeStyle = "#E2E8F0"; ctx.lineWidth = 1;
+      // Grid
+      ctx.strokeStyle = "rgba(255,255,255,0.04)";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const gy = pad + (H / 4) * i;
+        ctx.beginPath(); ctx.moveTo(pad, gy); ctx.lineTo(pad + W, gy); ctx.stroke();
+      }
+
+      // Axes
+      ctx.strokeStyle = "rgba(255,255,255,0.08)";
       ctx.beginPath(); ctx.moveTo(pad, pad); ctx.lineTo(pad, pad + H); ctx.lineTo(pad + W, pad + H); ctx.stroke();
 
       const x = (i) => points.length <= 1 ? pad : pad + (i / (points.length - 1)) * W;
       const y = (v) => pad + H - (v / maxV) * H;
 
       function line(series, stroke) {
-        ctx.strokeStyle = stroke; ctx.lineWidth = 2; ctx.lineJoin = 'round';
+        ctx.strokeStyle = stroke; ctx.lineWidth = 2; ctx.lineJoin = "round";
         ctx.beginPath();
-        series.forEach((v, i) => {
-          if (i === 0) ctx.moveTo(x(i), y(v)); else ctx.lineTo(x(i), y(v));
-        });
+        series.forEach((v, i) => { if (i === 0) ctx.moveTo(x(i), y(v)); else ctx.lineTo(x(i), y(v)); });
         ctx.stroke();
+        // Data points
+        ctx.fillStyle = stroke;
+        series.forEach((v, i) => { ctx.beginPath(); ctx.arc(x(i), y(v), 3, 0, Math.PI * 2); ctx.fill(); });
       }
 
-      line(points.map(p => p.pageviews), "#3B82F6"); // PV
-      line(points.map(p => p.uniques), "#06B6D4");   // Unique
-      line(points.map(p => p.verified), "#10B981");  // Verified
+      line(points.map(p => p.pageviews), "#3B82F6");
+      line(points.map(p => p.uniques), "#06B6D4");
+      line(points.map(p => p.verified), "#22C55E");
+
+      // Labels
+      ctx.fillStyle = "#64748B"; ctx.font = "10px 'JetBrains Mono'"; ctx.textAlign = "center";
+      points.forEach((p, i) => ctx.fillText(p.day.slice(5), x(i), pad + H + 18));
     }
 
     function makeBotSummary(s) {
       const last = s.last7days?.[s.last7days.length - 1];
       const prev = s.last7days?.[s.last7days.length - 2];
-      const pvDelta = (prev && last) ? (last.pageviews - prev.pageviews) : 0;
-
-      const p = [`Daily pageviews: ${s.pv24}. Total verified: ${s.verified_total}.`];
-      if (pvDelta > 0) p.push(`Traffic is trending UP (+${pvDelta} compared to yesterday).`);
-      else if (pvDelta < 0) p.push(`Traffic is trending DOWN (${pvDelta} compared to yesterday).`);
-
+      const delta = (prev && last) ? (last.pageviews - prev.pageviews) : 0;
+      const lines = [`> Daily PV: ${s.pv24} | Verified: ${s.verified_total}`];
+      if (delta > 0) lines.push(`> Traffic UP (+${delta})`);
+      else if (delta < 0) lines.push(`> Traffic DOWN (${delta})`);
       const conv = (s.verified_total || 0) / Math.max(1, s.signups_total || 0);
-      if ((s.signups_total || 0) > 0 && conv < 0.6) p.push("Alert: High drop-off during email verification step.");
-      else p.push("Conversion rates look healthy.");
-
-      return p.join("\n");
+      lines.push(conv < 0.6 ? "> ALERT: High verification drop-off" : "> Conversion healthy");
+      return lines.join("\n");
     }
 
-    // --- TAB 2: Users ---
+    // Users
     async function loadUsers() {
       try {
         const data = await apiCall("/api/admin/users");
         usersList = data.users || [];
         renderUsersTable();
-      } catch (err) {
-        showToast("Users error: " + err.message, true);
-      }
+      } catch (err) { showToast("Users error: " + err.message, true); }
     }
     document.getElementById("refreshUsersBtn").addEventListener("click", loadUsers);
 
@@ -881,34 +695,31 @@
       const tb = document.getElementById("usersTbody");
       tb.innerHTML = "";
       if (usersList.length === 0) {
-        tb.innerHTML = '<tr><td colspan="7" style="text-align:center;">No users found.</td></tr>';
+        tb.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:var(--text-muted);">No users.</td></tr>';
         return;
       }
-
       usersList.forEach(u => {
         const d = new Date(u.ts).toLocaleDateString();
-        const statClass = u.status === 'verified' ? 'badge-ok' : (u.status === 'pending' ? 'badge-warn' : 'badge-blue');
+        const cls = u.status === "verified" ? "badge-ok" : u.status === "pending" ? "badge-warn" : "badge-blue";
         const name = [u.first_name, u.last_name].filter(Boolean).join(" ") || "-";
-
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${d}</td>
-          <td><span class="badge ${statClass}">${u.status}</span></td>
-          <td style="font-weight:500;">${name}</td>
+          <td><span class="badge ${cls}">${u.status}</span></td>
+          <td style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:600;">${name}</td>
           <td>${u.email}</td>
           <td>${u.city || "-"}</td>
           <td>${u.profile || "-"}</td>
           <td style="text-align:right;">
-             <button class="btn" style="padding:6px 10px; font-size:11px;" onclick="openEditModal(${u.id})">Edit</button>
-             <button class="btn btn-primary" style="padding:6px 10px; font-size:11px; margin-left:4px;" onclick="openReqModal(${u.id})">Request Info</button>
-          </td>
-        `;
+            <button class="btn" style="padding:5px 10px; font-size:10px;" onclick="openEditModal(${u.id})">EDIT</button>
+            <button class="btn btn-primary" style="padding:5px 10px; font-size:10px; margin-left:4px;" onclick="openReqModal(${u.id})">REQUEST</button>
+          </td>`;
         tb.appendChild(tr);
       });
     }
 
-    // Modals Handling
-    window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+    // Modals
+    window.closeModal = (id) => document.getElementById(id).style.display = "none";
 
     window.openEditModal = (id) => {
       const u = usersList.find(x => x.id === id);
@@ -920,7 +731,6 @@
       document.getElementById("editProfile").value = u.profile || "";
       document.getElementById("editNote").value = u.note || "";
       document.getElementById("editExtra").value = JSON.stringify(u.extra_fields || {}, null, 2);
-
       document.getElementById("editModalBackdrop").style.display = "flex";
     };
 
@@ -934,21 +744,15 @@
         note: document.getElementById("editNote").value,
         extra_fields: {}
       };
-
-      try {
-        body.extra_fields = JSON.parse(document.getElementById("editExtra").value || "{}");
-      } catch (e) {
-        return showToast("Invalid JSON in Extra Fields", true);
-      }
+      try { body.extra_fields = JSON.parse(document.getElementById("editExtra").value || "{}"); }
+      catch { return showToast("Invalid JSON", true); }
 
       try {
         await apiCall(`/api/admin/users/${id}`, "PUT", body);
-        showToast("User updated successfully");
+        showToast("User updated");
         closeModal("editModalBackdrop");
-        loadUsers(); // Refresh
-      } catch (err) {
-        showToast("Update failed: " + err.message, true);
-      }
+        loadUsers();
+      } catch (err) { showToast("Update failed: " + err.message, true); }
     };
 
     window.openReqModal = (id) => {
@@ -964,14 +768,12 @@
       const msg = document.getElementById("reqMessage").value;
       try {
         await apiCall(`/api/admin/users/${id}/request-info`, "POST", { additionalMessage: msg });
-        showToast("Email sent!");
+        showToast("Email sent");
         closeModal("reqModalBackdrop");
-      } catch (err) {
-        showToast("Failed to send: " + err.message, true);
-      }
-    }
+      } catch (err) { showToast("Failed: " + err.message, true); }
+    };
 
-    // --- TAB 3: Settings ---
+    // Settings
     let currentDynFields = [];
 
     async function loadSettings() {
@@ -979,17 +781,14 @@
         const data = await apiCall("/api/admin/settings");
         const s = data.settings || {};
 
-        // Load Dynamic Fields
         currentDynFields = Array.isArray(s.dynamic_form_fields) ? s.dynamic_form_fields : [];
         renderDynFields();
 
-        // Load Auto Reply
         const ar = s.auto_reply_email || {};
         document.getElementById("arEnabled").checked = !!ar.enabled;
         document.getElementById("arSubject").value = ar.subject || "";
         document.getElementById("arBody").value = ar.body || "";
 
-        // Load Firebase
         const fb = s.firebase_config || {};
         document.getElementById("fbApiKey").value = fb.apiKey || "";
         document.getElementById("fbAuthDomain").value = fb.authDomain || "";
@@ -997,7 +796,6 @@
         document.getElementById("fbClientEmail").value = fb.clientEmail || "";
         document.getElementById("fbPrivateKey").value = fb.privateKey || "";
 
-        // Load SMTP
         const smtp = s.smtp_config || {};
         document.getElementById("smtpHost").value = smtp.host || "";
         document.getElementById("smtpPort").value = smtp.port || "";
@@ -1005,72 +803,46 @@
         document.getElementById("smtpPass").value = smtp.pass || "";
         document.getElementById("smtpSecure").checked = !!smtp.secure;
         document.getElementById("smtpTlsReject").checked = smtp.tlsReject !== undefined ? !!smtp.tlsReject : true;
-
-      } catch (e) {
-        showToast("Error loading settings", true);
-      }
+      } catch { showToast("Settings load error", true); }
     }
 
-    // Dynamic Fields Logic
     window.renderDynFields = () => {
       const container = document.getElementById("dynFieldsContainer");
       container.innerHTML = "";
       if (currentDynFields.length === 0) {
-        container.innerHTML = "<div style='color:var(--text-muted); font-size:13px;'>No custom fields. Click Add Field.</div>";
+        container.innerHTML = "<div style='color:var(--text-muted); font-size:12px; font-family:JetBrains Mono,monospace;'>No custom fields.</div>";
         return;
       }
-
       currentDynFields.forEach((f, i) => {
         const row = document.createElement("div");
-        row.style.display = "flex";
-        row.style.gap = "12px";
-        row.style.alignItems = "flex-end";
-        row.style.background = "#F1F5F9";
-        row.style.padding = "16px";
-        row.style.borderRadius = "8px";
-        row.style.border = "1px solid #E2E8F0";
-
+        row.style.cssText = "display:flex; gap:12px; align-items:flex-end; background:var(--bg3); padding:16px; border-radius:4px; border:1px solid var(--border);";
         row.innerHTML = `
-          <div style="flex:1;"><label style="font-size:11px; margin-bottom:4px;">ID (lowercase_only)</label>
-            <input type="text" id="df_id_${i}" value="${f.id || ''}" placeholder="e.g. phone" style="padding:8px;" />
-          </div>
-          <div style="flex:1;"><label style="font-size:11px; margin-bottom:4px;">Display Label</label>
-            <input type="text" id="df_lbl_${i}" value="${f.label || ''}" placeholder="Phone Number" style="padding:8px;" />
-          </div>
-          <div style="width:100px;"><label style="font-size:11px; margin-bottom:4px;">Input Type</label>
-             <select id="df_typ_${i}" style="padding:8px;">
-               <option value="text" ${f.type === 'text' ? 'selected' : ''}>Text</option>
-               <option value="number" ${f.type === 'number' ? 'selected' : ''}>Number</option>
-               <option value="date" ${f.type === 'date' ? 'selected' : ''}>Date</option>
-             </select>
-          </div>
-          <div style="width:80px; display:flex; flex-direction:column; align-items:center; padding-bottom:8px;">
-             <label style="font-size:11px; margin-bottom:8px;">Required</label>
-             <input type="checkbox" id="df_req_${i}" ${f.required ? 'checked' : ''} style="width:16px; height:16px; margin:0;" />
-          </div>
-          <button class="btn btn-danger" style="margin-bottom:2px; padding:8px 12px;" onclick="removeDynFieldRow(${i})">X</button>
-        `;
+          <div style="flex:1;"><label style="font-size:9px; margin-bottom:4px;">ID</label>
+            <input type="text" id="df_id_${i}" value="${f.id || ''}" placeholder="phone" style="padding:8px;" /></div>
+          <div style="flex:1;"><label style="font-size:9px; margin-bottom:4px;">LABEL</label>
+            <input type="text" id="df_lbl_${i}" value="${f.label || ''}" placeholder="Phone Number" style="padding:8px;" /></div>
+          <div style="width:100px;"><label style="font-size:9px; margin-bottom:4px;">TYPE</label>
+            <select id="df_typ_${i}" style="padding:8px;">
+              <option value="text" ${f.type === 'text' ? 'selected' : ''}>Text</option>
+              <option value="number" ${f.type === 'number' ? 'selected' : ''}>Number</option>
+              <option value="date" ${f.type === 'date' ? 'selected' : ''}>Date</option>
+            </select></div>
+          <div style="width:70px; display:flex; flex-direction:column; align-items:center; padding-bottom:8px;">
+            <label style="font-size:9px; margin-bottom:8px;">REQ</label>
+            <input type="checkbox" id="df_req_${i}" ${f.required ? 'checked' : ''} style="width:16px; height:16px; margin:0;" /></div>
+          <button class="btn btn-danger" style="margin-bottom:2px; padding:8px 12px;" onclick="removeDynFieldRow(${i})">X</button>`;
         container.appendChild(row);
       });
-    }
-
-    window.addDynFieldRow = () => {
-      syncDynFieldsFromUI();
-      currentDynFields.push({ id: "", label: "", type: "text", required: false });
-      renderDynFields();
     };
 
-    window.removeDynFieldRow = (index) => {
-      syncDynFieldsFromUI();
-      currentDynFields.splice(index, 1);
-      renderDynFields();
-    };
+    window.addDynFieldRow = () => { syncDynFieldsFromUI(); currentDynFields.push({ id: "", label: "", type: "text", required: false }); renderDynFields(); };
+    window.removeDynFieldRow = (i) => { syncDynFieldsFromUI(); currentDynFields.splice(i, 1); renderDynFields(); };
 
     function syncDynFieldsFromUI() {
       currentDynFields.forEach((f, i) => {
-        const elId = document.getElementById(`df_id_${i}`);
-        if (elId) {
-          f.id = elId.value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+        const el = document.getElementById(`df_id_${i}`);
+        if (el) {
+          f.id = el.value.trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
           f.label = document.getElementById(`df_lbl_${i}`).value.trim();
           f.type = document.getElementById(`df_typ_${i}`).value;
           f.required = document.getElementById(`df_req_${i}`).checked;
@@ -1080,71 +852,30 @@
 
     window.saveDynFieldsConfig = async () => {
       syncDynFieldsFromUI();
-      const validFields = currentDynFields.filter(f => f.id && f.label);
-      try {
-        await apiCall("/api/admin/settings/dynamic_form_fields", "PUT", { value: validFields });
-        currentDynFields = validFields;
-        renderDynFields();
-        showToast("Form Fields saved successfully");
-      } catch (e) {
-        showToast("Error saving form fields: " + e.message, true);
-      }
+      const valid = currentDynFields.filter(f => f.id && f.label);
+      try { await apiCall("/api/admin/settings/dynamic_form_fields", "PUT", { value: valid }); currentDynFields = valid; renderDynFields(); showToast("Fields saved"); }
+      catch (e) { showToast("Error: " + e.message, true); }
     };
 
     window.saveAutoReplyConfig = async () => {
-      const val = {
-        enabled: document.getElementById("arEnabled").checked,
-        subject: document.getElementById("arSubject").value.trim(),
-        body: document.getElementById("arBody").value.trim()
-      };
-      try {
-        await apiCall("/api/admin/settings/auto_reply_email", "PUT", { value: val });
-        showToast("Auto-Reply saved successfully");
-      } catch (e) {
-        showToast("Error saving Auto-Reply: " + e.message, true);
-      }
+      const val = { enabled: document.getElementById("arEnabled").checked, subject: document.getElementById("arSubject").value.trim(), body: document.getElementById("arBody").value.trim() };
+      try { await apiCall("/api/admin/settings/auto_reply_email", "PUT", { value: val }); showToast("Auto-Reply saved"); }
+      catch (e) { showToast("Error: " + e.message, true); }
     };
 
     window.saveSmtpConfig = async () => {
-      const val = {
-        host: document.getElementById("smtpHost").value.trim(),
-        port: document.getElementById("smtpPort").value,
-        user: document.getElementById("smtpUser").value.trim(),
-        pass: document.getElementById("smtpPass").value.trim(),
-        secure: document.getElementById("smtpSecure").checked,
-        tlsReject: document.getElementById("smtpTlsReject").checked
-      };
-
-      try {
-        await apiCall("/api/admin/settings/smtp_config", "PUT", { value: val });
-        // After sending request, restart server nodemailer instance might be needed via API eventually, 
-        // but since our transporter fetches per request it's ok.
-        showToast("SMTP Config saved successfully. New emails will use these settings.");
-      } catch (e) {
-        showToast("Error saving SMTP Config: " + e.message, true);
-      }
+      const val = { host: document.getElementById("smtpHost").value.trim(), port: document.getElementById("smtpPort").value, user: document.getElementById("smtpUser").value.trim(), pass: document.getElementById("smtpPass").value.trim(), secure: document.getElementById("smtpSecure").checked, tlsReject: document.getElementById("smtpTlsReject").checked };
+      try { await apiCall("/api/admin/settings/smtp_config", "PUT", { value: val }); showToast("SMTP saved"); }
+      catch (e) { showToast("Error: " + e.message, true); }
     };
 
     window.saveFirebaseConfig = async () => {
-      const val = {
-        apiKey: document.getElementById("fbApiKey").value.trim(),
-        authDomain: document.getElementById("fbAuthDomain").value.trim(),
-        projectId: document.getElementById("fbProjectId").value.trim(),
-        clientEmail: document.getElementById("fbClientEmail").value.trim(),
-        privateKey: document.getElementById("fbPrivateKey").value.trim()
-      };
-      try {
-        await apiCall("/api/admin/settings/firebase_config", "PUT", { value: val });
-        showToast("Firebase Config saved successfully");
-      } catch (e) {
-        showToast("Error saving Firebase Config: " + e.message, true);
-      }
+      const val = { apiKey: document.getElementById("fbApiKey").value.trim(), authDomain: document.getElementById("fbAuthDomain").value.trim(), projectId: document.getElementById("fbProjectId").value.trim(), clientEmail: document.getElementById("fbClientEmail").value.trim(), privateKey: document.getElementById("fbPrivateKey").value.trim() };
+      try { await apiCall("/api/admin/settings/firebase_config", "PUT", { value: val }); showToast("Firebase saved"); }
+      catch (e) { showToast("Error: " + e.message, true); }
     };
 
-    // Boot
     initFirebaseClient();
   </script>
-
 </body>
-
 </html>

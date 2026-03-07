@@ -5,12 +5,9 @@ import { sendEmail } from "../mail.js";
 
 const router = Router();
 
-/* ---------- Route ---------- */
 router.post("/verify-code", async (req, res) => {
   const OTP_SALT = process.env.OTP_SALT || "";
   if (!OTP_SALT) return res.status(503).json({ ok: false, error: "Not configured" });
-
-  const ip = getClientIp(req);
 
   const email = String(req.body.email || "").trim().toLowerCase();
   const code = String(req.body.code || "").trim().replace(/\s+/g, "");
@@ -22,11 +19,10 @@ router.post("/verify-code", async (req, res) => {
     const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 
     const { rows } = await pool.query(
-      `SELECT id, code_hash, expires_at, attempts, consumed_at, ts
+      `SELECT id, code_hash, expires_at, attempts, consumed_at
        FROM email_verifications
        WHERE lower(email) = lower($1) AND ts >= $2
-       ORDER BY ts DESC
-       LIMIT 1`,
+       ORDER BY ts DESC LIMIT 1`,
       [email, since]
     );
 
@@ -43,48 +39,33 @@ router.post("/verify-code", async (req, res) => {
     const actual = sha256(code + "|" + email + "|" + OTP_SALT);
 
     if (expected !== actual) {
-      await pool.query(
-        `UPDATE email_verifications SET attempts = $1 WHERE id = $2`,
-        [(row.attempts || 0) + 1, row.id]
-      );
+      await pool.query(`UPDATE email_verifications SET attempts = $1 WHERE id = $2`, [(row.attempts || 0) + 1, row.id]);
       return res.status(401).json({ ok: false, error: "Incorrect code" });
     }
 
-    // Başarılı doğrulama
-    await pool.query(
-      `UPDATE email_verifications SET consumed_at = now(), attempts = $1 WHERE id = $2`,
-      [(row.attempts || 0) + 1, row.id]
-    );
-
     // Success
-    await pool.query(
-      `UPDATE waitlist SET status = 'verified', verified_at = now() WHERE lower(email) = $1`,
-      [email]
-    );
+    await pool.query(`UPDATE email_verifications SET consumed_at = now(), attempts = $1 WHERE id = $2`, [(row.attempts || 0) + 1, row.id]);
+    await pool.query(`UPDATE waitlist SET status = 'verified', verified_at = now() WHERE lower(email) = $1`, [email]);
 
-    // Send Auto Reply if configured
+    // Auto-reply
     try {
-      const autoReplyRes = await pool.query("SELECT value FROM system_settings WHERE key = 'auto_reply_email'");
-      if (autoReplyRes.rows.length > 0) {
-        const autoReply = autoReplyRes.rows[0].value;
-        if (autoReply && autoReply.enabled) {
-          const waitlistUser = await pool.query("SELECT first_name FROM waitlist WHERE lower(email) = $1", [email]);
-          const name = waitlistUser.rows.length > 0 && waitlistUser.rows[0].first_name ? waitlistUser.rows[0].first_name : "there";
-
-          let bodyHtml = autoReply.body || "Thank you for registering.";
-          // Simple personalization
-          bodyHtml = bodyHtml.replace(/{{first_name}}/g, name);
-
-          await sendEmail(email, autoReply.subject || "PROPTREX Registration Received", bodyHtml);
+      const arRes = await pool.query("SELECT value FROM system_settings WHERE key = 'auto_reply_email'");
+      if (arRes.rows.length > 0) {
+        const ar = arRes.rows[0].value;
+        if (ar && ar.enabled) {
+          const wlUser = await pool.query("SELECT first_name FROM waitlist WHERE lower(email) = $1", [email]);
+          const name = wlUser.rows[0]?.first_name || "there";
+          let body = (ar.body || "Thank you for registering.").replace(/{{first_name}}/g, name);
+          await sendEmail(email, ar.subject || "PROPTREX Registration Received", body);
         }
       }
     } catch (mailErr) {
-      console.error("Auto reply mail error:", mailErr.message);
+      console.error("[VERIFY] Auto-reply error:", mailErr.message);
     }
 
     return res.json({ ok: true });
   } catch (err) {
-    console.error("verify-code error:", err.message);
+    console.error("[VERIFY-CODE]", err.message);
     return res.status(500).json({ ok: false, error: "Server error" });
   }
 });

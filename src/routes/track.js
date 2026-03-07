@@ -21,8 +21,7 @@ router.post("/track", async (req, res) => {
 
     res.json({ ok: true });
   } catch (err) {
-    console.error("track error:", err.message);
-    // Sessizce başarılı dön, analytics kaybı kritik değil
+    console.error("[TRACK]", err.message);
     res.json({ ok: true });
   }
 });

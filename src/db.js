@@ -9,7 +9,7 @@ const pool = new pg.Pool({
 });
 
 pool.on("error", (err) => {
-  console.error("Unexpected PG pool error:", err.message);
+  console.error("[DB] Pool error:", err.message);
 });
 
 export default pool;

@@ -6,34 +6,30 @@
   <title>PROPTREX — Early Access</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #050505;
-      --bg-accent: #0f1115;
-      --text-main: #FFFFFF;
-      --text-muted: #8892B0;
-      
-      --accent: #3B82F6;
-      --accent-glow: rgba(59, 130, 246, 0.4);
-      --accent-secondary: #06B6D4;
-      
-      --border: rgba(255, 255, 255, 0.08);
-      --card-bg: rgba(15, 17, 21, 0.6);
-      
+      --bg: #030304;
+      --bg-accent: #0a0b0f;
+      --text-main: #F0F0F0;
+      --text-muted: #94A3B8;
+      --accent: #D4A853;
+      --accent-glow: rgba(212, 168, 83, 0.35);
+      --accent-secondary: #2DD4BF;
+      --border: rgba(255, 255, 255, 0.06);
+      --card-bg: rgba(10, 11, 15, 0.7);
       --radius: 16px;
       --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      
       --err: #ef4444;
-      --ok: #10b981;
+      --ok: #2DD4BF;
     }
 
     * { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; padding: 0; }
-    
+
     body {
-      font-family: 'Outfit', system-ui, sans-serif;
+      font-family: 'DM Sans', system-ui, sans-serif;
       background-color: var(--bg);
       color: var(--text-main);
       overflow-x: hidden;
@@ -41,34 +37,58 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Ambient Background Glows */
+    /* Grid Pattern Background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(212,168,83,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212,168,83,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Grain Overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      opacity: 0.4;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Ambient Glows */
     .ambient-light {
       position: absolute;
       border-radius: 50%;
-      filter: blur(80px);
+      filter: blur(100px);
       z-index: 0;
       pointer-events: none;
-      opacity: 0.5;
+      opacity: 0.4;
     }
     .light-1 {
-      top: -10%; left: -10%;
+      top: -15%; left: -10%;
       width: 50vw; height: 50vw;
-      background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
-      animation: float 20s ease-in-out infinite alternate;
+      background: radial-gradient(circle, rgba(212,168,83,0.12) 0%, transparent 70%);
+      animation: drift 25s ease-in-out infinite alternate;
     }
     .light-2 {
-      bottom: -10%; right: -10%;
-      width: 60vw; height: 60vw;
-      background: radial-gradient(circle, rgba(6,182,212,0.1) 0%, transparent 70%);
-      animation: float 25s ease-in-out infinite alternate-reverse;
+      bottom: -15%; right: -10%;
+      width: 55vw; height: 55vw;
+      background: radial-gradient(circle, rgba(45,212,191,0.08) 0%, transparent 70%);
+      animation: drift 30s ease-in-out infinite alternate-reverse;
     }
 
-    @keyframes float {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(5%, 5%); }
+    @keyframes drift {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(4%, 4%) scale(1.05); }
     }
 
-    /* Top Navigation */
+    /* Topbar */
     .topbar {
       position: relative;
       z-index: 10;
@@ -79,43 +99,42 @@
       backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
     }
-    
+
     .brand {
       display: flex;
       align-items: center;
       gap: 12px;
+      font-family: 'Space Mono', monospace;
       font-weight: 700;
-      font-size: 16px;
-      letter-spacing: 0.15em;
+      font-size: 15px;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
+      color: var(--accent);
     }
 
     .brand svg { width: 32px; height: 32px; }
 
-    .nav-actions {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
+    .nav-actions { display: flex; gap: 16px; align-items: center; }
 
     .lang-switcher {
       background: transparent;
       border: 1px solid var(--border);
       color: var(--text-muted);
-      padding: 6px 12px;
-      border-radius: 20px;
+      padding: 6px 14px;
+      border-radius: 4px;
       cursor: pointer;
-      font-family: 'Outfit', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
       transition: var(--transition);
     }
     .lang-switcher:hover {
-      color: var(--text-main);
-      border-color: rgba(255,255,255,0.2);
+      color: var(--accent);
+      border-color: var(--accent);
     }
 
-    /* Main Container */
+    /* Container */
     .container {
       position: relative;
       z-index: 5;
@@ -123,7 +142,7 @@
       margin: 0 auto;
       padding: 60px 5%;
       display: grid;
-      grid-template-columns: 1fr 450px;
+      grid-template-columns: 1fr 460px;
       gap: 60px;
       align-items: center;
       min-height: calc(100vh - 85px);
@@ -138,111 +157,122 @@
       }
     }
 
-    /* Hero Text */
+    /* Hero */
     .hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       padding: 6px 16px;
-      border: 1px solid rgba(6,182,212,0.3);
-      background: rgba(6,182,212,0.05);
-      border-radius: 30px;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      color: var(--accent-secondary);
+      border: 1px solid rgba(212,168,83,0.3);
+      background: rgba(212,168,83,0.05);
+      border-radius: 4px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--accent);
       text-transform: uppercase;
-      margin-bottom: 24px;
-      box-shadow: 0 0 20px rgba(6,182,212,0.1);
+      margin-bottom: 28px;
     }
 
     .hero-badge .dot {
       width: 6px; height: 6px;
       border-radius: 50%;
-      background: var(--accent-secondary);
-      box-shadow: 0 0 8px var(--accent-secondary);
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
       animation: pulse 2s infinite;
     }
-    
+
     @keyframes pulse {
-      0% { opacity: 0.5; transform: scale(0.8); }
+      0%, 100% { opacity: 0.5; transform: scale(0.8); }
       50% { opacity: 1; transform: scale(1.2); }
-      100% { opacity: 0.5; transform: scale(0.8); }
     }
 
     h1 {
-      font-size: clamp(40px, 5vw, 64px);
-      line-height: 1.1;
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(36px, 4.5vw, 58px);
+      line-height: 1.15;
       margin: 0 0 24px 0;
       font-weight: 700;
-      letter-spacing: -0.02em;
-      background: linear-gradient(135deg, #FFFFFF 0%, #A1A1AA 100%);
+      letter-spacing: -0.01em;
+      background: linear-gradient(135deg, #F0F0F0 0%, var(--accent) 60%, var(--accent-secondary) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .subtitle {
-      font-size: clamp(16px, 2vw, 20px);
+      font-size: clamp(15px, 1.8vw, 18px);
       color: var(--text-muted);
       margin-bottom: 32px;
-      max-width: 600px;
-      line-height: 1.6;
+      max-width: 550px;
+      line-height: 1.7;
     }
-    
+
     @media (max-width: 992px) {
       .subtitle { margin: 0 auto 32px; }
     }
 
-    /* Features / Chips */
-    .features {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 40px;
-    }
-    @media (max-width: 992px) {
-      .features { justify-content: center; }
-    }
+    /* Chips */
+    .features { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
+    @media (max-width: 992px) { .features { justify-content: center; } }
 
     .chip {
-      padding: 8px 16px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      color: #D4D4D8;
+      padding: 7px 14px;
+      background: rgba(212,168,83,0.04);
+      border: 1px solid rgba(212,168,83,0.15);
+      border-radius: 4px;
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
       transition: var(--transition);
+      animation: fadeSlideUp 0.5s ease both;
     }
+    .chip:nth-child(1) { animation-delay: 0.1s; }
+    .chip:nth-child(2) { animation-delay: 0.2s; }
+    .chip:nth-child(3) { animation-delay: 0.3s; }
+    .chip:nth-child(4) { animation-delay: 0.4s; }
+    .chip:nth-child(5) { animation-delay: 0.5s; }
+
     .chip:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(212,168,83,0.1);
+      color: var(--accent);
       transform: translateY(-2px);
     }
 
-    /* Glass Card (Form Container) */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Glass Card */
     .glass-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 24px;
+      border-radius: var(--radius);
       padding: 40px;
       backdrop-filter: blur(20px);
-      box-shadow: 0 24px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
       position: relative;
       overflow: hidden;
     }
-    
+
     .glass-card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), transparent);
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent 5%, var(--accent) 30%, var(--accent-secondary) 70%, transparent 95%);
     }
 
     .card-title {
-      font-size: 24px;
-      font-weight: 600;
-      margin: 0 0 8px 0;
+      font-family: 'Space Mono', monospace;
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0 0 6px 0;
+      color: var(--accent);
     }
-    
+
     .card-subtitle {
       color: var(--text-muted);
       font-size: 14px;
@@ -250,59 +280,62 @@
     }
 
     /* Forms */
-    .form-group {
-      margin-bottom: 16px;
-    }
-    
-    .form-row {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
+    .form-group { margin-bottom: 16px; }
+
+    .form-row { display: flex; gap: 16px; margin-bottom: 16px; }
     .form-row > div { flex: 1; }
-    @media (max-width: 480px){
-      .form-row { flex-direction: column; gap: 16px; }
-    }
+    @media (max-width: 480px) { .form-row { flex-direction: column; gap: 16px; } }
 
     label {
       display: block;
-      font-size: 12px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.1em;
       color: var(--text-muted);
       margin-bottom: 8px;
-      font-weight: 500;
+      font-weight: 700;
     }
 
     input, select {
       width: 100%;
-      background: rgba(0,0,0,0.2);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      padding: 14px 16px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 13px 16px;
       color: #fff;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'DM Sans', sans-serif;
       font-size: 15px;
       transition: var(--transition);
       outline: none;
     }
-    
+
     input:focus, select:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
-      background: rgba(0,0,0,0.4);
+      box-shadow: 0 0 0 2px rgba(212,168,83,0.15);
+      background: rgba(0,0,0,0.5);
     }
-    
-    input::placeholder { color: rgba(255,255,255,0.3); }
+
+    input::placeholder { color: rgba(255,255,255,0.2); }
+
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%2394A3B8' stroke-width='1.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      cursor: pointer;
+    }
+    select option { background: #0a0b0f; color: #fff; }
 
     /* Buttons */
     .btn {
       width: 100%;
       padding: 14px 24px;
-      border-radius: 12px;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 600;
-      font-size: 15px;
+      border-radius: 8px;
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.05em;
       cursor: pointer;
       transition: var(--transition);
       display: flex;
@@ -310,41 +343,43 @@
       align-items: center;
       gap: 10px;
       border: none;
+      text-transform: uppercase;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent) 0%, #2563EB 100%);
-      color: #fff;
-      box-shadow: 0 8px 20px rgba(37,99,235,0.3);
-    }
-    
-    .btn-primary:hover {
-      box-shadow: 0 12px 25px rgba(37,99,235,0.4);
-      transform: translateY(-2px);
+      background: linear-gradient(135deg, var(--accent) 0%, #c49440 100%);
+      color: #030304;
+      box-shadow: 0 8px 24px rgba(212,168,83,0.25);
     }
 
+    .btn-primary:hover {
+      box-shadow: 0 12px 30px rgba(212,168,83,0.4);
+      transform: translateY(-2px) scale(1.01);
+    }
+    .btn-primary:active { transform: scale(0.98); }
+
     .btn-google {
-      background: #FFFFFF;
-      color: #000000;
+      background: rgba(255,255,255,0.06);
+      color: #fff;
       margin-top: 12px;
-      border: 1px solid transparent;
+      border: 1px solid rgba(255,255,255,0.1);
     }
     .btn-google:hover {
-      background: #F8FAFC;
+      background: rgba(255,255,255,0.1);
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(255,255,255,0.1);
+      box-shadow: 0 8px 20px rgba(255,255,255,0.05);
     }
     .g-icon { width: 18px; height: 18px; }
 
     .divider {
       display: flex;
       align-items: center;
-      text-align: center;
       margin: 20px 0;
       color: var(--text-muted);
-      font-size: 12px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.15em;
     }
     .divider::before, .divider::after {
       content: '';
@@ -358,18 +393,19 @@
       margin-top: 16px;
       font-size: 13px;
       padding: 12px;
-      border-radius: 8px;
+      border-radius: 6px;
       display: none;
+      font-family: 'DM Sans', sans-serif;
     }
     .message.success {
       display: block;
-      background: rgba(16, 185, 129, 0.1);
+      background: rgba(45, 212, 191, 0.08);
       color: var(--ok);
-      border: 1px solid rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(45, 212, 191, 0.2);
     }
     .message.error {
       display: block;
-      background: rgba(239, 68, 68, 0.1);
+      background: rgba(239, 68, 68, 0.08);
       color: var(--err);
       border: 1px solid rgba(239, 68, 68, 0.2);
     }
@@ -383,12 +419,23 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Footer info */
+    /* Success */
+    .success-ring {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: rgba(45,212,191,0.08);
+      border: 2px solid var(--accent-secondary);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+      box-shadow: 0 0 30px rgba(45,212,191,0.2);
+    }
+
     .fine-print {
       margin-top: 20px;
-      font-size: 12px;
-      color: var(--text-muted);
+      font-size: 11px;
+      color: rgba(148,163,184,0.5);
       text-align: center;
+      font-family: 'DM Sans', sans-serif;
     }
   </style>
 </head>
@@ -400,8 +447,8 @@
   <nav class="topbar">
     <div class="brand">
       <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="32" height="32" rx="8" fill="#3B82F6"/>
-        <text x="16" y="22" text-anchor="middle" font-family="Outfit, sans-serif" font-size="16" font-weight="700" fill="#FFFFFF">PX</text>
+        <rect width="32" height="32" rx="6" fill="#D4A853"/>
+        <text x="16" y="22" text-anchor="middle" font-family="Space Mono, monospace" font-size="14" font-weight="700" fill="#030304">PX</text>
       </svg>
       PROPTREX
     </div>
@@ -421,7 +468,7 @@
         The platform remains private while we calibrate signals and scale infrastructure.
         Request early access and we'll notify you when your window opens.
       </p>
-      
+
       <div class="features">
         <div class="chip">Crypto</div>
         <div class="chip">CEX / DEX</div>
@@ -432,7 +479,7 @@
     </section>
 
     <aside class="glass-card">
-      
+
       <!-- Step 1: Request -->
       <div class="step active" id="step1">
         <h2 class="card-title" data-i18n="cardTitle">Request Access</h2>
@@ -471,13 +518,12 @@
             </div>
           </div>
 
-          <!-- Dynamic Fields Container -->
           <div id="dynamicFieldsContainer"></div>
 
           <button class="btn btn-primary" id="btnEmailSignup" type="button" data-i18n="btnEmail">Continue with Email</button>
-          
+
           <div class="divider" data-i18n="divider">OR</div>
-          
+
           <button class="btn btn-google" id="btnGoogleSignup" type="button">
             <svg class="g-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -487,7 +533,7 @@
             </svg>
             <span data-i18n="btnGoogle">Continue with Google</span>
           </button>
-          
+
           <div id="msg1" class="message"></div>
         </form>
       </div>
@@ -495,17 +541,17 @@
       <!-- Step 2: Verification -->
       <div class="step" id="step2">
         <h2 class="card-title" data-i18n="step2Title">Verification Code</h2>
-        <p class="card-subtitle" data-i18n="step2Sub">We sent a 6-digit code to <span id="emailEcho" style="color:#fff;font-weight:600;"></span></p>
+        <p class="card-subtitle"><span data-i18n="step2Sub">We sent a 6-digit code to </span><span id="emailEcho" style="color:var(--accent);font-weight:600;"></span></p>
 
         <form onsubmit="return false;">
           <div class="form-group">
-            <input type="text" id="code" placeholder="000000" maxlength="6" style="text-align:center; letter-spacing:8px; font-size:24px;" />
+            <input type="text" id="code" placeholder="000000" maxlength="6" style="text-align:center; letter-spacing:10px; font-size:26px; font-family:'Space Mono',monospace;" />
           </div>
-          
+
           <button class="btn btn-primary" id="btnVerify" type="button" data-i18n="btnVerify">Verify Code</button>
-          
+
           <div style="margin-top:16px;text-align:center;">
-             <a href="#" id="btnBack" style="color:var(--text-muted);font-size:14px;text-decoration:none;" data-i18n="btnChangeEmail">Change email</a>
+            <a href="#" id="btnBack" style="color:var(--text-muted);font-size:13px;text-decoration:none;font-family:'Space Mono',monospace;" data-i18n="btnChangeEmail">Change email</a>
           </div>
 
           <div id="msg2" class="message"></div>
@@ -515,12 +561,12 @@
       <!-- Step 3: Success -->
       <div class="step" id="step3">
         <div style="text-align:center;">
-          <div style="width:64px;height:64px;border-radius:50%;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <div class="success-ring">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2DD4BF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
           </div>
-          <h2 class="card-title" data-i18n="step3Title">You're on the list.</h2>
+          <h2 class="card-title" style="color:var(--accent-secondary);" data-i18n="step3Title">You're on the list.</h2>
           <p class="card-subtitle" data-i18n="step3Sub" style="margin-bottom:0;">Your email has been verified. We will notify you when your access window opens.</p>
         </div>
       </div>
@@ -530,15 +576,8 @@
   </main>
 
   <script type="module">
-    // State
-    const state = {
-      lang: 'EN',
-      dynamicFields: [],
-      fbConfig: null,
-      authLib: null
-    };
+    const state = { lang: 'EN', dynamicFields: [], fbConfig: null, authLib: null };
 
-    // Translations Dictionary
     const dict = {
       EN: {
         badge: "6 AI AGENTS · MULTI-ASSET · REAL-TIME",
@@ -563,44 +602,44 @@
         finePrint: "By requesting access, you agree to our terms and privacy policy.",
         errFields: "Please fill all required fields.",
         errEmail: "Please enter a valid email.",
-        errCode: "Enter the 6 digit code."
+        errCode: "Enter the 6 digit code.",
+        errGoogleOffline: "Google sign-in is not available right now."
       },
       TR: {
-        badge: "6 YAPAY ZEKA AJANI · ÇOKLU VARLIK · GERÇEK ZAMANLI",
-        heading: "Tüm Piyasalarda<br/>İstihbarat Katmanı.",
-        subheading: "Sinyalleri kalibre edip altyapıyı ölçeklendirirken platform gizli kalmaya devam ediyor. Erken erişim talep edin, zamanınız geldiğinde size haber verelim.",
-        cardTitle: "Erişim Talep Et",
-        cardSub: "Sıraya katılmak için kayıt olun.",
+        badge: "6 YAPAY ZEKA AJANI · COKLU VARLIK · GERCEK ZAMANLI",
+        heading: "Tum Piyasalarda<br/>Istihbarat Katmani.",
+        subheading: "Sinyalleri kalibre edip altyapiyi olceklendirirken platform gizli kalmaya devam ediyor. Erken erisim talep edin, zamaniniz geldiginde size haber verelim.",
+        cardTitle: "Erisim Talep Et",
+        cardSub: "Siraya katilmak icin kayit olun.",
         lblFirstName: "Ad *",
         lblLastName: "Soyad *",
         lblEmail: "E-Posta Adresi *",
-        lblCity: "Şehir *",
+        lblCity: "Sehir *",
         lblProfile: "Profil",
         btnEmail: "E-posta ile Devam Et",
         divider: "VEYA",
         btnGoogle: "Google ile Devam Et",
-        step2Title: "Doğrulama Kodu",
-        step2Sub: "6 haneli kodu şuraya gönderdik: ",
-        btnVerify: "Kodu Doğrula",
-        btnChangeEmail: "E-postayı Değiştir",
-        step3Title: "Listeye Alındınız.",
-        step3Sub: "E-postanız doğrulandı. Erişim pencereniz açıldığında sizi bilgilendireceğiz.",
-        finePrint: "Erişim talep ederek şartlarımızı ve gizlilik politikamızı kabul etmiş olursunuz.",
-        errFields: "Lütfen tüm zorunlu alanları doldurun.",
-        errEmail: "Geçerli bir e-posta girin.",
-        errCode: "6 haneli kodu girin."
+        step2Title: "Dogrulama Kodu",
+        step2Sub: "6 haneli kodu suraya gonderdik: ",
+        btnVerify: "Kodu Dogrula",
+        btnChangeEmail: "E-postayi Degistir",
+        step3Title: "Listeye Alindiniz.",
+        step3Sub: "E-postaniz dogrulandi. Erisim pencereniz acildiginda sizi bilgilendirecegiz.",
+        finePrint: "Erisim talep ederek sartlarimizi ve gizlilik politikamizi kabul etmis olursunuz.",
+        errFields: "Lutfen tum zorunlu alanlari doldurun.",
+        errEmail: "Gecerli bir e-posta girin.",
+        errCode: "6 haneli kodu girin.",
+        errGoogleOffline: "Google giris simdilik kullanilamiyor."
       }
     };
 
-    // Elements
     const langToggle = document.getElementById('langToggle');
     const msg1 = document.getElementById('msg1');
     const msg2 = document.getElementById('msg2');
-    const step1 = document.getElementById('step1');
-    const step2 = document.getElementById('step2');
-    const step3 = document.getElementById('step3');
+    const step1El = document.getElementById('step1');
+    const step2El = document.getElementById('step2');
+    const step3El = document.getElementById('step3');
 
-    // UI Helpers
     function setLang(l) {
       state.lang = l;
       langToggle.textContent = l === 'EN' ? 'TR' : 'EN';
@@ -608,13 +647,10 @@
         const key = el.getAttribute('data-i18n');
         if (dict[l][key]) el.innerHTML = dict[l][key];
       });
-      // Update dynamic fields labels if they have translation strings (assuming EN for now if no TR provided)
       renderDynamicFields();
     }
 
-    langToggle.addEventListener('click', () => {
-      setLang(state.lang === 'EN' ? 'TR' : 'EN');
-    });
+    langToggle.addEventListener('click', () => setLang(state.lang === 'EN' ? 'TR' : 'EN'));
 
     function showMsg(el, type, txt) {
       el.className = `message ${type}`;
@@ -623,63 +659,54 @@
     }
 
     function switchStep(num) {
-      step1.classList.remove('active');
-      step2.classList.remove('active');
-      step3.classList.remove('active');
-      if(num===1) step1.classList.add('active');
-      if(num===2) step2.classList.add('active');
-      if(num===3) step3.classList.add('active');
+      step1El.classList.remove('active');
+      step2El.classList.remove('active');
+      step3El.classList.remove('active');
+      if (num === 1) step1El.classList.add('active');
+      if (num === 2) step2El.classList.add('active');
+      if (num === 3) step3El.classList.add('active');
     }
 
-    // Dynamic Fields rendering
     function renderDynamicFields() {
       const c = document.getElementById('dynamicFieldsContainer');
       c.innerHTML = '';
       if (!state.dynamicFields || state.dynamicFields.length === 0) return;
-
       state.dynamicFields.forEach(f => {
-        // f = { id: "company", label: "Company Name", type: "text", required: true }
         const wrap = document.createElement('div');
         wrap.className = 'form-group';
-        
         const lbl = document.createElement('label');
         lbl.textContent = f.label + (f.required ? ' *' : '');
-        
         const inp = document.createElement('input');
         inp.type = f.type || 'text';
         inp.id = `dyn_${f.id}`;
-        if(f.required) inp.required = true;
-
+        if (f.required) inp.required = true;
         wrap.appendChild(lbl);
         wrap.appendChild(inp);
         c.appendChild(wrap);
       });
     }
 
-    // Init App
     async function init() {
-      // Setup tracking quietly
       fetch("/api/track", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ path: location.pathname, ref: document.referrer || "" })
-      }).catch(()=>{});
+      }).catch(() => {});
 
-      // Fetch settings (Firebase config & Custom fields)
       try {
         const sr = await fetch("/api/settings/public");
         const sData = await sr.json();
         if (sData.ok && sData.settings) {
-          if(sData.settings.dynamic_form_fields) {
+          if (sData.settings.dynamic_form_fields) {
             state.dynamicFields = sData.settings.dynamic_form_fields;
             renderDynamicFields();
           }
-          if(sData.settings.firebase_config && sData.settings.firebase_config.apiKey) {
+          if (sData.settings.firebase_config && sData.settings.firebase_config.apiKey) {
             state.fbConfig = sData.settings.firebase_config;
             loadFirebase();
           }
         }
-      } catch(e) { console.warn("Failed to load settings", e); }
+      } catch (e) { console.warn("Settings load failed", e); }
     }
 
     async function loadFirebase() {
@@ -688,10 +715,11 @@
         const { getAuth, GoogleAuthProvider, signInWithPopup } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js");
         const app = initializeApp(state.fbConfig);
         state.authLib = { auth: getAuth(app), GoogleAuthProvider, signInWithPopup };
-      } catch(e) { console.error("Firebase init failed", e); }
+      } catch (e) { console.error("Firebase init failed", e); }
     }
 
-    function collectForm() {
+    // Collect form data — email is optional when isGoogle=true
+    function collectForm(isGoogle = false) {
       const email = document.getElementById('email').value.trim();
       const first = document.getElementById('first_name').value.trim();
       const last = document.getElementById('last_name').value.trim();
@@ -700,90 +728,95 @@
 
       let valid = true;
       if (!first || !last || !city) valid = false;
+      // Email is only required for email signup, not Google
+      if (!isGoogle && !email) valid = false;
 
       const extra = {};
       state.dynamicFields.forEach(f => {
         const el = document.getElementById(`dyn_${f.id}`);
-        if(el) {
+        if (el) {
           extra[f.id] = el.value.trim();
-          if(f.required && !extra[f.id]) valid = false;
+          if (f.required && !extra[f.id]) valid = false;
         }
       });
 
       return { valid, data: { email, first_name: first, last_name: last, city, profile, note: "", extra_fields: extra } };
     }
 
-    // Handlers
+    // Email signup
     document.getElementById('btnEmailSignup').addEventListener('click', async () => {
-      const { valid, data } = collectForm();
+      const { valid, data } = collectForm(false);
       if (!valid) return showMsg(msg1, 'error', dict[state.lang].errFields);
       if (!data.email.includes('@')) return showMsg(msg1, 'error', dict[state.lang].errEmail);
 
       try {
         const r = await fetch('/api/request-code', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify(data) // Send everything, no hcaptcha
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
         });
         const d = await r.json();
-        if(d.ok) {
+        if (d.ok) {
           document.getElementById('emailEcho').textContent = data.email;
           switchStep(2);
         } else {
           showMsg(msg1, 'error', d.error || "Failed");
         }
-      } catch(e) { showMsg(msg1, 'error', "Network Error"); }
+      } catch (e) { showMsg(msg1, 'error', "Network Error"); }
     });
 
+    // Google signup — email NOT required, comes from Google account
     document.getElementById('btnGoogleSignup').addEventListener('click', async () => {
-      if(!state.authLib) return showMsg(msg1, 'error', "Google connect is offline");
-      const { valid, data } = collectForm();
+      if (!state.authLib) return showMsg(msg1, 'error', dict[state.lang].errGoogleOffline);
+
+      const { valid, data } = collectForm(true); // isGoogle=true, email not required
       if (!valid) return showMsg(msg1, 'error', dict[state.lang].errFields);
 
       try {
         const provider = new state.authLib.GoogleAuthProvider();
         const cred = await state.authLib.signInWithPopup(state.authLib.auth, provider);
         const token = await cred.user.getIdToken();
-        
+
         data.googleIdToken = token;
-        data.email = cred.user.email; // Override front end UI with actual Google email just in case
+        data.email = cred.user.email; // Email comes from Google
 
         const r = await fetch('/api/request-code', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
         const d = await r.json();
-        if(d.ok && d.verified) {
+        if (d.ok && d.verified) {
           switchStep(3);
         } else {
           showMsg(msg1, 'error', d.error || "Request failed");
         }
-      } catch(e) {
-        if(e.code !== 'auth/popup-closed-by-user') {
+      } catch (e) {
+        if (e.code !== 'auth/popup-closed-by-user') {
           showMsg(msg1, 'error', "Google Auth failed");
         }
       }
     });
 
+    // Verify code
     document.getElementById('btnVerify').addEventListener('click', async () => {
       const email = document.getElementById('email').value.trim();
       const code = document.getElementById('code').value.trim();
-      if(code.length !== 6) return showMsg(msg2, 'error', dict[state.lang].errCode);
+      if (code.length !== 6) return showMsg(msg2, 'error', dict[state.lang].errCode);
 
       try {
         const r = await fetch('/api/verify-code', {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, code })
         });
         const d = await r.json();
-        if(d.ok) {
+        if (d.ok) {
           switchStep(3);
         } else {
           showMsg(msg2, 'error', d.error || "Invalid Code");
         }
-      } catch(e) { showMsg(msg2, 'error', "Network Error"); }
+      } catch (e) { showMsg(msg2, 'error', "Network Error"); }
     });
 
     document.getElementById('btnBack').addEventListener('click', (e) => {

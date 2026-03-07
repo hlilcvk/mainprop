@@ -7,7 +7,7 @@ import admin from "firebase-admin";
 
 const router = Router();
 
-/* ---------- In-memory rate limiter ---------- */
+/* In-memory rate limiter */
 const rate = new Map();
 function rateOk(ip, limit = 8, windowMs = 10 * 60 * 1000) {
   const now = Date.now();
@@ -20,7 +20,6 @@ function rateOk(ip, limit = 8, windowMs = 10 * 60 * 1000) {
   return r.count <= limit;
 }
 
-/* ---------- Route ---------- */
 router.post("/request-code", async (req, res) => {
   const OTP_SALT = process.env.OTP_SALT || "";
   if (!OTP_SALT) return res.status(503).json({ ok: false, error: "Not configured" });
@@ -40,12 +39,12 @@ router.post("/request-code", async (req, res) => {
   const source = googleIdToken ? "google" : "email";
 
   if (googleIdToken) {
-    if (!admin.apps.length) return res.status(503).json({ ok: false, error: "Google Auth not properly configured" });
+    if (!admin.apps.length) return res.status(503).json({ ok: false, error: "Google Auth not configured" });
     try {
-      const decodedToken = await getAuth().verifyIdToken(googleIdToken);
-      email = decodedToken.email.toLowerCase(); // Force override email from trusted token
+      const decoded = await getAuth().verifyIdToken(googleIdToken);
+      email = decoded.email.toLowerCase();
     } catch (err) {
-      console.error("Firebase Token Error:", err.message);
+      console.error("[AUTH] Firebase token error:", err.message);
       return res.status(401).json({ ok: false, error: "Invalid Google Token" });
     }
   }
@@ -94,15 +93,13 @@ router.post("/request-code", async (req, res) => {
     const ip_hash = sha256(ip + "|otp");
 
     await pool.query(
-      `INSERT INTO email_verifications (email, code_hash, expires_at, ip_hash)
-       VALUES ($1, $2, $3, $4)`,
+      `INSERT INTO email_verifications (email, code_hash, expires_at, ip_hash) VALUES ($1, $2, $3, $4)`,
       [email, code_hash, expires_at, ip_hash]
     );
 
-    // Send email
     const subject = "PROPTREX Verification Code";
     const html = `
-      <div style="font-family:Inter,Arial,sans-serif;line-height:1.5;color:#0B1220">
+      <div style="font-family:system-ui,sans-serif;line-height:1.5;color:#0B1220">
         <h2 style="margin:0 0 10px">Verify your email</h2>
         <p style="margin:0 0 14px;color:#58647A">
           Enter this code to confirm your early access request. This code expires in 10 minutes.
@@ -117,10 +114,9 @@ router.post("/request-code", async (req, res) => {
     `;
 
     await sendEmail(email, subject, html);
-
     return res.json({ ok: true, verified: false });
   } catch (err) {
-    console.error("request-code error:", err.message);
+    console.error("[REQUEST-CODE]", err.message);
     return res.status(500).json({ ok: false, error: "Server error" });
   }
 });

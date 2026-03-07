@@ -1,12 +1,4 @@
-# ============================================
-# PROPTREX Early Access — docker-compose
-# Coolify'da bunu doğrudan kullanabilirsiniz veya
-# sadece Dockerfile ile deploy edip environment
-# variables'ı Coolify panelinden ayarlayabilirsiniz.
-# ============================================
-
 services:
-  # ---- PostgreSQL ----
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -24,23 +16,17 @@ services:
     networks:
       - internal
 
-  # ---- SMTP Mail Server (opsiyonel - kendi mail sunucunuz) ----
-  # Coolify'da ayrı bir servis olarak Mailpit/Mailhog (test)
-  # veya docker-mailserver (production) kurabilirsiniz.
-  # Harici SMTP (Gmail, SendGrid, Resend, vs.) kullanacaksanız
-  # bu servisi kaldırın ve SMTP_* env'lerini dışarıya yönlendirin.
   mailpit:
     image: axllent/mailpit:latest
     restart: unless-stopped
     ports:
-      - "8025:8025"   # Web UI (test için)
+      - "8025:8025"
     environment:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
     networks:
       - internal
 
-  # ---- PROPTREX App ----
   app:
     build: .
     restart: unless-stopped
@@ -52,12 +38,8 @@ services:
     environment:
       PORT: 8080
       NODE_ENV: production
-
-      # PostgreSQL
       DATABASE_URL: postgresql://proptrex:${POSTGRES_PASSWORD:-changeme_strong_password}@postgres:5432/proptrex
       DB_SSL: "false"
-
-      # SMTP (Mailpit — test, production'da gerçek SMTP kullanın)
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
       SMTP_SECURE: "false"
@@ -65,19 +47,12 @@ services:
       SMTP_PASS: ""
       SMTP_TLS_REJECT: "false"
       MAIL_FROM: "PROPTREX <noreply@proptrex.com>"
-
-      # hCaptcha
       HCAPTCHA_SECRET: ${HCAPTCHA_SECRET}
-
-      # OTP
       OTP_SALT: ${OTP_SALT}
-
-      # Firebase Admin (admin panel auth)
       FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID}
       FIREBASE_CLIENT_EMAIL: ${FIREBASE_CLIENT_EMAIL}
       FIREBASE_PRIVATE_KEY: ${FIREBASE_PRIVATE_KEY}
-
-      # Admin izinli e-postalar
+      ADMIN_SECRET: ${ADMIN_SECRET}
       ADMIN_EMAILS: ${ADMIN_EMAILS}
     networks:
       - internal

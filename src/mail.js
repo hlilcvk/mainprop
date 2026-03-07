@@ -1,8 +1,11 @@
 import nodemailer from "nodemailer";
-
 import pool from "./db.js";
 
 let transporter = null;
+
+export function resetTransporter() {
+  transporter = null;
+}
 
 async function getTransporter() {
   if (transporter) return transporter;
@@ -14,22 +17,21 @@ async function getTransporter() {
   let pass = process.env.SMTP_PASS || "";
   let tlsReject = process.env.SMTP_TLS_REJECT !== "false";
 
-  // Try to override from DB settings
   try {
     const res = await pool.query("SELECT value FROM system_settings WHERE key = 'smtp_config'");
     if (res.rows.length > 0) {
-      const dbSmtp = res.rows[0].value;
-      if (dbSmtp && dbSmtp.host) {
-        host = dbSmtp.host;
-        port = parseInt(dbSmtp.port || "587", 10);
-        secure = !!dbSmtp.secure;
-        user = dbSmtp.user || "";
-        pass = dbSmtp.pass || "";
-        tlsReject = !!dbSmtp.tlsReject;
+      const db = res.rows[0].value;
+      if (db && db.host) {
+        host = db.host;
+        port = parseInt(db.port || "587", 10);
+        secure = !!db.secure;
+        user = db.user || "";
+        pass = db.pass || "";
+        tlsReject = !!db.tlsReject;
       }
     }
   } catch (err) {
-    console.error("Failed to load SMTP config from DB:", err.message);
+    console.error("[MAIL] DB config load failed:", err.message);
   }
 
   transporter = nodemailer.createTransport({
@@ -43,12 +45,6 @@ async function getTransporter() {
   return transporter;
 }
 
-/**
- * E-posta gönder
- * @param {string} to - Alıcı
- * @param {string} subject - Konu
- * @param {string} html - HTML içerik
- */
 export async function sendEmail(to, subject, html) {
   const from = process.env.MAIL_FROM || "PROPTREX <noreply@proptrex.com>";
   const t = await getTransporter();
