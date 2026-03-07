@@ -174,4 +174,27 @@ router.put("/admin/settings/:key", requireAdmin, async (req, res) => {
   }
 });
 
+/* ---- Test Email ---- */
+
+router.post("/admin/test-email", requireAdmin, async (req, res) => {
+  const { to } = req.body;
+  if (!to) return res.status(400).json({ ok: false, error: "Recipient email required" });
+
+  try {
+    await sendEmail(
+      to,
+      "PROPTREX - SMTP Test",
+      `<div style="font-family:system-ui,sans-serif;padding:20px;">
+        <h2>SMTP Test Successful</h2>
+        <p>Your SMTP configuration is working correctly.</p>
+        <p style="color:#58647A;font-size:12px;">Sent at: ${new Date().toISOString()}</p>
+      </div>`
+    );
+    return res.json({ ok: true, message: "Test email sent successfully" });
+  } catch (err) {
+    console.error("[ADMIN] Test email failed:", err.message);
+    return res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 export default router;

@@ -432,7 +432,10 @@
               <label style="margin:0; font-size:10px;">REJECT UNAUTH TLS</label>
             </div>
           </div>
-          <button class="btn btn-primary" onclick="saveSmtpConfig()">SAVE SMTP</button>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button class="btn btn-primary" onclick="saveSmtpConfig()">SAVE SMTP</button>
+            <button class="btn" onclick="sendTestEmail()" style="font-size:10px;">SEND TEST EMAIL</button>
+          </div>
         </div>
 
         <div class="setting-section">
@@ -882,6 +885,17 @@
       const val = { host: document.getElementById("smtpHost").value.trim(), port: document.getElementById("smtpPort").value, user: document.getElementById("smtpUser").value.trim(), pass: document.getElementById("smtpPass").value.trim(), secure: document.getElementById("smtpSecure").checked, tlsReject: document.getElementById("smtpTlsReject").checked, mailFrom: document.getElementById("smtpMailFrom").value.trim() };
       try { await apiCall("/api/admin/settings/smtp_config", "PUT", { value: val }); showToast("SMTP saved"); }
       catch (e) { showToast("Error: " + e.message, true); }
+    };
+
+    window.sendTestEmail = async () => {
+      const to = prompt("Enter recipient email for test:");
+      if (!to) return;
+      try {
+        await apiCall("/api/admin/test-email", "POST", { to });
+        showToast("Test email sent to " + to);
+      } catch (e) {
+        showToast("SMTP Error: " + e.message, true);
+      }
     };
 
     window.saveFirebaseConfig = async () => {
