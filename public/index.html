@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PROPTREX — Early Access</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
 
   <style>
     :root {
@@ -25,8 +28,16 @@
       --ok: #2DD4BF;
     }
 
-    * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: 'DM Sans', system-ui, sans-serif;
@@ -43,8 +54,8 @@
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(rgba(212,168,83,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(212,168,83,0.03) 1px, transparent 1px);
+        linear-gradient(rgba(212, 168, 83, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 168, 83, 0.03) 1px, transparent 1px);
       background-size: 60px 60px;
       z-index: 0;
       pointer-events: none;
@@ -70,22 +81,33 @@
       pointer-events: none;
       opacity: 0.4;
     }
+
     .light-1 {
-      top: -15%; left: -10%;
-      width: 50vw; height: 50vw;
-      background: radial-gradient(circle, rgba(212,168,83,0.12) 0%, transparent 70%);
+      top: -15%;
+      left: -10%;
+      width: 50vw;
+      height: 50vw;
+      background: radial-gradient(circle, rgba(212, 168, 83, 0.12) 0%, transparent 70%);
       animation: drift 25s ease-in-out infinite alternate;
     }
+
     .light-2 {
-      bottom: -15%; right: -10%;
-      width: 55vw; height: 55vw;
-      background: radial-gradient(circle, rgba(45,212,191,0.08) 0%, transparent 70%);
+      bottom: -15%;
+      right: -10%;
+      width: 55vw;
+      height: 55vw;
+      background: radial-gradient(circle, rgba(45, 212, 191, 0.08) 0%, transparent 70%);
       animation: drift 30s ease-in-out infinite alternate-reverse;
     }
 
     @keyframes drift {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(4%, 4%) scale(1.05); }
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      100% {
+        transform: translate(4%, 4%) scale(1.05);
+      }
     }
 
     /* Topbar */
@@ -112,9 +134,16 @@
       color: var(--accent);
     }
 
-    .brand svg { width: 32px; height: 32px; }
+    .brand svg {
+      width: 32px;
+      height: 32px;
+    }
 
-    .nav-actions { display: flex; gap: 16px; align-items: center; }
+    .nav-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
 
     .lang-switcher {
       background: transparent;
@@ -129,6 +158,7 @@
       letter-spacing: 0.1em;
       transition: var(--transition);
     }
+
     .lang-switcher:hover {
       color: var(--accent);
       border-color: var(--accent);
@@ -163,8 +193,8 @@
       align-items: center;
       gap: 8px;
       padding: 6px 16px;
-      border: 1px solid rgba(212,168,83,0.3);
-      background: rgba(212,168,83,0.05);
+      border: 1px solid rgba(212, 168, 83, 0.3);
+      background: rgba(212, 168, 83, 0.05);
       border-radius: 4px;
       font-family: 'Space Mono', monospace;
       font-size: 11px;
@@ -176,7 +206,8 @@
     }
 
     .hero-badge .dot {
-      width: 6px; height: 6px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: var(--accent);
       box-shadow: 0 0 10px var(--accent);
@@ -184,8 +215,17 @@
     }
 
     @keyframes pulse {
-      0%, 100% { opacity: 0.5; transform: scale(0.8); }
-      50% { opacity: 1; transform: scale(1.2); }
+
+      0%,
+      100% {
+        opacity: 0.5;
+        transform: scale(0.8);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
     }
 
     h1 {
@@ -209,17 +249,29 @@
     }
 
     @media (max-width: 992px) {
-      .subtitle { margin: 0 auto 32px; }
+      .subtitle {
+        margin: 0 auto 32px;
+      }
     }
 
     /* Chips */
-    .features { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
-    @media (max-width: 992px) { .features { justify-content: center; } }
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+
+    @media (max-width: 992px) {
+      .features {
+        justify-content: center;
+      }
+    }
 
     .chip {
       padding: 7px 14px;
-      background: rgba(212,168,83,0.04);
-      border: 1px solid rgba(212,168,83,0.15);
+      background: rgba(212, 168, 83, 0.04);
+      border: 1px solid rgba(212, 168, 83, 0.15);
       border-radius: 4px;
       font-family: 'Space Mono', monospace;
       font-size: 12px;
@@ -229,21 +281,43 @@
       transition: var(--transition);
       animation: fadeSlideUp 0.5s ease both;
     }
-    .chip:nth-child(1) { animation-delay: 0.1s; }
-    .chip:nth-child(2) { animation-delay: 0.2s; }
-    .chip:nth-child(3) { animation-delay: 0.3s; }
-    .chip:nth-child(4) { animation-delay: 0.4s; }
-    .chip:nth-child(5) { animation-delay: 0.5s; }
+
+    .chip:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+
+    .chip:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .chip:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    .chip:nth-child(4) {
+      animation-delay: 0.4s;
+    }
+
+    .chip:nth-child(5) {
+      animation-delay: 0.5s;
+    }
 
     .chip:hover {
-      background: rgba(212,168,83,0.1);
+      background: rgba(212, 168, 83, 0.1);
       color: var(--accent);
       transform: translateY(-2px);
     }
 
     @keyframes fadeSlideUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* Glass Card */
@@ -253,7 +327,7 @@
       border-radius: var(--radius);
       padding: 40px;
       backdrop-filter: blur(20px);
-      box-shadow: 0 24px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
       position: relative;
       overflow: hidden;
     }
@@ -261,7 +335,10 @@
     .glass-card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0; height: 2px;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
       background: linear-gradient(90deg, transparent 5%, var(--accent) 30%, var(--accent-secondary) 70%, transparent 95%);
     }
 
@@ -280,11 +357,26 @@
     }
 
     /* Forms */
-    .form-group { margin-bottom: 16px; }
+    .form-group {
+      margin-bottom: 16px;
+    }
 
-    .form-row { display: flex; gap: 16px; margin-bottom: 16px; }
-    .form-row > div { flex: 1; }
-    @media (max-width: 480px) { .form-row { flex-direction: column; gap: 16px; } }
+    .form-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .form-row>div {
+      flex: 1;
+    }
+
+    @media (max-width: 480px) {
+      .form-row {
+        flex-direction: column;
+        gap: 16px;
+      }
+    }
 
     label {
       display: block;
@@ -297,10 +389,11 @@
       font-weight: 700;
     }
 
-    input, select {
+    input,
+    select {
       width: 100%;
-      background: rgba(0,0,0,0.3);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 8px;
       padding: 13px 16px;
       color: #fff;
@@ -310,13 +403,16 @@
       outline: none;
     }
 
-    input:focus, select:focus {
+    input:focus,
+    select:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(212,168,83,0.15);
-      background: rgba(0,0,0,0.5);
+      box-shadow: 0 0 0 2px rgba(212, 168, 83, 0.15);
+      background: rgba(0, 0, 0, 0.5);
     }
 
-    input::placeholder { color: rgba(255,255,255,0.2); }
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.2);
+    }
 
     select {
       appearance: none;
@@ -325,7 +421,11 @@
       background-position: right 14px center;
       cursor: pointer;
     }
-    select option { background: #0a0b0f; color: #fff; }
+
+    select option {
+      background: #0a0b0f;
+      color: #fff;
+    }
 
     /* Buttons */
     .btn {
@@ -349,27 +449,35 @@
     .btn-primary {
       background: linear-gradient(135deg, var(--accent) 0%, #c49440 100%);
       color: #030304;
-      box-shadow: 0 8px 24px rgba(212,168,83,0.25);
+      box-shadow: 0 8px 24px rgba(212, 168, 83, 0.25);
     }
 
     .btn-primary:hover {
-      box-shadow: 0 12px 30px rgba(212,168,83,0.4);
+      box-shadow: 0 12px 30px rgba(212, 168, 83, 0.4);
       transform: translateY(-2px) scale(1.01);
     }
-    .btn-primary:active { transform: scale(0.98); }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
 
     .btn-google {
-      background: rgba(255,255,255,0.06);
+      background: rgba(255, 255, 255, 0.06);
       color: #fff;
       margin-top: 12px;
-      border: 1px solid rgba(255,255,255,0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
+
     .btn-google:hover {
-      background: rgba(255,255,255,0.1);
+      background: rgba(255, 255, 255, 0.1);
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(255,255,255,0.05);
+      box-shadow: 0 8px 20px rgba(255, 255, 255, 0.05);
     }
-    .g-icon { width: 18px; height: 18px; }
+
+    .g-icon {
+      width: 18px;
+      height: 18px;
+    }
 
     .divider {
       display: flex;
@@ -381,13 +489,21 @@
       text-transform: uppercase;
       letter-spacing: 0.15em;
     }
-    .divider::before, .divider::after {
+
+    .divider::before,
+    .divider::after {
       content: '';
       flex: 1;
       border-bottom: 1px solid var(--border);
     }
-    .divider:not(:empty)::before { margin-right: 15px; }
-    .divider:not(:empty)::after { margin-left: 15px; }
+
+    .divider:not(:empty)::before {
+      margin-right: 15px;
+    }
+
+    .divider:not(:empty)::after {
+      margin-left: 15px;
+    }
 
     .message {
       margin-top: 16px;
@@ -397,12 +513,14 @@
       display: none;
       font-family: 'DM Sans', sans-serif;
     }
+
     .message.success {
       display: block;
       background: rgba(45, 212, 191, 0.08);
       color: var(--ok);
       border: 1px solid rgba(45, 212, 191, 0.2);
     }
+
     .message.error {
       display: block;
       background: rgba(239, 68, 68, 0.08);
@@ -411,29 +529,45 @@
     }
 
     /* Steps */
-    .step { display: none; animation: fadeIn 0.4s ease forwards; }
-    .step.active { display: block; }
+    .step {
+      display: none;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    .step.active {
+      display: block;
+    }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* Success */
     .success-ring {
-      width: 72px; height: 72px;
+      width: 72px;
+      height: 72px;
       border-radius: 50%;
-      background: rgba(45,212,191,0.08);
+      background: rgba(45, 212, 191, 0.08);
       border: 2px solid var(--accent-secondary);
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin: 0 auto 24px;
-      box-shadow: 0 0 30px rgba(45,212,191,0.2);
+      box-shadow: 0 0 30px rgba(45, 212, 191, 0.2);
     }
 
     .fine-print {
       margin-top: 20px;
       font-size: 11px;
-      color: rgba(148,163,184,0.5);
+      color: rgba(148, 163, 184, 0.5);
       text-align: center;
       font-family: 'DM Sans', sans-serif;
     }
@@ -447,8 +581,9 @@
   <nav class="topbar">
     <div class="brand">
       <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="32" height="32" rx="6" fill="#D4A853"/>
-        <text x="16" y="22" text-anchor="middle" font-family="Space Mono, monospace" font-size="14" font-weight="700" fill="#030304">PX</text>
+        <rect width="32" height="32" rx="6" fill="#D4A853" />
+        <text x="16" y="22" text-anchor="middle" font-family="Space Mono, monospace" font-size="14" font-weight="700"
+          fill="#030304">PX</text>
       </svg>
       PROPTREX
     </div>
@@ -463,7 +598,7 @@
         <span class="dot"></span>
         <span data-i18n="badge">6 AI AGENTS · MULTI-ASSET · REAL-TIME</span>
       </div>
-      <h1 data-i18n="heading">The Intelligence Layer<br/>Across Every Market.</h1>
+      <h1 data-i18n="heading">The Intelligence Layer<br />Across Every Market.</h1>
       <p class="subtitle" data-i18n="subheading">
         The platform remains private while we calibrate signals and scale infrastructure.
         Request early access and we'll notify you when your window opens.
@@ -520,16 +655,25 @@
 
           <div id="dynamicFieldsContainer"></div>
 
-          <button class="btn btn-primary" id="btnEmailSignup" type="button" data-i18n="btnEmail">Continue with Email</button>
+          <button class="btn btn-primary" id="btnEmailSignup" type="button" data-i18n="btnEmail">Continue with
+            Email</button>
 
           <div class="divider" data-i18n="divider">OR</div>
 
           <button class="btn btn-google" id="btnGoogleSignup" type="button">
             <svg class="g-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+              <path
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                fill="#4285F4" />
+              <path
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                fill="#34A853" />
+              <path
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                fill="#FBBC05" />
+              <path
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                fill="#EA4335" />
             </svg>
             <span data-i18n="btnGoogle">Continue with Google</span>
           </button>
@@ -541,17 +685,21 @@
       <!-- Step 2: Verification -->
       <div class="step" id="step2">
         <h2 class="card-title" data-i18n="step2Title">Verification Code</h2>
-        <p class="card-subtitle"><span data-i18n="step2Sub">We sent a 6-digit code to </span><span id="emailEcho" style="color:var(--accent);font-weight:600;"></span></p>
+        <p class="card-subtitle"><span data-i18n="step2Sub">We sent a 6-digit code to </span><span id="emailEcho"
+            style="color:var(--accent);font-weight:600;"></span></p>
 
         <div>
           <div class="form-group">
-            <input type="text" id="code" placeholder="000000" maxlength="6" style="text-align:center; letter-spacing:10px; font-size:26px; font-family:'Space Mono',monospace;" />
+            <input type="text" id="code" placeholder="000000" maxlength="6"
+              style="text-align:center; letter-spacing:10px; font-size:26px; font-family:'Space Mono',monospace;" />
           </div>
 
           <button class="btn btn-primary" id="btnVerify" type="button" data-i18n="btnVerify">Verify Code</button>
 
           <div style="margin-top:16px;text-align:center;">
-            <a href="#" id="btnBack" style="color:var(--text-muted);font-size:13px;text-decoration:none;font-family:'Space Mono',monospace;" data-i18n="btnChangeEmail">Change email</a>
+            <a href="#" id="btnBack"
+              style="color:var(--text-muted);font-size:13px;text-decoration:none;font-family:'Space Mono',monospace;"
+              data-i18n="btnChangeEmail">Change email</a>
           </div>
 
           <div id="msg2" class="message"></div>
@@ -562,16 +710,19 @@
       <div class="step" id="step3">
         <div style="text-align:center;">
           <div class="success-ring">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2DD4BF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2DD4BF" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
           </div>
           <h2 class="card-title" style="color:var(--accent-secondary);" data-i18n="step3Title">You're on the list.</h2>
-          <p class="card-subtitle" data-i18n="step3Sub" style="margin-bottom:0;">Your email has been verified. We will notify you when your access window opens.</p>
+          <p class="card-subtitle" data-i18n="step3Sub" style="margin-bottom:0;">Your email has been verified. We will
+            notify you when your access window opens.</p>
         </div>
       </div>
 
-      <div class="fine-print" data-i18n="finePrint">By requesting access, you agree to our terms and privacy policy.</div>
+      <div class="fine-print" data-i18n="finePrint">By requesting access, you agree to our terms and privacy policy.
+      </div>
     </aside>
   </main>
 
@@ -691,7 +842,7 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ path: location.pathname, ref: document.referrer || "" })
-      }).catch(() => {});
+      }).catch(() => { });
 
       try {
         const sr = await fetch("/api/settings/public");
@@ -719,11 +870,10 @@
       } catch (e) { console.error("Firebase init failed", e); }
     }
 
-    // Collect form data — email is optional when isGoogle=true
     function collectForm(isGoogle = false) {
       const email = document.getElementById('email').value.trim();
-      const first = document.getElementById('first_name').value.trim();
-      const last = document.getElementById('last_name').value.trim();
+      let first = document.getElementById('first_name').value.trim();
+      let last = document.getElementById('last_name').value.trim();
       const city = document.getElementById('city').value.trim();
       const profile = document.getElementById('profile').value;
 
@@ -781,6 +931,13 @@
         data.googleIdToken = token;
         data.email = cred.user.email;
 
+        // Extract name from Google if user didn't type it
+        if (!data.first_name && cred.user.displayName) {
+          const nameParts = cred.user.displayName.trim().split(' ');
+          data.first_name = nameParts[0];
+          data.last_name = nameParts.slice(1).join(' ');
+        }
+
         const r = await fetch('/api/request-code', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -828,4 +985,5 @@
     init();
   </script>
 </body>
+
 </html>
