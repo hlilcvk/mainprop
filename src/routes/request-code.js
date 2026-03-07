@@ -52,6 +52,11 @@ router.post("/request-code", async (req, res) => {
   if (!isEmail(email)) return res.status(400).json({ ok: false, error: "Invalid email" });
 
   try {
+    // Duplicate signup check
+    const existing = await pool.query("SELECT status FROM waitlist WHERE lower(email) = $1", [email]);
+    if (existing.rows.length > 0 && existing.rows[0].status === 'verified') {
+      return res.json({ ok: true, registered: true });
+    }
     if (googleIdToken) {
       await pool.query(
         `INSERT INTO waitlist (email, first_name, last_name, city, profile, note, extra_fields, source, status, verified_at)

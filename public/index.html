@@ -2,30 +2,29 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PROPTREX — Early Access</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PROPTREX — Early Access (Light Edition)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
     rel="stylesheet">
 
   <style>
     :root {
-      --bg: #030304;
-      --bg-accent: #0a0b0f;
-      --text-main: #F0F0F0;
-      --text-muted: #94A3B8;
-      --accent: #D4A853;
-      --accent-glow: rgba(212, 168, 83, 0.35);
-      --accent-secondary: #2DD4BF;
-      --border: rgba(255, 255, 255, 0.06);
-      --card-bg: rgba(10, 11, 15, 0.7);
-      --radius: 16px;
-      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --bg: #F8FAFC;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --accent: #B48A36;
+      --accent-glow: rgba(180, 138, 54, 0.15);
+      --accent-secondary: #0ea5e9;
+      --card-bg: rgba(255, 255, 255, 0.75);
+      --border: rgba(0, 0, 0, 0.08);
+      --radius: 20px;
+      --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       --err: #ef4444;
-      --ok: #2DD4BF;
+      --ok: #10B981;
     }
 
     * {
@@ -40,103 +39,111 @@
     }
 
     body {
-      font-family: 'DM Sans', system-ui, sans-serif;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
       background-color: var(--bg);
       color: var(--text-main);
       overflow-x: hidden;
-      line-height: 1.5;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Grid Pattern Background */
-    body::before {
-      content: '';
+    /* Ambient Animated Background */
+    .ambient-bg {
       position: fixed;
       inset: 0;
-      background-image:
-        linear-gradient(rgba(212, 168, 83, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(212, 168, 83, 0.03) 1px, transparent 1px);
-      background-size: 60px 60px;
       z-index: 0;
+      overflow: hidden;
       pointer-events: none;
+      background: #F8FAFC;
     }
 
-    /* Grain Overlay */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      opacity: 0.4;
-      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
-      z-index: 0;
-      pointer-events: none;
+    #bg-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      opacity: 0.6;
     }
 
-    /* Ambient Glows */
-    .ambient-light {
+    .orb {
       position: absolute;
       border-radius: 50%;
-      filter: blur(100px);
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0.4;
+      filter: blur(80px);
+      opacity: 0.6;
+      animation: float 20s infinite alternate ease-in-out;
     }
 
-    .light-1 {
-      top: -15%;
+    .orb-1 {
+      width: 600px;
+      height: 600px;
+      background: rgba(180, 138, 54, 0.1);
+      top: -20%;
       left: -10%;
-      width: 50vw;
-      height: 50vw;
-      background: radial-gradient(circle, rgba(212, 168, 83, 0.12) 0%, transparent 70%);
-      animation: drift 25s ease-in-out infinite alternate;
     }
 
-    .light-2 {
-      bottom: -15%;
+    .orb-2 {
+      width: 500px;
+      height: 500px;
+      background: rgba(14, 165, 233, 0.08);
+      bottom: -10%;
       right: -10%;
-      width: 55vw;
-      height: 55vw;
-      background: radial-gradient(circle, rgba(45, 212, 191, 0.08) 0%, transparent 70%);
-      animation: drift 30s ease-in-out infinite alternate-reverse;
+      animation-delay: -5s;
     }
 
-    @keyframes drift {
+    .orb-3 {
+      width: 400px;
+      height: 400px;
+      background: rgba(16, 185, 129, 0.05);
+      top: 30%;
+      left: 40%;
+      animation-delay: -10s;
+    }
+
+    @keyframes float {
       0% {
         transform: translate(0, 0) scale(1);
       }
 
       100% {
-        transform: translate(4%, 4%) scale(1.05);
+        transform: translate(50px, 40px) scale(1.1);
       }
     }
 
-    /* Topbar */
+    /* Dot Grid Texture */
+    .ambient-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+      background-size: 30px 30px;
+      mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+      -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+    }
+
+    /* Top Navigation */
     .topbar {
       position: relative;
       z-index: 10;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 24px 5%;
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
+      padding: 24px 6%;
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+      background: rgba(248, 250, 252, 0.6);
     }
 
     .brand {
       display: flex;
       align-items: center;
       gap: 12px;
-      font-family: 'Space Mono', monospace;
-      font-weight: 700;
-      font-size: 15px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--accent);
-    }
-
-    .brand svg {
-      width: 32px;
-      height: 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: 0.1em;
+      color: var(--text-main);
     }
 
     .nav-actions {
@@ -146,74 +153,369 @@
     }
 
     .lang-switcher {
-      background: transparent;
+      appearance: none;
+      background: #ffffff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%230F172A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 12px center;
       border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 6px 14px;
-      border-radius: 4px;
+      color: var(--text-main);
+      padding: 8px 32px 8px 16px;
+      border-radius: 8px;
       cursor: pointer;
-      font-family: 'Space Mono', monospace;
-      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
       transition: var(--transition);
     }
 
-    .lang-switcher:hover {
-      color: var(--accent);
+    .lang-switcher:hover,
+    .lang-switcher:focus {
       border-color: var(--accent);
+      outline: none;
+      box-shadow: 0 0 0 3px var(--accent-glow);
     }
 
-    /* Container */
+    /* Main Layout */
     .container {
       position: relative;
       z-index: 5;
-      max-width: 1200px;
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 60px 5%;
+      padding: 60px 6%;
       display: grid;
-      grid-template-columns: 1fr 460px;
-      gap: 60px;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 80px;
       align-items: center;
       min-height: calc(100vh - 85px);
     }
 
-    @media (max-width: 992px) {
+    @media (max-width: 1024px) {
       .container {
         grid-template-columns: 1fr;
+        gap: 40px;
         padding-top: 40px;
         padding-bottom: 80px;
         text-align: center;
       }
     }
 
-    /* Hero */
+    /* Typography & Hero */
     .hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 16px;
-      border: 1px solid rgba(212, 168, 83, 0.3);
-      background: rgba(212, 168, 83, 0.05);
-      border-radius: 4px;
-      font-family: 'Space Mono', monospace;
+      padding: 8px 18px;
+      background: #fff;
+      border: 1px solid rgba(180, 138, 54, 0.2);
+      border-radius: 30px;
+      font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 28px;
+      box-shadow: 0 4px 15px var(--accent-glow);
+      margin-bottom: 32px;
+      animation: slideInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .hero-badge .dot {
-      width: 6px;
-      height: 6px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background: var(--accent);
-      box-shadow: 0 0 10px var(--accent);
       animation: pulse 2s infinite;
     }
 
+    h1 {
+      font-size: clamp(40px, 5vw, 64px);
+      line-height: 1.1;
+      margin: 0 0 24px 0;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text-main);
+      animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, var(--accent) 0%, #d97706 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: clamp(16px, 1.8vw, 20px);
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      max-width: 550px;
+      line-height: 1.7;
+      animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+    }
+
+    @media (max-width: 1024px) {
+      .subtitle {
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
+    /* Data Points */
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+    }
+
+    @media (max-width: 1024px) {
+      .features {
+        justify-content: center;
+      }
+    }
+
+    .chip {
+      padding: 8px 16px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+      transition: var(--transition);
+    }
+
+    .chip:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(180, 138, 54, 0.1);
+    }
+
+    /* Premium Glass Form Card */
+    .glass-card {
+      background: var(--card-bg);
+      border: 1px solid #ffffff;
+      border-radius: 24px;
+      padding: 48px;
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      box-shadow:
+        0 40px 80px -20px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+      animation: fadeInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+    }
+
+    .card-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      margin: 0 0 8px 0;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+
+    .card-subtitle {
+      color: var(--text-muted);
+      font-size: 15px;
+      margin: 0 0 32px 0;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-row>div {
+      flex: 1;
+    }
+
+    @media (max-width: 480px) {
+      .form-row {
+        flex-direction: column;
+        gap: 20px;
+      }
+    }
+
+    label {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    input,
+    select {
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      transition: var(--transition);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.01) inset;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-glow);
+    }
+
+    input::placeholder {
+      color: #cbd5e1;
+      font-weight: 400;
+    }
+
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 18px center;
+      cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--text-main);
+      color: #ffffff;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: #1e293b;
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(15, 23, 42, 0.3);
+    }
+
+    .btn-google {
+      background: #ffffff;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    }
+
+    .btn-google:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    }
+
+    .g-icon {
+      width: 22px;
+      height: 22px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 24px 0;
+      color: #94a3b8;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-top: 1px solid var(--border);
+    }
+
+    .divider::before {
+      margin-right: 16px;
+    }
+
+    .divider::after {
+      margin-left: 16px;
+    }
+
+    /* Feedback Msgs */
+    .message {
+      margin-top: 20px;
+      font-size: 14px;
+      padding: 14px;
+      border-radius: 8px;
+      font-weight: 500;
+      display: none;
+    }
+
+    .message.success {
+      display: block;
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+
+    .message.error {
+      display: block;
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    /* Inter-step animations */
+    .step {
+      display: none;
+      animation: scaleUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    .success-ring {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #ecfdf5;
+      border: 2px solid #10B981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      box-shadow: 0 0 40px rgba(16, 185, 129, 0.2);
+    }
+
+    .fine-print {
+      margin-top: 24px;
+      font-size: 12px;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    /* Keyframes */
     @keyframes pulse {
 
       0%,
@@ -224,94 +526,14 @@
 
       50% {
         opacity: 1;
-        transform: scale(1.2);
+        transform: scale(1.3);
       }
     }
 
-    h1 {
-      font-family: 'Space Mono', monospace;
-      font-size: clamp(36px, 4.5vw, 58px);
-      line-height: 1.15;
-      margin: 0 0 24px 0;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      background: linear-gradient(135deg, #F0F0F0 0%, var(--accent) 60%, var(--accent-secondary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .subtitle {
-      font-size: clamp(15px, 1.8vw, 18px);
-      color: var(--text-muted);
-      margin-bottom: 32px;
-      max-width: 550px;
-      line-height: 1.7;
-    }
-
-    @media (max-width: 992px) {
-      .subtitle {
-        margin: 0 auto 32px;
-      }
-    }
-
-    /* Chips */
-    .features {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 40px;
-    }
-
-    @media (max-width: 992px) {
-      .features {
-        justify-content: center;
-      }
-    }
-
-    .chip {
-      padding: 7px 14px;
-      background: rgba(212, 168, 83, 0.04);
-      border: 1px solid rgba(212, 168, 83, 0.15);
-      border-radius: 4px;
-      font-family: 'Space Mono', monospace;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-      transition: var(--transition);
-      animation: fadeSlideUp 0.5s ease both;
-    }
-
-    .chip:nth-child(1) {
-      animation-delay: 0.1s;
-    }
-
-    .chip:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .chip:nth-child(3) {
-      animation-delay: 0.3s;
-    }
-
-    .chip:nth-child(4) {
-      animation-delay: 0.4s;
-    }
-
-    .chip:nth-child(5) {
-      animation-delay: 0.5s;
-    }
-
-    .chip:hover {
-      background: rgba(212, 168, 83, 0.1);
-      color: var(--accent);
-      transform: translateY(-2px);
-    }
-
-    @keyframes fadeSlideUp {
+    @keyframes slideInUp {
       from {
         opacity: 0;
-        transform: translateY(12px);
+        transform: translateY(30px);
       }
 
       to {
@@ -320,228 +542,10 @@
       }
     }
 
-    /* Glass Card */
-    .glass-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 40px;
-      backdrop-filter: blur(20px);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .glass-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent 5%, var(--accent) 30%, var(--accent-secondary) 70%, transparent 95%);
-    }
-
-    .card-title {
-      font-family: 'Space Mono', monospace;
-      font-size: 22px;
-      font-weight: 700;
-      margin: 0 0 6px 0;
-      color: var(--accent);
-    }
-
-    .card-subtitle {
-      color: var(--text-muted);
-      font-size: 14px;
-      margin: 0 0 24px 0;
-    }
-
-    /* Forms */
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-row {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    .form-row>div {
-      flex: 1;
-    }
-
-    @media (max-width: 480px) {
-      .form-row {
-        flex-direction: column;
-        gap: 16px;
-      }
-    }
-
-    label {
-      display: block;
-      font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-      font-weight: 700;
-    }
-
-    input,
-    select {
-      width: 100%;
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 8px;
-      padding: 13px 16px;
-      color: #fff;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      transition: var(--transition);
-      outline: none;
-    }
-
-    input:focus,
-    select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(212, 168, 83, 0.15);
-      background: rgba(0, 0, 0, 0.5);
-    }
-
-    input::placeholder {
-      color: rgba(255, 255, 255, 0.2);
-    }
-
-    select {
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%2394A3B8' stroke-width='1.5'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 14px center;
-      cursor: pointer;
-    }
-
-    select option {
-      background: #0a0b0f;
-      color: #fff;
-    }
-
-    /* Buttons */
-    .btn {
-      width: 100%;
-      padding: 14px 24px;
-      border-radius: 8px;
-      font-family: 'Space Mono', monospace;
-      font-weight: 700;
-      font-size: 13px;
-      letter-spacing: 0.05em;
-      cursor: pointer;
-      transition: var(--transition);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      border: none;
-      text-transform: uppercase;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent) 0%, #c49440 100%);
-      color: #030304;
-      box-shadow: 0 8px 24px rgba(212, 168, 83, 0.25);
-    }
-
-    .btn-primary:hover {
-      box-shadow: 0 12px 30px rgba(212, 168, 83, 0.4);
-      transform: translateY(-2px) scale(1.01);
-    }
-
-    .btn-primary:active {
-      transform: scale(0.98);
-    }
-
-    .btn-google {
-      background: rgba(255, 255, 255, 0.06);
-      color: #fff;
-      margin-top: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .btn-google:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(255, 255, 255, 0.05);
-    }
-
-    .g-icon {
-      width: 18px;
-      height: 18px;
-    }
-
-    .divider {
-      display: flex;
-      align-items: center;
-      margin: 20px 0;
-      color: var(--text-muted);
-      font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-    }
-
-    .divider::before,
-    .divider::after {
-      content: '';
-      flex: 1;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .divider:not(:empty)::before {
-      margin-right: 15px;
-    }
-
-    .divider:not(:empty)::after {
-      margin-left: 15px;
-    }
-
-    .message {
-      margin-top: 16px;
-      font-size: 13px;
-      padding: 12px;
-      border-radius: 6px;
-      display: none;
-      font-family: 'DM Sans', sans-serif;
-    }
-
-    .message.success {
-      display: block;
-      background: rgba(45, 212, 191, 0.08);
-      color: var(--ok);
-      border: 1px solid rgba(45, 212, 191, 0.2);
-    }
-
-    .message.error {
-      display: block;
-      background: rgba(239, 68, 68, 0.08);
-      color: var(--err);
-      border: 1px solid rgba(239, 68, 68, 0.2);
-    }
-
-    /* Steps */
-    .step {
-      display: none;
-      animation: fadeIn 0.4s ease forwards;
-    }
-
-    .step.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
+    @keyframes slideInDown {
       from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(-20px);
       }
 
       to {
@@ -550,45 +554,57 @@
       }
     }
 
-    /* Success */
-    .success-ring {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      background: rgba(45, 212, 191, 0.08);
-      border: 2px solid var(--accent-secondary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 24px;
-      box-shadow: 0 0 30px rgba(45, 212, 191, 0.2);
+    @keyframes fadeInRight {
+      from {
+        opacity: 0;
+        transform: translateX(40px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
 
-    .fine-print {
-      margin-top: 20px;
-      font-size: 11px;
-      color: rgba(148, 163, 184, 0.5);
-      text-align: center;
-      font-family: 'DM Sans', sans-serif;
+    @keyframes scaleUp {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
   </style>
 </head>
 
 <body>
-  <div class="ambient-light light-1"></div>
-  <div class="ambient-light light-2"></div>
+  <div class="ambient-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <canvas id="bg-canvas"></canvas>
+  </div>
 
   <nav class="topbar">
     <div class="brand">
-      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="32" height="32" rx="6" fill="#D4A853" />
-        <text x="16" y="22" text-anchor="middle" font-family="Space Mono, monospace" font-size="14" font-weight="700"
-          fill="#030304">PX</text>
+      <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="28">
+        <rect width="32" height="32" rx="8" fill="#0F172A" />
+        <text x="16" y="22" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14"
+          font-weight="700" fill="#ffffff">PX</text>
       </svg>
       PROPTREX
     </div>
     <div class="nav-actions">
-      <button class="lang-switcher" id="langToggle">TR</button>
+      <select class="lang-switcher" id="langSelect">
+        <option value="EN">🇺🇸 EN</option>
+        <option value="TR">🇹🇷 TR</option>
+        <option value="ES">🇪🇸 ES</option>
+        <option value="DE">🇩🇪 DE</option>
+        <option value="FR">🇫🇷 FR</option>
+      </select>
     </div>
   </nav>
 
@@ -598,7 +614,7 @@
         <span class="dot"></span>
         <span data-i18n="badge">6 AI AGENTS · MULTI-ASSET · REAL-TIME</span>
       </div>
-      <h1 data-i18n="heading">The Intelligence Layer<br />Across Every Market.</h1>
+      <h1 data-i18n="heading">The Intelligence Layer<br />Across Every <span>Market.</span></h1>
       <p class="subtitle" data-i18n="subheading">
         The platform remains private while we calibrate signals and scale infrastructure.
         Request early access and we'll notify you when your window opens.
@@ -614,8 +630,6 @@
     </section>
 
     <aside class="glass-card">
-
-      <!-- Step 1: Request -->
       <div class="step active" id="step1">
         <h2 class="card-title" data-i18n="cardTitle">Request Access</h2>
         <p class="card-subtitle" data-i18n="cardSub">Join the waitlist to secure your spot.</p>
@@ -624,23 +638,23 @@
           <div class="form-row">
             <div class="form-group">
               <label data-i18n="lblFirstName">First Name *</label>
-              <input type="text" id="first_name" />
+              <input type="text" id="first_name" placeholder="John" />
             </div>
             <div class="form-group">
               <label data-i18n="lblLastName">Last Name *</label>
-              <input type="text" id="last_name" />
+              <input type="text" id="last_name" placeholder="Doe" />
             </div>
           </div>
 
           <div class="form-group">
             <label data-i18n="lblEmail">Email Address *</label>
-            <input type="email" id="email" />
+            <input type="email" id="email" placeholder="john@example.com" />
           </div>
 
           <div class="form-row">
             <div class="form-group">
               <label data-i18n="lblCity">City *</label>
-              <input type="text" id="city" />
+              <input type="text" id="city" placeholder="London" />
             </div>
             <div class="form-group">
               <label data-i18n="lblProfile">Profile</label>
@@ -682,47 +696,45 @@
         </div>
       </div>
 
-      <!-- Step 2: Verification -->
       <div class="step" id="step2">
         <h2 class="card-title" data-i18n="step2Title">Verification Code</h2>
         <p class="card-subtitle"><span data-i18n="step2Sub">We sent a 6-digit code to </span><span id="emailEcho"
-            style="color:var(--accent);font-weight:600;"></span></p>
+            style="color:var(--text-main);font-weight:700;"></span></p>
 
         <div>
           <div class="form-group">
             <input type="text" id="code" placeholder="000000" maxlength="6"
-              style="text-align:center; letter-spacing:10px; font-size:26px; font-family:'Space Mono',monospace;" />
+              style="text-align:center; letter-spacing:12px; font-size:32px; font-family:'JetBrains Mono',monospace; padding:20px;" />
           </div>
 
-          <button class="btn btn-primary" id="btnVerify" type="button" data-i18n="btnVerify">Verify Code</button>
+          <button class="btn btn-primary" id="btnVerify" type="button" data-i18n="btnVerify">Verify
+            Code</button>
 
-          <div style="margin-top:16px;text-align:center;">
+          <div style="margin-top:20px;text-align:center;">
             <a href="#" id="btnBack"
-              style="color:var(--text-muted);font-size:13px;text-decoration:none;font-family:'Space Mono',monospace;"
+              style="color:var(--text-muted);font-size:14px;font-weight:600;text-decoration:none;"
               data-i18n="btnChangeEmail">Change email</a>
           </div>
-
           <div id="msg2" class="message"></div>
         </div>
       </div>
 
-      <!-- Step 3: Success -->
       <div class="step" id="step3">
         <div style="text-align:center;">
           <div class="success-ring">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2DD4BF" stroke-width="2.5"
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"
               stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
           </div>
-          <h2 class="card-title" style="color:var(--accent-secondary);" data-i18n="step3Title">You're on the list.</h2>
-          <p class="card-subtitle" data-i18n="step3Sub" style="margin-bottom:0;">Your email has been verified. We will
-            notify you when your access window opens.</p>
+          <h2 class="card-title" style="color:#10B981;" data-i18n="step3Title">You're on the list.</h2>
+          <p class="card-subtitle" data-i18n="step3Sub" style="margin-bottom:0;">Your email has been verified.
+            We will notify you when your access window opens.</p>
         </div>
       </div>
 
-      <div class="fine-print" data-i18n="finePrint">By requesting access, you agree to our terms and privacy policy.
-      </div>
+      <div class="fine-print" data-i18n="finePrint">By requesting access, you agree to our terms and privacy
+        policy.</div>
     </aside>
   </main>
 
@@ -732,7 +744,7 @@
     const dict = {
       EN: {
         badge: "6 AI AGENTS · MULTI-ASSET · REAL-TIME",
-        heading: "The Intelligence Layer<br/>Across Every Market.",
+        heading: "The Intelligence Layer<br/>Across Every <span>Market.</span>",
         subheading: "The platform remains private while we calibrate signals and scale infrastructure. Request early access and we'll notify you when your window opens.",
         cardTitle: "Request Access",
         cardSub: "Join the waitlist to secure your spot.",
@@ -754,37 +766,120 @@
         errFields: "Please fill all required fields.",
         errEmail: "Please enter a valid email.",
         errCode: "Enter the 6 digit code.",
-        errGoogleOffline: "Google sign-in is not available right now."
+        errGoogleOffline: "Google sign-in is not available right now.",
+        msgRegistered: "You are already registered! We will notify you when access opens."
       },
       TR: {
-        badge: "6 YAPAY ZEKA AJANI · COKLU VARLIK · GERCEK ZAMANLI",
-        heading: "Tum Piyasalarda<br/>Istihbarat Katmani.",
-        subheading: "Sinyalleri kalibre edip altyapiyi olceklendirirken platform gizli kalmaya devam ediyor. Erken erisim talep edin, zamaniniz geldiginde size haber verelim.",
-        cardTitle: "Erisim Talep Et",
-        cardSub: "Siraya katilmak icin kayit olun.",
+        badge: "6 YAPAY ZEKA AJANI · ÇOKLU VARLIK · GERÇEK ZAMANLI",
+        heading: "Tüm Piyasalarda<br/>İstihbarat <span>Katmanı.</span>",
+        subheading: "Sinyalleri kalibre edip altyapıyı ölçeklendirirken platform gizli kalmaya devam ediyor. Erken erişim talep edin, zamanınız geldiğinde size haber verelim.",
+        cardTitle: "Erişim Talep Et",
+        cardSub: "Sıraya katılmak için kayıt olun.",
         lblFirstName: "Ad *",
         lblLastName: "Soyad *",
         lblEmail: "E-Posta Adresi *",
-        lblCity: "Sehir *",
+        lblCity: "Şehir *",
         lblProfile: "Profil",
         btnEmail: "E-posta ile Devam Et",
         divider: "VEYA",
         btnGoogle: "Google ile Devam Et",
-        step2Title: "Dogrulama Kodu",
-        step2Sub: "6 haneli kodu suraya gonderdik: ",
-        btnVerify: "Kodu Dogrula",
-        btnChangeEmail: "E-postayi Degistir",
-        step3Title: "Listeye Alindiniz.",
-        step3Sub: "E-postaniz dogrulandi. Erisim pencereniz acildiginda sizi bilgilendirecegiz.",
-        finePrint: "Erisim talep ederek sartlarimizi ve gizlilik politikamizi kabul etmis olursunuz.",
-        errFields: "Lutfen tum zorunlu alanlari doldurun.",
-        errEmail: "Gecerli bir e-posta girin.",
+        step2Title: "Doğrulama Kodu",
+        step2Sub: "6 haneli kodu şuraya gönderdik: ",
+        btnVerify: "Kodu Doğrula",
+        btnChangeEmail: "E-postayı Değiştir",
+        step3Title: "Listeye Alındınız.",
+        step3Sub: "E-postanız doğrulandı. Erişim pencereniz açıldığında sizi bilgilendireceğiz.",
+        finePrint: "Erişim talep ederek şartlarımızı ve gizlilik politikamızı kabul etmiş olursunuz.",
+        errFields: "Lütfen tüm zorunlu alanları doldurun.",
+        errEmail: "Geçerli bir e-posta girin.",
         errCode: "6 haneli kodu girin.",
-        errGoogleOffline: "Google giris simdilik kullanilamiyor."
+        errGoogleOffline: "Google giriş şimdilik kullanılamıyor.",
+        msgRegistered: "Zaten kayıtlısınız! Erişim açıldığında size haber vereceğiz."
+      },
+      ES: {
+        badge: "6 AGENTES IA · MULTI-ACTIVO · TIEMPO REAL",
+        heading: "Capa de Inteligencia<br/>en Cada <span>Mercado.</span>",
+        subheading: "La plataforma permanece privada mientras escalamos. Solicite acceso anticipado y se lo notificaremos.",
+        cardTitle: "Solicitar Acceso",
+        cardSub: "Únete a la lista de espera.",
+        lblFirstName: "Nombre *",
+        lblLastName: "Apellido *",
+        lblEmail: "Correo electrónico *",
+        lblCity: "Ciudad *",
+        lblProfile: "Perfil",
+        btnEmail: "Continuar con Email",
+        divider: "O",
+        btnGoogle: "Continuar con Google",
+        step2Title: "Código de Verificación",
+        step2Sub: "Enviamos un código de 6 dígitos a ",
+        btnVerify: "Verificar Código",
+        btnChangeEmail: "Cambiar correo",
+        step3Title: "Estás en la lista.",
+        step3Sub: "Tu correo ha sido verificado. Te avisaremos cuando se abra el acceso.",
+        finePrint: "Al solicitar acceso, aceptas nuestros términos y privacidad.",
+        errFields: "Por favor complete todos los campos requeridos.",
+        errEmail: "Por favor introduzca un correo válido.",
+        errCode: "Ingrese el código de 6 dígitos.",
+        errGoogleOffline: "El inicio con Google no está disponible.",
+        msgRegistered: "¡Ya estás registrado! Te avisaremos cuando haya acceso."
+      },
+      DE: {
+        badge: "6 KI-AGENTEN · MULTI-ASSET · ECHTZEIT",
+        heading: "Die Intelligenzschicht<br/>Für Jeden <span>Markt.</span>",
+        subheading: "Die Plattform bleibt vorerst privat. Fordern Sie Vorabzugang an und wir benachrichtigen Sie.",
+        cardTitle: "Zugang Anfordern",
+        cardSub: "Treten Sie der Warteliste bei.",
+        lblFirstName: "Vorname *",
+        lblLastName: "Nachname *",
+        lblEmail: "E-Mail-Adresse *",
+        lblCity: "Stadt *",
+        lblProfile: "Profil",
+        btnEmail: "Mit E-Mail fortfahren",
+        divider: "ODER",
+        btnGoogle: "Mit Google fortfahren",
+        step2Title: "Bestätigungscode",
+        step2Sub: "Wir haben einen 6-stelligen Code gesendet an ",
+        btnVerify: "Code Bestätigen",
+        btnChangeEmail: "E-Mail ändern",
+        step3Title: "Sie stehen auf der Liste.",
+        step3Sub: "Ihre E-Mail wurde verifiziert. Wir melden uns.",
+        finePrint: "Durch Ihre Anfrage stimmen Sie zu unseren Bedingungen ein.",
+        errFields: "Füllen Sie alle Pflichtfelder aus.",
+        errEmail: "Gültige E-Mail eingeben.",
+        errCode: "Geben Sie den 6-stelligen Code ein.",
+        errGoogleOffline: "Google-Login ist derzeit nicht verfügbar.",
+        msgRegistered: "Sie sind bereits registriert! Wir melden uns bei Ihnen."
+      },
+      FR: {
+        badge: "6 AGENTS IA · MULTI-ACTIFS · TEMPS RÉEL",
+        heading: "La Couche d'Intelligence<br/>Pour Chaque <span>Marché.</span>",
+        subheading: "La plateforme reste privée pour l'instant. Demandez un accès anticipé.",
+        cardTitle: "Demander l'Accès",
+        cardSub: "Rejoignez la liste d'attente.",
+        lblFirstName: "Prénom *",
+        lblLastName: "Nom *",
+        lblEmail: "Adresse Email *",
+        lblCity: "Ville *",
+        lblProfile: "Profil",
+        btnEmail: "Continuer avec Email",
+        divider: "OU",
+        btnGoogle: "Continuer avec Google",
+        step2Title: "Code de Vérification",
+        step2Sub: "Code à 6 chiffres envoyé à ",
+        btnVerify: "Vérifier le Code",
+        btnChangeEmail: "Changer d'email",
+        step3Title: "Vous êtes sur la liste.",
+        step3Sub: "Email vérifié. Nous vous contacterons.",
+        finePrint: "En demandant l'accès, vous acceptez nos termes.",
+        errFields: "Remplissez tous les champs obligatoires.",
+        errEmail: "Entrez un email valide.",
+        errCode: "Entrez le code à 6 chiffres.",
+        errGoogleOffline: "Connexion Google indisponible.",
+        msgRegistered: "Vous êtes déjà enregistré! Nous vous informerons de l'accès."
       }
     };
 
-    const langToggle = document.getElementById('langToggle');
+    const langSelect = document.getElementById('langSelect');
     const msg1 = document.getElementById('msg1');
     const msg2 = document.getElementById('msg2');
     const step1El = document.getElementById('step1');
@@ -793,7 +888,7 @@
 
     function setLang(l) {
       state.lang = l;
-      langToggle.textContent = l === 'EN' ? 'TR' : 'EN';
+      langSelect.value = l;
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (dict[l][key]) el.innerHTML = dict[l][key];
@@ -801,7 +896,7 @@
       renderDynamicFields();
     }
 
-    langToggle.addEventListener('click', () => setLang(state.lang === 'EN' ? 'TR' : 'EN'));
+    langSelect.addEventListener('change', (e) => setLang(e.target.value));
 
     function showMsg(el, type, txt) {
       el.className = `message ${type}`;
@@ -854,7 +949,6 @@
           }
           if (sData.settings.firebase_config && sData.settings.firebase_config.apiKey) {
             state.fbConfig = sData.settings.firebase_config;
-            console.log("[FIREBASE] Config loaded:", { apiKey: state.fbConfig.apiKey ? "OK" : "MISSING", authDomain: state.fbConfig.authDomain || "MISSING", projectId: state.fbConfig.projectId || "MISSING", appId: state.fbConfig.appId || "MISSING" });
             loadFirebase();
           }
         }
@@ -908,6 +1002,9 @@
         });
         const d = await r.json();
         if (d.ok) {
+          if (d.registered) {
+            return showMsg(msg1, 'success', dict[state.lang].msgRegistered);
+          }
           document.getElementById('emailEcho').textContent = data.email;
           switchStep(2);
         } else {
@@ -916,7 +1013,7 @@
       } catch (e) { showMsg(msg1, 'error', "Network Error"); }
     });
 
-    // Google signup — popup
+    // Google signup
     document.getElementById('btnGoogleSignup').addEventListener('click', async () => {
       if (!state.authLib) return showMsg(msg1, 'error', dict[state.lang].errGoogleOffline);
 
@@ -931,7 +1028,7 @@
         data.googleIdToken = token;
         data.email = cred.user.email;
 
-        // Extract name from Google if user didn't type it
+        // Formda ad-soyad boşsa ve Google'dan geldiyse doldur
         if (!data.first_name && cred.user.displayName) {
           const nameParts = cred.user.displayName.trim().split(' ');
           data.first_name = nameParts[0];
@@ -944,8 +1041,13 @@
           body: JSON.stringify(data)
         });
         const d = await r.json();
-        if (d.ok && d.verified) {
-          switchStep(3);
+        if (d.ok) {
+          if (d.registered) {
+            return showMsg(msg1, 'success', dict[state.lang].msgRegistered);
+          }
+          if (d.verified) {
+            switchStep(3);
+          }
         } else {
           showMsg(msg1, 'error', d.error || "Request failed");
         }
@@ -981,6 +1083,70 @@
       e.preventDefault();
       switchStep(1);
     });
+
+    // --- AI Intelligence Background Animation ---
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height, particles;
+
+    function initCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      particles = [];
+      const numParticles = Math.min(width * height / 10000, 150); // Arttırıldı (daha yoğun)
+
+      for (let i = 0; i < numParticles; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 1.5, // Hız 3 katına çıkarıldı
+          vy: (Math.random() - 0.5) * 1.5, // Hız 3 katına çıkarıldı
+          radius: Math.random() * 4 + 2, // Boyut büyütüldü (eskiden 1-3 arasıydı, şimdi 2-6 arası)
+          color: Math.random() > 0.5 ? 'rgba(180, 138, 54, ' : 'rgba(14, 165, 233, '
+        });
+      }
+    }
+
+    function animateCanvas() {
+      requestAnimationFrame(animateCanvas);
+      ctx.clearRect(0, 0, width, height);
+
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color + '0.5)';
+        ctx.fill();
+      });
+
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 220) { // Bağlantı mesafesi artırıldı
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            // Dynamic opacity based on distance
+            const alpha = (1 - dist / 220) * 0.35; // Çizgi görünürlüğü artırıldı
+            ctx.strokeStyle = `rgba(180, 138, 54, ${alpha})`;
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    window.addEventListener('resize', initCanvas);
+    initCanvas();
+    animateCanvas();
+    // --- End Animation ---
 
     init();
   </script>
